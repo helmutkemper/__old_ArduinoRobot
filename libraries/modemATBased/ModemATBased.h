@@ -43,21 +43,26 @@ class ModemATBased
 {
 	private:
 	
-		static eSerialPort		vceSerial;
-		static const unsigned char   * vcacucATString[ 8 ];
+		static eSerialPort				vceSerial;
+		static const unsigned char *	vcacucATString[ 8 ];
+		static const unsigned char *	vcacucATResponse[ 8 ];
+		static const unsigned char *	vcucpDataToCompare;
 		static unsigned char			vcaucATEndLine[ 8 ];
+		static unsigned char			vcaucSMStep;
+		static unsigned char			vcaucSMTotalStep;
+		static			char			vcascPointerDataModem;
 	
 		static void				sendData ( unsigned char vapucData );
 		static int				availableData ( );
 		static unsigned char	getData ( );
 		static void				sendCommandConstBased ( const unsigned char * vapcucString, unsigned char vaucEndLine );
-		static void				StateMachineRun ( unsigned char vaucLength );
+		static void				StateMachineRun ();
 		
 	public:
-	
 								ModemATBased ();
 		static void				setSerial ( eSerialPort vaeSerial );
-		static void				sendTextSms ( unsigned char * vapucNumber, unsigned char * vapucMessage );
+		static void				sendTextSms ( const unsigned char * vapucNumber, const unsigned char * vapucMessage );
+		static void				getDataModem ();
 		
 };
 

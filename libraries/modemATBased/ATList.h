@@ -29,7 +29,7 @@ const unsigned char modem_bye[2]							 =  { 26, 0x00 };
 
 
 
-const unsigned char modem_sms_text_mode[7]					 =  { 'C', 'M', 'G', 'F', '=', '1', 0x00 };
+const unsigned char modem_sms_text_mode[7]					 =  { 'C', 'M', 'G', 'F', '=', '1', 0x00 };//OK
 const unsigned char modem_sms_read_all[11]					 =  { 'C', 'M', 'G', 'L', '=', '"', 'A', 'L', 'L', '"', 0x00 };
 const unsigned char modem_sms_delete_by_id[6]				 =  { 'C', 'M', 'G', 'D', '=', 0x00 };
 const unsigned char modem_sms_read_by_id[6]					 =  { 'C', 'M', 'G', 'R', '=', 0x00 };
@@ -39,7 +39,8 @@ const unsigned char modem_sms_new_message[6]				 =  { 'C', 'N', 'M', 'I', ':', 0
 const unsigned char modem_modem_status[5]					 =  { 'C', 'P', 'A', 'S', 0x00 };//0 call ready - 2 unknow - 3 tocando - 4 em ligacao
 const unsigned char modem_modem_ring[5]						 =  { 'R', 'I', 'N', 'G', 0x00 };
 const unsigned char modem_modem_no_carrier[11]				 =  { 'N', 'O', ' ', 'C', 'A', 'R', 'R', 'I', 'E', 'R', 0x00 };
-const unsigned char modem_modem_ok[3]						 =  { 'O', 'K', 0x00 };
+//const unsigned char modem_modem_ok[7]						 =  { '\r', '\n', 'O', 'K', '\r', '\n', 0x00 };
+const unsigned char modem_modem_ok[5]						 =  { 'O', 'K', '\r', '\n', 0x00 };
 const unsigned char modem_modem_error[6]					 =  { 'E', 'R', 'R', 'O', 'R', 0x00 };
 
 /*
