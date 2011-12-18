@@ -13,6 +13,7 @@ unsigned char			ModemATBased::vcaucATEndLine[ 8 ];
 unsigned char			ModemATBased::vcaucSMStep;
 unsigned char			ModemATBased::vcaucSMTotalStep;
 		 char			ModemATBased::vcascPointerDataModem;
+unsigned char *         ModemATBased::teste;
 
 
 ModemATBased::ModemATBased ()
@@ -131,9 +132,9 @@ unsigned char ModemATBased::getData ( )
 	}
 }
 
-void ModemATBased::sendTextSms ( const unsigned char * vapucNumber, const unsigned char * vapucMessage )
+void ModemATBased::sendTextSms ( const unsigned char * vapucMessage )
 {
-	ModemATBased::vcacucATString[ 0 ]	 =  &modem_at_plus[ 0 ];
+    ModemATBased::vcacucATString[ 0 ]	 =  &modem_at_plus[ 0 ];
 	ModemATBased::vcaucATEndLine[ 0 ]	 =  0;
 	
 	ModemATBased::vcacucATString[ 1 ]	 =  &modem_sms_text_mode[ 0 ];
@@ -143,23 +144,17 @@ void ModemATBased::sendTextSms ( const unsigned char * vapucNumber, const unsign
 	ModemATBased::vcacucATString[ 2 ]	 =  &modem_at_plus[ 0 ];
 	ModemATBased::vcaucATEndLine[ 2 ]	 =  0;
 	
-	ModemATBased::vcacucATString[ 3 ]	 =  &modem_sms_send_1of2[ 0 ];
-	ModemATBased::vcaucATEndLine[ 3 ]	 =  0;
-	
-	ModemATBased::vcacucATString[ 4 ]	 =  vapucNumber;
+	ModemATBased::vcacucATString[ 3 ]	 =  &modem_sms_send[ 0 ];
+    ModemATBased::vcacucATResponse[ 3 ]	 =  &modem_modem_ok[ 0 ];
+	ModemATBased::vcaucATEndLine[ 3 ]	 =  1;
+
+	ModemATBased::vcacucATString[ 4 ]	 =  vapucMessage;
 	ModemATBased::vcaucATEndLine[ 4 ]	 =  0;
 	
-	ModemATBased::vcacucATString[ 5 ]	 =  &modem_sms_send_2of2[ 0 ];
+	ModemATBased::vcacucATString[ 5 ]	 =  &modem_bye[ 0 ];
 	ModemATBased::vcacucATResponse[ 5 ]	 =  &modem_modem_ok[ 0 ];
 	ModemATBased::vcaucATEndLine[ 5 ]	 =  1;
-	
-	ModemATBased::vcacucATString[ 6 ]	 =  vapucMessage;
-	ModemATBased::vcaucATEndLine[ 6 ]	 =  0;
-	
-	ModemATBased::vcacucATString[ 7 ]	 =  &modem_bye[ 0 ];
-	ModemATBased::vcacucATResponse[ 7 ]	 =  &modem_modem_ok[ 0 ];
-	ModemATBased::vcaucATEndLine[ 7 ]	 =  1;
-	
+                
 	ModemATBased::vcaucSMStep			 =  0;
 	ModemATBased::vcaucSMTotalStep		 =  7;
 	ModemATBased::vcascPointerDataModem	 = -1;
@@ -187,13 +182,42 @@ void ModemATBased::sendCommandConstBased ( const unsigned char * vapcucString, u
 {
 	while ( * vapcucString != 0x00 )
 	{
-		ModemATBased::sendData ( * vapcucString );
-		vapcucString ++;
+		switch ( * vapcucString )
+        {
+            case 0xFF:
+                
+                Serial.print ( (unsigned char)*ModemATBased::teste );
+                ModemATBased::teste++;
+                Serial.print ( (unsigned char)*ModemATBased::teste );
+                ModemATBased::teste++;
+                Serial.print ( (unsigned char)*ModemATBased::teste );
+                ModemATBased::teste++;
+                Serial.print ( (unsigned char)*ModemATBased::teste );
+                ModemATBased::teste++;
+                Serial.print ( (unsigned char)*ModemATBased::teste );
+                ModemATBased::teste++;
+                Serial.print ( (unsigned char)*ModemATBased::teste );
+                ModemATBased::teste++;
+                Serial.print ( (unsigned char)*ModemATBased::teste );
+                ModemATBased::teste++;
+                Serial.println ( (unsigned char)*ModemATBased::teste );
+                ModemATBased::teste++;
+                
+                break;
+		
+            
+            default:
+                ModemATBased::sendData ( * vapcucString );
+                //vapcucString ++;
+                break;
+        }
+        
+        vapcucString ++;
 	}
 	
 	while ( vaucEndLine != 0 )
 	{
-		ModemATBased::sendData ( '\r' );
+        ModemATBased::sendData ( '\r' );
 		ModemATBased::sendData ( '\n' );
 		vaucEndLine --;
 	}

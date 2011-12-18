@@ -51,7 +51,7 @@ class ModemATBased
 		static unsigned char			vcaucSMStep;
 		static unsigned char			vcaucSMTotalStep;
 		static			char			vcascPointerDataModem;
-	
+    
 		static void				sendData ( unsigned char vapucData );
 		static int				availableData ( );
 		static unsigned char	getData ( );
@@ -59,9 +59,12 @@ class ModemATBased
 		static void				StateMachineRun ();
 		
 	public:
-								ModemATBased ();
+		
+        static unsigned char *    teste;
+                                
+                                ModemATBased ();
 		static void				setSerial ( eSerialPort vaeSerial );
-		static void				sendTextSms ( const unsigned char * vapucNumber, const unsigned char * vapucMessage );
+		static void				sendTextSms ( const unsigned char * vapucMessage );
 		static void				getDataModem ();
 		
 };
