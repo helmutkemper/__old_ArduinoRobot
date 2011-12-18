@@ -1,0 +1,15 @@
+1441 leitura de dados internos
+1449 time out em funao de um iB
+1452 erro de reconhecimento
+1468 mandei escrever o trigger "porfavor"
+1506 mandei treinar, primeiro treino
+1524 mandei treinar, segundo treino
+1534 mandei testar, porfavor. ok
+1546 mandei testar, porfavor. timeout
+1554 mandei testar, porfavor. timeout
+1562 mandei testar, porfavor. timeout
+1569 mandei testar, porfavor. timeout
+
+
+quando se recebe e de erro, tem que se enviar dois espaos para pegar as duas letras de erro
+

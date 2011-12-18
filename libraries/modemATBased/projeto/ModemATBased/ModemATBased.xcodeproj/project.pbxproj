@@ -1,0 +1,78 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXFileReference section */
+		1D85E405149D248300B9B386 /* ATList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATList.h; path = ../../ATList.h; sourceTree = SOURCE_ROOT; };
+		1D85E406149D248300B9B386 /* ModemATBased.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModemATBased.cpp; path = ../../ModemATBased.cpp; sourceTree = SOURCE_ROOT; };
+		1D85E407149D248300B9B386 /* ModemATBased.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModemATBased.h; path = ../../ModemATBased.h; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1D15F1D3149CCE60009E981F = {
+			isa = PBXGroup;
+			children = (
+				1D85E405149D248300B9B386 /* ATList.h */,
+				1D85E406149D248300B9B386 /* ModemATBased.cpp */,
+				1D85E407149D248300B9B386 /* ModemATBased.h */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		1D15F1D5149CCE60009E981F /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1D15F1D8149CCE60009E981F /* Build configuration list for PBXProject "ModemATBased" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 1D15F1D3149CCE60009E981F;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		1D15F1D6149CCE60009E981F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		1D15F1D7149CCE60009E981F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D15F1D8149CCE60009E981F /* Build configuration list for PBXProject "ModemATBased" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D15F1D6149CCE60009E981F /* Debug */,
+				1D15F1D7149CCE60009E981F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1D15F1D5149CCE60009E981F /* Project object */;
+}

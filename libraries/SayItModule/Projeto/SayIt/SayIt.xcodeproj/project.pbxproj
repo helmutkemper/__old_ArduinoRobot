@@ -1,0 +1,78 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXFileReference section */
+		1D74732D14312FA800F11BBF /* SayItModule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SayItModule.cpp; path = ../../SayItModule.cpp; sourceTree = SOURCE_ROOT; };
+		1D74732E14312FA800F11BBF /* SayItModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SayItModule.h; path = ../../SayItModule.h; sourceTree = SOURCE_ROOT; };
+		1DB61668144135FD0004E15F /* index.php */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.php; name = index.php; path = /Users/helmutkemper/Sites/index.php; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1D74732214312F7000F11BBF = {
+			isa = PBXGroup;
+			children = (
+				1DB61668144135FD0004E15F /* index.php */,
+				1D74732D14312FA800F11BBF /* SayItModule.cpp */,
+				1D74732E14312FA800F11BBF /* SayItModule.h */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		1D74732414312F7000F11BBF /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1D74732714312F7000F11BBF /* Build configuration list for PBXProject "SayIt" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 1D74732214312F7000F11BBF;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		1D74732514312F7000F11BBF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		1D74732614312F7000F11BBF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D74732714312F7000F11BBF /* Build configuration list for PBXProject "SayIt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D74732514312F7000F11BBF /* Debug */,
+				1D74732614312F7000F11BBF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1D74732414312F7000F11BBF /* Project object */;
+}

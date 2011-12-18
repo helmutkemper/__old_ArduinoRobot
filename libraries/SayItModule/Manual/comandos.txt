@@ -1,0 +1,34 @@
+por favor
+
+apresente se
+escaneie a area
+explore o local
+pare
+desligue se
+aceite o comando
+
+mova se
+gire
+rotacione sensor
+suba o sensor
+desca o sensor
+alinhe sensores
+
+para frente
+para traz
+para a direita
+para a esquerda
+
+zero
+um
+dois
+tres
+quatro
+cinco
+seis
+sete
+oito
+nove
+graus
+
+informe

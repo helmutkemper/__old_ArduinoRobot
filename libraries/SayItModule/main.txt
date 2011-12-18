@@ -1,0 +1,40 @@
+#include "SayItModule.h"
+
+const byte pinoLed =  13;
+boolean reconhecimento = false;
+
+void setup ()
+{
+ pinMode ( pinoLed, OUTPUT );
+ Serial.begin ( 19200 );
+ //Serial.print ( "Bus" );
+ SayItModule::setSerial ( SerialPort::Port1 );
+ 
+ SayItModule::defineEventFunction ( &piscar1, Reconhecimento );
+ SayItModule::defineEventFunction ( &piscar2, Erro );
+ SayItModule::defineEventFunction ( &piscar3, Livre );
+ 
+ SayItModule::start ();
+}
+
+void loop ()
+{
+  int cont = 0;
+  SayItModule::run ();
+}
+
+void piscar1 ( unsigned char vaucIndex )
+{
+  Serial.print ( "*** Reconheceu *** " );
+  Serial.println ( vaucIndex );
+}
+
+void piscar2 ( unsigned char vaucIndex )
+{
+  Serial.println ( "Erro" );
+}
+
+void piscar3 ( unsigned char vaucIndex )
+{
+  Serial.println ( "Livre" );
+}
