@@ -49,20 +49,21 @@ class ModemATBased
 {
 	private:
 	
-		static eSerialPort				vceSerial;
-		static const unsigned char *	vcacucATString[ 8 ];
-		static const unsigned char *	vcacucATResponse[ 8 ];
-		static const unsigned char *	vcucpDataToCompare;
-		static unsigned char			vcaucSMStep;
-		static unsigned char			vcaucSMTotalStep;
-		static			char			vcascPointerDataModem;
+		static eSerialPort		vceSerial;
+		static const String *	vcacucATString[ 8 ];
+		static const String *	vcacucATResponse[ 8 ];
+		static const String *	vcucpDataToCompare;
+		static unsigned char	vcucSMStep;
+        static unsigned char    vcucSMStepCompare;
+        static unsigned char    vcucSMTotalStep;
+        static          char    vcascPointerDataModem;
     
-		static void				sendData ( unsigned char vapucData );
+		static void				sendData ( String vapucData );
 		static int				availableData ( );
 		static unsigned char	getData ( );
-		static void				sendCommandConstBased ( const unsigned char * vapcucString );
+//		static void				sendCommandConstBased ( const unsigned char * vapcucString );
 		static void				StateMachineRun ();
-        static void             sendCommandExternalPointerBased ( unsigned char * vapucExternalPointer );
+//        static void             sendCommandExternalPointerBased ( unsigned char * vapucExternalPointer );
 		
 	public:
 		/**  Arquiva o número do telefone usado para envio
@@ -73,7 +74,7 @@ class ModemATBased
                                 
                                 ModemATBased ();
 		static void				setSerial ( eSerialPort vaeSerial );
-		static void				sendTextSms ();
+		static void				sendTextSms ( const String * vapcucTelefon, const String * vapcucMessage );
 		static void				getDataModem ();
 		
 };

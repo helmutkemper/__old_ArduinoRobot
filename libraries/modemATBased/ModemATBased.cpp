@@ -6,14 +6,14 @@
 #include "ATList.h"
 
 eSerialPort				ModemATBased::vceSerial;
-const unsigned char *	ModemATBased::vcacucATString[ 8 ];
-const unsigned char *	ModemATBased::vcacucATResponse[8];
-const unsigned char *	ModemATBased::vcucpDataToCompare;
-unsigned char			ModemATBased::vcaucSMStep;
-unsigned char			ModemATBased::vcaucSMTotalStep;
+const String *          ModemATBased::vcacucATString[ 8 ];
+const String *          ModemATBased::vcacucATResponse[8];
+const String *          ModemATBased::vcucpDataToCompare;
+unsigned char			ModemATBased::vcucSMStep;
+unsigned char			ModemATBased::vcucSMTotalStep;
+unsigned char           ModemATBased::vcucSMStepCompare = 0;
 		 char			ModemATBased::vcascPointerDataModem = -1;
-const unsigned char *   ModemATBased::vcpucTelefone;
-const unsigned char *   ModemATBased::vcpucMessage;
+         
 
 ModemATBased::ModemATBased ()
 {
@@ -63,20 +63,20 @@ void ModemATBased::setSerial ( eSerialPort vaeSerial )
  *  
  *  
  */
-void ModemATBased::sendData ( unsigned char vaucData )
+void ModemATBased::sendData ( String vasData )
 {
 	switch ( ModemATBased::vceSerial )
 	{
 		#ifndef debug_ModemATBased
-		case SerialPort::Port0:	Serial.print ( vaucData );
+		case SerialPort::Port0:	Serial.print ( vasData );
 			break;
 		#endif
         
         #if defined(UBRR1H)
         
-		case SerialPort::Port1:	Serial1.print ( vaucData );
+		case SerialPort::Port1:	Serial1.print ( vasData );
             #ifdef debug_ModemATBased
-            Serial.print ( vaucData );
+            Serial.print ( vasData );
             #endif
             
 			break;
@@ -85,9 +85,9 @@ void ModemATBased::sendData ( unsigned char vaucData )
         
 		#if defined(UBRR2H)
         
-		case SerialPort::Port2:	Serial2.print ( vaucData );
+		case SerialPort::Port2:	Serial2.print ( vasData );
             #ifdef debug_ModemATBased
-            Serial.print ( vaucData );
+            Serial.print ( vasData );
             #endif
             
 			break;
@@ -96,9 +96,9 @@ void ModemATBased::sendData ( unsigned char vaucData )
         
 		#if defined(UBRR3H)
         
-		case SerialPort::Port3:	Serial3.print ( vaucData );
+		case SerialPort::Port3:	Serial3.print ( vasData );
             #ifdef debug_ModemATBased
-            Serial.print ( vaucData );
+            Serial.print ( vasData );
             #endif
             
 			break;
@@ -215,44 +215,45 @@ unsigned char ModemATBased::getData ( )
 	}
 }
 
-void ModemATBased::sendTextSms ()
+void ModemATBased::sendTextSms ( const String * vapcucTelefon, const String * vapcucMessage )
 {
-    ModemATBased::vcacucATString[ 0 ]	 =  &modem_echo_off[ 0 ];
-    ModemATBased::vcacucATResponse[ 0 ]	 =  &modem_modem_ok[ 0 ];
+    ModemATBased::vcacucATString[ 0 ]	 =  &modem_echo_off;
+    ModemATBased::vcacucATResponse[ 0 ]	 =  &modem_modem_ok;
     
-    ModemATBased::vcacucATString[ 1 ]	 =  &modem_at_plus[ 0 ];
-	ModemATBased::vcacucATResponse[ 1 ]	 =  0;
-	
-	ModemATBased::vcacucATString[ 2 ]	 =  &modem_sms_text_mode[ 0 ];
-	ModemATBased::vcacucATResponse[ 2 ]	 =  &modem_modem_ok[ 0 ];
-	
-	ModemATBased::vcacucATString[ 3 ]	 =  &modem_at_plus[ 0 ];
+	ModemATBased::vcacucATString[ 1 ]	 =  &modem_sms_text_mode;
+	ModemATBased::vcacucATResponse[ 1 ]	 =  &modem_modem_ok;
+    
+	ModemATBased::vcacucATString[ 2 ]	 =  &modem_sms_send_confg_1of2;
+    ModemATBased::vcacucATResponse[ 2 ]	 =  0;
+    
+    ModemATBased::vcacucATString[ 3 ]	 =  vapcucTelefon;
     ModemATBased::vcacucATResponse[ 3 ]	 =  0;
-	
-	ModemATBased::vcacucATString[ 4 ]	 =  &modem_sms_send_confg[ 0 ];
-    ModemATBased::vcacucATResponse[ 4 ]	 =  &modem_sms_text_redy_to_send[ 0 ];
+    
+	ModemATBased::vcacucATString[ 4 ]	 =  &modem_sms_send_confg_2of2;
+    ModemATBased::vcacucATResponse[ 4 ]	 =  &modem_sms_text_redy_to_send;
 
-	ModemATBased::vcacucATString[ 5 ]	 =  &modem_sms_send_text[ 0 ];
+	ModemATBased::vcacucATString[ 5 ]	 =  vapcucMessage;
     ModemATBased::vcacucATResponse[ 5 ]	 =  0;
 	
-	ModemATBased::vcacucATString[ 6 ]	 =  &modem_bye[ 0 ];
-	ModemATBased::vcacucATResponse[ 6 ]	 =  &modem_modem_ok[ 0 ];
+	ModemATBased::vcacucATString[ 6 ]	 =  &modem_bye;
+	ModemATBased::vcacucATResponse[ 6 ]	 =  &modem_modem_ok;
                 
-	ModemATBased::vcaucSMStep			 =  0;
-	ModemATBased::vcaucSMTotalStep		 =  6;
+	ModemATBased::vcucSMStepCompare      =  0;
+    ModemATBased::vcucSMStep			 =  0;
+	ModemATBased::vcucSMTotalStep		 =  6;
 	ModemATBased::vcascPointerDataModem	 = -1;
 	ModemATBased::StateMachineRun ();
 }
 
 void ModemATBased::StateMachineRun ()
 {
-    ModemATBased::sendCommandConstBased ( ModemATBased::vcacucATString[ ModemATBased::vcaucSMStep ] );
+    ModemATBased::sendData ( * ( ModemATBased::vcacucATString[ ModemATBased::vcucSMStep ] ) );
     
-    if ( ModemATBased::vcacucATResponse[ ModemATBased::vcaucSMStep ] == 0 )
+    if ( ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ] == 0 )
 	{
-        if ( ModemATBased::vcaucSMStep != ModemATBased::vcaucSMTotalStep )
+        if ( ModemATBased::vcucSMStep != ModemATBased::vcucSMTotalStep )
         {
-            ModemATBased::vcaucSMStep ++;
+            ModemATBased::vcucSMStep ++;
             ModemATBased::StateMachineRun ();
         }
 	}
@@ -260,43 +261,8 @@ void ModemATBased::StateMachineRun ()
 	else
 	{
 		ModemATBased::vcascPointerDataModem	 =  0;
-		ModemATBased::vcucpDataToCompare	 =  ModemATBased::vcacucATResponse[ ModemATBased::vcaucSMStep ];
+		ModemATBased::vcucpDataToCompare	 =  ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ];
 	}
-}
-
-void ModemATBased::sendCommandConstBased ( const unsigned char * vapcucString )
-{
-	while ( * vapcucString != 0x00 )
-	{
-		switch ( * vapcucString )
-        {
-            case kTelefon:
-                
-                ModemATBased::sendCommandConstBased ( ModemATBased::vcpucTelefone );
-                break;
-		
-            case kMessage:
-            
-                ModemATBased::sendCommandConstBased ( ModemATBased::vcpucMessage );
-                break;
-            
-            default:
-                ModemATBased::sendData ( * vapcucString );
-                //vapcucString ++;
-                break;
-        }
-        
-        vapcucString ++;
-	}
-}
-
-void ModemATBased::sendCommandExternalPointerBased ( unsigned char * vapucExternalPointer )
-{
-    while ( * vapucExternalPointer != 0x00 )
-    {
-        ModemATBased::sendData ( * vapucExternalPointer );
-        vapucExternalPointer ++;
-    }
 }
 
 void ModemATBased::getDataModem ()
@@ -311,13 +277,36 @@ void ModemATBased::getDataModem ()
 	{
         unsigned char vlucSerialData =  ModemATBased::getData ();
         
-		if ( ( vlucSerialData == (unsigned char)(*ModemATBased::vcucpDataToCompare) ) || ( (unsigned char)(*ModemATBased::vcucpDataToCompare) == kAnyWare ) )
+        /*
+        Serial.print ( "\r\nDado esperado: " );
+        Serial.println ( *ModemATBased::vcucpDataToCompare );
+        
+        Serial.print ( "Letra capturada: " );
+        Serial.println ( (unsigned char)(*ModemATBased::vcucpDataToCompare).charAt ( ModemATBased::vcucSMStepCompare ) );
+        
+        Serial.print ( "Recebido: " );
+        Serial.println ( vlucSerialData );
+        
+        if ( vlucSerialData == (unsigned char)(*ModemATBased::vcucpDataToCompare).charAt ( ModemATBased::vcucSMStepCompare ) )
+            Serial.println ( "==" );
+            
+        else
+            Serial.println ( "!=" );
+        */
+        
+		if ( ( vlucSerialData == (unsigned char)(*ModemATBased::vcucpDataToCompare).charAt ( ModemATBased::vcucSMStepCompare ) ) || ( (unsigned char)(*ModemATBased::vcucpDataToCompare).charAt ( ModemATBased::vcucSMStepCompare ) == kAnyWare ) )
 		{
-			ModemATBased::vcucpDataToCompare ++;
-			
-			if ( (unsigned char)(*ModemATBased::vcucpDataToCompare) == 0x00 )
+			ModemATBased::vcucSMStepCompare ++;
+            
+			if ( ( (unsigned char)(*ModemATBased::vcucpDataToCompare).charAt ( ModemATBased::vcucSMStepCompare ) == '\r' ) || ( vlucSerialData == '>' ) )
 			{
-				ModemATBased::vcaucSMStep ++;
+                if ( vlucSerialData == '>' )
+                {
+                    delay ( 500 );
+                }
+                
+                ModemATBased::vcucSMStepCompare =  0;
+                ModemATBased::vcucSMStep ++;
 				ModemATBased::StateMachineRun ();
 			}
 		}
