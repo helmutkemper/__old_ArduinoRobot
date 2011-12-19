@@ -8,6 +8,12 @@
 	typedef void (*voidPonteiroDeFuncao)( unsigned char );
 }*/
 
+#define debug_ModemATBased
+
+#define kTelefon    0x80
+#define kMessage    0x81
+#define kAnyWare    0x82
+
 /*! \brief All Arduino Serial Ports.
  *  Sets the serial port used to communicate with the module.
  *  The UBRRxH are AVR registers used by serial port.
@@ -47,7 +53,6 @@ class ModemATBased
 		static const unsigned char *	vcacucATString[ 8 ];
 		static const unsigned char *	vcacucATResponse[ 8 ];
 		static const unsigned char *	vcucpDataToCompare;
-		static unsigned char			vcaucATEndLine[ 8 ];
 		static unsigned char			vcaucSMStep;
 		static unsigned char			vcaucSMTotalStep;
 		static			char			vcascPointerDataModem;
@@ -55,16 +60,20 @@ class ModemATBased
 		static void				sendData ( unsigned char vapucData );
 		static int				availableData ( );
 		static unsigned char	getData ( );
-		static void				sendCommandConstBased ( const unsigned char * vapcucString, unsigned char vaucEndLine );
+		static void				sendCommandConstBased ( const unsigned char * vapcucString );
 		static void				StateMachineRun ();
+        static void             sendCommandExternalPointerBased ( unsigned char * vapucExternalPointer );
 		
 	public:
-		
-        static unsigned char *    teste;
+		/**  Arquiva o número do telefone usado para envio
+         *   
+         */
+        static unsigned char *    vcpucTelefone;
+        static unsigned char *    vcpucMessage;
                                 
                                 ModemATBased ();
 		static void				setSerial ( eSerialPort vaeSerial );
-		static void				sendTextSms ( const unsigned char * vapucMessage );
+		static void				sendTextSms ();
 		static void				getDataModem ();
 		
 };
