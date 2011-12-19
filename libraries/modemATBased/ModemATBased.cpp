@@ -12,8 +12,8 @@ const unsigned char *	ModemATBased::vcucpDataToCompare;
 unsigned char			ModemATBased::vcaucSMStep;
 unsigned char			ModemATBased::vcaucSMTotalStep;
 		 char			ModemATBased::vcascPointerDataModem = -1;
-unsigned char *         ModemATBased::vcpucTelefone;
-unsigned char *         ModemATBased::vcpucMessage;
+const unsigned char *   ModemATBased::vcpucTelefone;
+const unsigned char *   ModemATBased::vcpucMessage;
 
 ModemATBased::ModemATBased ()
 {
@@ -246,9 +246,9 @@ void ModemATBased::sendTextSms ()
 
 void ModemATBased::StateMachineRun ()
 {
-	ModemATBased::sendCommandConstBased ( ModemATBased::vcacucATString[ ModemATBased::vcaucSMStep ] );
-	
-	if ( ModemATBased::vcacucATResponse[ ModemATBased::vcaucSMStep ] == 0 )
+    ModemATBased::sendCommandConstBased ( ModemATBased::vcacucATString[ ModemATBased::vcaucSMStep ] );
+    
+    if ( ModemATBased::vcacucATResponse[ ModemATBased::vcaucSMStep ] == 0 )
 	{
         if ( ModemATBased::vcaucSMStep != ModemATBased::vcaucSMTotalStep )
         {
@@ -272,12 +272,12 @@ void ModemATBased::sendCommandConstBased ( const unsigned char * vapcucString )
         {
             case kTelefon:
                 
-                ModemATBased::sendCommandExternalPointerBased ( ModemATBased::vcpucTelefone );
+                ModemATBased::sendCommandConstBased ( ModemATBased::vcpucTelefone );
                 break;
 		
             case kMessage:
             
-                ModemATBased::sendCommandExternalPointerBased ( ModemATBased::vcpucMessage );
+                ModemATBased::sendCommandConstBased ( ModemATBased::vcpucMessage );
                 break;
             
             default:

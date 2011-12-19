@@ -8,7 +8,7 @@
 	typedef void (*voidPonteiroDeFuncao)( unsigned char );
 }*/
 
-#define debug_ModemATBased
+#define debug_ModemATBased 1
 
 #define kTelefon    0x80
 #define kMessage    0x81
@@ -68,8 +68,8 @@ class ModemATBased
 		/**  Arquiva o número do telefone usado para envio
          *   
          */
-        static unsigned char *    vcpucTelefone;
-        static unsigned char *    vcpucMessage;
+        static const unsigned char *    vcpucTelefone;
+        static const unsigned char *    vcpucMessage;
                                 
                                 ModemATBased ();
 		static void				setSerial ( eSerialPort vaeSerial );
