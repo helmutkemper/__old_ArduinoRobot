@@ -230,7 +230,7 @@ loop_start:
  
  
   Serial1.flush();
- for (byte contador=0;contador != 5; contador++)
+ for (byte contador=0;contador != 1; contador++)
  {
   //Emulate HTTP and use PUT command to upload temperature datapoint using Comma Seperate Value Method
   Serial1.print("GET /modem/modem.php?teste=6 HTTP/1.1\r\n");
