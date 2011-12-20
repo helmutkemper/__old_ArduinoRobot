@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		1D44055C149FC56A00FA18E6 /* lixo */ = {isa = PBXFileReference; lastKnownFileType = text; path = lixo; sourceTree = "<group>"; };
 		1D85E405149D248300B9B386 /* ATList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATList.h; path = ../../ATList.h; sourceTree = SOURCE_ROOT; };
 		1D85E406149D248300B9B386 /* ModemATBased.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ModemATBased.cpp; path = ../../ModemATBased.cpp; sourceTree = SOURCE_ROOT; };
 		1D85E407149D248300B9B386 /* ModemATBased.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ModemATBased.h; path = ../../ModemATBased.h; sourceTree = SOURCE_ROOT; };
@@ -18,6 +19,7 @@
 			children = (
 				1D85E405149D248300B9B386 /* ATList.h */,
 				1D85E406149D248300B9B386 /* ModemATBased.cpp */,
+				1D44055C149FC56A00FA18E6 /* lixo */,
 				1D85E407149D248300B9B386 /* ModemATBased.h */,
 			);
 			sourceTree = "<group>";

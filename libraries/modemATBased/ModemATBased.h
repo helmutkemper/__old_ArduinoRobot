@@ -49,9 +49,11 @@ class ModemATBased
 {
 	private:
 	
+        static void ( * vcpfOnFunction ) ( void );
+    
 		static eSerialPort		vceSerial;
-		static const String *	vcacucATString[ 8 ];
-		static const String *	vcacucATResponse[ 8 ];
+		static const String *	vcacucATString[ 15 ];
+		static const String *	vcacucATResponse[ 15 ];
 		static const String *	vcucpDataToCompare;
 		static unsigned char	vcucSMStep;
         static unsigned char    vcucSMStepCompare;
@@ -71,10 +73,12 @@ class ModemATBased
          */
         static const unsigned char *    vcpucTelefone;
         static const unsigned char *    vcpucMessage;
-                                
+        
                                 ModemATBased ();
 		static void				setSerial ( eSerialPort vaeSerial );
-		static void				sendTextSms ( const String * vapcucTelefon, const String * vapcucMessage );
+		static void				sendTextSms ( const String * vapcucTelefon, const String * vapcucMessage, void ( * vafpExtFuntion ) ( void ) );
+        static void             internetGETSend ( const String * vapsHost, const String * vapsHostPort, const String * vapsPathAndQueryString, void ( * vafpExtFuntion ) ( void ) );
+        static void             internetConnect ( void ( * vafpExtFuntion ) ( void ) );
 		static void				getDataModem ();
 		
 };

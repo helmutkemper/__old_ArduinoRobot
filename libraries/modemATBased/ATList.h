@@ -1,29 +1,31 @@
 
 
-const String modem_ip_single					 =  "CIPMUX=0";//OK
-const String modem_ip_multi						 =  "CIPMUX=1";//OK
-const String modem_ip_mode_normal				 =  "CIPMODE=0";//OK-ERROR
-const String modem_ip_mode_transparent			 =  "CIPMODE=1";//OK-ERROR
-const String modem_internet_connect				 =  "CGDCONT=1,\"IP\",\"TATA.DOCOMO.INTERNET\",\"10.6.6.6\",0,0";//OK-ERROR
-const String modem_interner_connect_password	 =  "CSTT=\"TATA.DOCOMO.INTERNET\"";//OK_ERROR
-const String modem_deactive_gprs_dpd			 =  "CIPSHUT";//OK-CLOSE OK-ERROR
+const String modem_ip_single					 =  "AT+CIPMUX=0\r";//OK
+const String modem_ip_multi						 =  "AT+CIPMUX=1\r";//OK
+const String modem_ip_mode_normal				 =  "AT+CIPMODE=0\r";//OK-ERROR
+const String modem_ip_mode_transparent			 =  "AT+CIPMODE=1\r";//OK-ERROR
+const String modem_internet_connect				 =  "AT+CGDCONT=1,\"IP\",\"TATA.DOCOMO.INTERNET\",\"10.6.6.6\",0,0\r";//OK-ERROR
+const String modem_interner_connect_password	 =  "AT+CSTT=\"TATA.DOCOMO.INTERNET\"\r";//OK_ERROR
+const String modem_deactive_gprs_dpd			 =  "AT+CIPSHUT\r";//OK-CLOSE OK-ERROR
+const String modem_deactive_gprs_dpd_ok			 =  "SHUT OK\r\n";//OK-CLOSE OK-ERROR
 
 
-const String modem_connect_host_and_port_1of3	 =  "CIPSTART=\"TCP\",\"";//OK-+CME ERRORn-ALREADY CONNECT-STATE:n-CONNECT FAIL-CONNECT OK
+const String modem_connect_host_and_port_1of3	 =  "AT+CIPSTART=\"TCP\",\"";//OK-+CME ERRORn-ALREADY CONNECT-STATE:n-CONNECT FAIL-CONNECT OK
 const String modem_connect_host_and_port_2of3	 =  "\",\"";
-const String modem_connect_host_and_port_3of3	 =  "\"";
+const String modem_connect_host_and_port_3of3	 =  "\"\r";
+const String modem_connect_host_and_port_ok      =  "CONNECT OK";
 
-
-const String modem_start_send_data_over_tcp_udp	 =  "CIPSEND";
+const String modem_start_send_data_over_tcp_udp	 =  "AT+CIPSEND";
 
 const String modem_header_get_send_1of2			 =  "GET ";
-const String modem_header_get_send_2of2			 =  " HTTP/1.1";
+const String modem_header_get_send_2of2			 =  " HTTP/1.1\r";
 const String modem_header_host					 =  "Host: ";
-const String modem_heafer_connection_alive		 =  "Connection: Keep-Alive";
-const String modem_header_accept				 =  "Accept: */*";
-const String modem_header_connection_close		 =  "Connection: close";
-const String modem_bye							 =  String ( byte ( 0x1A ) );
+const String modem_heafer_connection_alive		 =  "Connection: Keep-Alive\r";
+const String modem_header_accept				 =  "Accept: */*\r";
+const String modem_header_connection_close		 =  "Connection: close\r";
+const String modem_header_connection_close_ok	 =  "Connection: Keep-Alive\r\n";
 
+const String modem_at_command_general_end_line   =  "\r";
 
 
 
@@ -47,3 +49,5 @@ const String modem_echo_on						 =  "ATE1\r";//OK
 const String modem_sms_text_mode				 =  "AT+CMGF=1\r";//OK
 const String modem_sms_send_confg_1of2           =  "AT+CMGS=\"";
 const String modem_sms_send_confg_2of2           =  "\"\r";
+const String modem_bye							 =  String ( byte ( 0x1A ) );
+const String modem_sms_send_ok                   =  "";
