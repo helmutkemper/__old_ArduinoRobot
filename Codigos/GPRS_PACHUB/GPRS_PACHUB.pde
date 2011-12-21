@@ -59,7 +59,7 @@ setup_start:
     }
     else
     {
-      Serial.print("Received:");
+      Serial.print("\rReceived:");
       while(Serial1.available()!=0)
       {
         Serial.print((unsigned char)Serial1.read());
@@ -81,7 +81,7 @@ setup_start:
     }
     else
     {
-      Serial.print("Received:");
+      Serial.print("\rReceived:");
       while(Serial1.available()!=0)
       {
         Serial.print((unsigned char)Serial1.read());
@@ -103,7 +103,7 @@ setup_start:
     }
     else
     {
-      Serial.print("Received:");
+      Serial.print("\rReceived:");
       while(Serial1.available()!=0)
       {
         Serial.print((unsigned char)Serial1.read());
@@ -126,7 +126,7 @@ setup_start:
     }
     else
     {
-      Serial.print("Received:");
+      Serial.print("\rReceived:");
       while(Serial1.available()!=0)
       {
         Serial.print((unsigned char)Serial1.read());
@@ -148,7 +148,7 @@ setup_start:
     }
     else
     {
-      Serial.print("Received:");
+      Serial.print("\rReceived:");
       while(Serial1.available()!=0)
       {
         Serial.print((unsigned char)Serial1.read());
@@ -170,7 +170,7 @@ setup_start:
     }
     else
     {
-      Serial.print("Received:");
+      Serial.print("\rReceived:");
       while(Serial1.available()!=0)
       {
         Serial.print((unsigned char)Serial1.read());
@@ -202,7 +202,7 @@ loop_start:
   }
   else
   {
-    Serial.print("Received:");
+    Serial.print("\rReceived:");
     while(Serial1.available()!=0)
     {
       Serial.print((unsigned char)Serial1.read());
@@ -220,10 +220,10 @@ loop_start:
   }
   else
   {
-    Serial.print("Received:");
+    Serial.print("\rReceived:");
     while(Serial1.available()!=0)
     {
-      Serial.print((unsigned char)Serial1.read());
+      Serial.print(String ( ( unsigned char ) Serial1.read (), HEX ) );
     }
     Serial.print("\n");
   }
@@ -260,6 +260,7 @@ loop_start:
 //  delay(300);
 //  Serial1.print("\r\n"); 
 //  delay(300);
+Serial.println("0x1A byte  Sent!");
   Serial1.print(0x1A,BYTE);
   delay(300); //Send End Of Line Character to send all the data and close connection
   if(Serial1_wait_for_bytes(20,255) == 0)
@@ -269,7 +270,7 @@ loop_start:
   }
   else
   {
-    Serial.print("Received:");
+    Serial.print("\rReceived:");
     while(Serial1.available()!=0)
     {
       Serial.print((unsigned char)Serial1.read());
@@ -282,7 +283,7 @@ loop_start:
  
   Serial1.flush();
   Serial1.println("AT+CIPSHUT"); //Close the GPRS Connection
-  Serial.println("AT+CIPSHUT  Sent!");
+  Serial.println("AT+CIPSHUT  Sent!-----------------");
   if(Serial1_wait_for_bytes(4,100) == 0)
   {  
     Serial.println("Timeout");
@@ -290,7 +291,7 @@ loop_start:
   }
   else
   {
-    Serial.print("Received:");
+    Serial.print("\rReceived:");
     while(Serial1.available()!=0)
     {
       Serial.print((unsigned char)Serial1.read());

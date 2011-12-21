@@ -3,25 +3,29 @@
 const String numero       =  "99268744";
 const String mensagem     =  "Ola mundo. Esta e uma nova mensagem de teste feita para ser transmitida pelo robo.";
 
-const String host         =  "http://www.kemper.com.br";
-const String hostPort     =  "80";
-const String queryString  =  "/modem/modem.php?teste=6";
+const String host         =  "kemper.com.br";
+const String hostPort     =  String ( 80, DEC );
+const String queryString  =  "/modem/modem.php?teste=robo enviando ok";
 
 void setup ()
 {
   Serial.begin ( 19200 );
-  delay (10000);
-//  ModemATBased::setSerial ( SerialPort::Port1 );
-//  ModemATBased::internetConnect ( &_internetConnect );
+  while (true)
+  {
+    if (Serial.available())
+      if ((unsigned char)Serial.read()=='c')
+        break;
+  }
+  ModemATBased::setSerial ( SerialPort::Port1 );
+  ModemATBased::internetConnect ( &internetConnect );
   
 
-
-  ModemATBased::sendTextSms ( &numero, &mensagem, &pisca );
+  //ModemATBased::internetGETSend ( &host, &hostPort, &queryString, &pisca );
+  //ModemATBased::sendTextSms ( &numero, &mensagem, &pisca );
 }
 
-void _internetConnect ()
+void internetConnect ()
 {
-  Serial.println ( "void _internetConnect () ok" );
   ModemATBased::internetGETSend ( &host, &hostPort, &queryString, &pisca );  
 }
 

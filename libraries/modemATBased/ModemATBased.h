@@ -8,7 +8,7 @@
 	typedef void (*voidPonteiroDeFuncao)( unsigned char );
 }*/
 
-#define debug_ModemATBased 1
+#define debug_ModemATBased
 
 #define kTelefon    0x80
 #define kMessage    0x81
@@ -52,8 +52,9 @@ class ModemATBased
         static void ( * vcpfOnFunction ) ( void );
     
 		static eSerialPort		vceSerial;
-		static const String *	vcacucATString[ 15 ];
-		static const String *	vcacucATResponse[ 15 ];
+		static const String *	vcacucATString[ 20 ];
+		static const String *	vcacucATResponse[ 20 ];
+        static int              vcacucATDelay[ 20 ];
 		static const String *	vcucpDataToCompare;
 		static unsigned char	vcucSMStep;
         static unsigned char    vcucSMStepCompare;
