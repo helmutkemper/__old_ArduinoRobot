@@ -303,27 +303,27 @@ void ModemATBased::internetGETSend ( const String * vapsHost, const String * vap
     ModemATBased::vcacucATResponse[ 10 ] =  0;
     
     ModemATBased::vcacucATString[ 11 ]	 =  &modem_at_command_general_end_line;
-    ModemATBased::vcacucATDelay[ 11 ]     =  300;
+    ModemATBased::vcacucATDelay[ 11 ]     =  0;
     ModemATBased::vcacucATResponse[ 11 ] =  0;//&modem_at_command_general_end_line;
     
     ModemATBased::vcacucATString[ 12 ]	 =  &modem_heafer_connection_alive;
-    ModemATBased::vcacucATDelay[ 12 ]     =  300;
+    ModemATBased::vcacucATDelay[ 12 ]     =  0;
     ModemATBased::vcacucATResponse[ 12 ] =  0;//&modem_at_command_general_end_line;
     
     ModemATBased::vcacucATString[ 13 ]	 =  &modem_header_accept;
-    ModemATBased::vcacucATDelay[ 13 ]     =  300;
+    ModemATBased::vcacucATDelay[ 13 ]     =  0;
     ModemATBased::vcacucATResponse[ 13 ] =  0;//&modem_at_command_general_end_line;
     
     ModemATBased::vcacucATString[ 14 ]	 =  &modem_header_connection_close;
-    ModemATBased::vcacucATDelay[ 14 ]     =  300;
+    ModemATBased::vcacucATDelay[ 14 ]     =  0;
     ModemATBased::vcacucATResponse[ 14 ] =  0;
     
     ModemATBased::vcacucATString[ 15 ]	 =  &modem_bye;
-    ModemATBased::vcacucATDelay[ 15 ]     =  300;
+    ModemATBased::vcacucATDelay[ 15 ]     =  0;
     ModemATBased::vcacucATResponse[ 15 ] =  &modem_bye_ok;
     //
     ModemATBased::vcacucATString[ 16 ]	 =  &modem_deactive_gprs_dpd;
-    ModemATBased::vcacucATDelay[ 16 ]     =  300;
+    ModemATBased::vcacucATDelay[ 16 ]     =  0;
     ModemATBased::vcacucATResponse[ 16 ] =  &modem_deactive_gprs_dpd_ok;
     
     ModemATBased::vcpfOnFunction         =  vafpExtFuntion;
@@ -358,9 +358,6 @@ void ModemATBased::sendTextSms ( const String * vapcucTelefon, const String * va
 	
 	ModemATBased::vcacucATString[ 6 ]	 =  &modem_bye;
 	ModemATBased::vcacucATResponse[ 6 ]	 =  &modem_modem_ok;
-    
-    ModemATBased::vcacucATString[ 7 ]	 =  0;
-	ModemATBased::vcacucATResponse[ 7 ]	 =  0;
     
     ModemATBased::vcpfOnFunction         =  vafpExtFuntion;
     

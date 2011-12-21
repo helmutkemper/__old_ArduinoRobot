@@ -5,7 +5,7 @@ const String mensagem     =  "Ola mundo. Esta e uma nova mensagem de teste feita
 
 const String host         =  "kemper.com.br";
 const String hostPort     =  String ( 80, DEC );
-const String queryString  =  "/modem/modem.php?teste=robo enviando ok";
+const String queryString  =  "/modem/modem.php?teste=robo%20enviando%20ok";
 
 void setup ()
 {
