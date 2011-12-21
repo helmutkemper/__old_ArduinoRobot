@@ -9,7 +9,6 @@ const String modem_interner_connect_password	 =  "AT+CSTT=\"TATA.DOCOMO.INTERNET
 const String modem_deactive_gprs_dpd			 =  "AT+CIPSHUT\r";//OK-CLOSE OK-ERROR
 const String modem_deactive_gprs_dpd_ok			 =  "SHUT OK\r\n";//OK-CLOSE OK-ERROR
 
-
 const String modem_connect_host_and_port_1of3	 =  "AT+CIPSTART=\"TCP\",\"";//OK-+CME ERRORn-ALREADY CONNECT-STATE:n-CONNECT FAIL-CONNECT OK
 const String modem_connect_host_and_port_2of3	 =  "\",\"";
 const String modem_connect_host_and_port_3of3	 =  "\"\r";
@@ -17,8 +16,9 @@ const String modem_connect_host_and_port_ok      =  "CONNECT OK\r\n";
 
 const String modem_start_send_data_over_tcp_udp	 =  "AT+CIPSEND\r";
 
-const String modem_header_get_send_1of2			 =  "GET ";
-const String modem_header_get_send_2of2			 =  " HTTP/1.1\r\n";
+const String modem_header_get_send_1of3			 =  "GET ";
+const String modem_header_get_send_2of3          =  "q";
+const String modem_header_get_send_3of3			 =  " HTTP/1.1\r\n";
 const String modem_header_host					 =  "Host: ";
 const String modem_heafer_connection_alive		 =  "Connection: Keep-Alive\r\n";
 const String modem_header_accept				 =  "Accept: */*\r\n";

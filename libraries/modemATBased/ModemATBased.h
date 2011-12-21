@@ -8,7 +8,7 @@
 	typedef void (*voidPonteiroDeFuncao)( unsigned char );
 }*/
 
-#define debug_ModemATBased
+//#define debug_ModemATBased
 
 #define kTelefon    0x80
 #define kMessage    0x81
@@ -74,11 +74,14 @@ class ModemATBased
          */
         static const unsigned char *    vcpucTelefone;
         static const unsigned char *    vcpucMessage;
+        static String                   vcsQueryString;
         
                                 ModemATBased ();
 		static void				setSerial ( eSerialPort vaeSerial );
 		static void				sendTextSms ( const String * vapcucTelefon, const String * vapcucMessage, void ( * vafpExtFuntion ) ( void ) );
-        static void             internetGETSend ( const String * vapsHost, const String * vapsHostPort, const String * vapsPathAndQueryString, void ( * vafpExtFuntion ) ( void ) );
+//        static void             internetGETSend ( const String * vapsHost, const String * vapsHostPort, const String * vapsPathAndQueryString, void ( * vafpExtFuntion ) ( void ) );
+        static void             internetDataSendByGET ( const String * vapsHost, const String * vapsHostPort, const String * vapsPathAndQueryString, void ( * vafpExtFuntion ) ( void ) );
+        static void             internetConnectToHost ( const String * vapsHost, const String * vapsHostPort, void ( * vafpExtFuntion ) ( void ) );
         static void             internetConnect ( void ( * vafpExtFuntion ) ( void ) );
 		static void				getDataModem ();
 		

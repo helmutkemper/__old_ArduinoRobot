@@ -16,7 +16,7 @@ unsigned char			ModemATBased::vcucSMStep;
 unsigned char			ModemATBased::vcucSMTotalStep;
 unsigned char           ModemATBased::vcucSMStepCompare = 0;
 		 char			ModemATBased::vcascPointerDataModem = -1;
-
+String                  ModemATBased::vcsQueryString;
 
          
 
@@ -256,7 +256,7 @@ void ModemATBased::internetConnect ( void ( * vafpExtFuntion ) ( void ) )
 	ModemATBased::StateMachineRun ();
 }
 
-void ModemATBased::internetGETSend ( const String * vapsHost, const String * vapsHostPort, const String * vapsPathAndQueryString, void ( * vafpExtFuntion ) ( void ) )
+void ModemATBased::internetConnectToHost ( const String * vapsHost, const String * vapsHostPort, void ( * vafpExtFuntion ) ( void ) )
 {
     ModemATBased::vcacucATString[ 0 ]	 =  &modem_connect_host_and_port_1of3;
     ModemATBased::vcacucATDelay[ 0 ]     =  0;
@@ -278,60 +278,73 @@ void ModemATBased::internetGETSend ( const String * vapsHost, const String * vap
     ModemATBased::vcacucATDelay[ 4 ]     =  0;
     ModemATBased::vcacucATResponse[ 4 ]	 =  &modem_connect_host_and_port_ok;
     
-    ModemATBased::vcacucATString[ 5 ]	 =  &modem_start_send_data_over_tcp_udp;
+    ModemATBased::vcpfOnFunction         =  vafpExtFuntion;
+    
+    ModemATBased::vcucpDataToCompare     =   0;
+	ModemATBased::vcucSMStepCompare      =   0;
+    ModemATBased::vcucSMStep			 =   0;
+	ModemATBased::vcucSMTotalStep		 =   4;
+	ModemATBased::vcascPointerDataModem	 =  -1;
+	ModemATBased::StateMachineRun ();
+}
+
+//void ModemATBased::internetGETSend ( const String * vapsHost, const String * vapsHostPort, const String * vapsPathAndQueryString, void ( * vafpExtFuntion ) ( void ) )
+void ModemATBased::internetDataSendByGET ( const String * vapsHost, const String * vapsHostPort, const String * vapsPathAndQueryString, void ( * vafpExtFuntion ) ( void ) )
+{
+    ModemATBased::vcacucATString[ 0 ]	 =  &modem_start_send_data_over_tcp_udp;
+    ModemATBased::vcacucATDelay[ 0 ]     =  0;
+    ModemATBased::vcacucATResponse[ 0 ]	 =  &modem_sms_text_redy_to_send;
+    
+    ModemATBased::vcacucATString[ 1 ]	 =  &modem_header_get_send_1of3;
+    ModemATBased::vcacucATDelay[ 1 ]     =  0;
+    ModemATBased::vcacucATResponse[ 1 ]	 =  0;
+    
+    ModemATBased::vcacucATString[ 2 ]	 =  &modem_header_get_send_2of3;
+    ModemATBased::vcacucATDelay[ 2 ]     =  0;
+    ModemATBased::vcacucATResponse[ 2 ]	 =  0;
+    
+    ModemATBased::vcacucATString[ 3 ]	 =  &modem_header_get_send_3of3;
+    ModemATBased::vcacucATDelay[ 3 ]     =  0;
+    ModemATBased::vcacucATResponse[ 3 ]	 =  0;//&modem_at_command_general_end_line;
+    
+    ModemATBased::vcacucATString[ 4 ]	 =  &modem_header_host;
+    ModemATBased::vcacucATDelay[ 4 ]     =  0;
+    ModemATBased::vcacucATResponse[ 4 ] =  0;
+    
+    ModemATBased::vcacucATString[ 5 ]	 =  vapsHost;
     ModemATBased::vcacucATDelay[ 5 ]     =  0;
-    ModemATBased::vcacucATResponse[ 5 ]	 =  &modem_sms_text_redy_to_send;
+    ModemATBased::vcacucATResponse[ 5 ] =  0;
     
-    ModemATBased::vcacucATString[ 6 ]	 =  &modem_header_get_send_1of2;
+    ModemATBased::vcacucATString[ 6 ]	 =  &modem_at_command_general_end_line;
     ModemATBased::vcacucATDelay[ 6 ]     =  0;
-    ModemATBased::vcacucATResponse[ 6 ]	 =  0;
+    ModemATBased::vcacucATResponse[ 6 ] =  0;//&modem_at_command_general_end_line;
     
-    ModemATBased::vcacucATString[ 7 ]	 =  vapsPathAndQueryString;
+    ModemATBased::vcacucATString[ 7 ]	 =  &modem_heafer_connection_alive;
     ModemATBased::vcacucATDelay[ 7 ]     =  0;
-    ModemATBased::vcacucATResponse[ 7 ]	 =  0;
+    ModemATBased::vcacucATResponse[ 7 ] =  0;//&modem_at_command_general_end_line;
     
-    ModemATBased::vcacucATString[ 8 ]	 =  &modem_header_get_send_2of2;
-    ModemATBased::vcacucATDelay[ 8 ]     =  300;
-    ModemATBased::vcacucATResponse[ 8 ]	 =  0;//&modem_at_command_general_end_line;
+    ModemATBased::vcacucATString[ 8 ]	 =  &modem_header_accept;
+    ModemATBased::vcacucATDelay[ 8 ]     =  0;
+    ModemATBased::vcacucATResponse[ 8 ] =  0;//&modem_at_command_general_end_line;
     
-    ModemATBased::vcacucATString[ 9 ]	 =  &modem_header_host;
+    ModemATBased::vcacucATString[ 9 ]	 =  &modem_header_connection_close;
     ModemATBased::vcacucATDelay[ 9 ]     =  0;
     ModemATBased::vcacucATResponse[ 9 ] =  0;
     
-    ModemATBased::vcacucATString[ 10 ]	 =  vapsHost;
+    ModemATBased::vcacucATString[ 10 ]	 =  &modem_bye;
     ModemATBased::vcacucATDelay[ 10 ]     =  0;
-    ModemATBased::vcacucATResponse[ 10 ] =  0;
-    
-    ModemATBased::vcacucATString[ 11 ]	 =  &modem_at_command_general_end_line;
-    ModemATBased::vcacucATDelay[ 11 ]     =  0;
-    ModemATBased::vcacucATResponse[ 11 ] =  0;//&modem_at_command_general_end_line;
-    
-    ModemATBased::vcacucATString[ 12 ]	 =  &modem_heafer_connection_alive;
-    ModemATBased::vcacucATDelay[ 12 ]     =  0;
-    ModemATBased::vcacucATResponse[ 12 ] =  0;//&modem_at_command_general_end_line;
-    
-    ModemATBased::vcacucATString[ 13 ]	 =  &modem_header_accept;
-    ModemATBased::vcacucATDelay[ 13 ]     =  0;
-    ModemATBased::vcacucATResponse[ 13 ] =  0;//&modem_at_command_general_end_line;
-    
-    ModemATBased::vcacucATString[ 14 ]	 =  &modem_header_connection_close;
-    ModemATBased::vcacucATDelay[ 14 ]     =  0;
-    ModemATBased::vcacucATResponse[ 14 ] =  0;
-    
-    ModemATBased::vcacucATString[ 15 ]	 =  &modem_bye;
-    ModemATBased::vcacucATDelay[ 15 ]     =  0;
-    ModemATBased::vcacucATResponse[ 15 ] =  &modem_bye_ok;
+    ModemATBased::vcacucATResponse[ 10 ] =  &modem_bye_ok;
     //
-    ModemATBased::vcacucATString[ 16 ]	 =  &modem_deactive_gprs_dpd;
-    ModemATBased::vcacucATDelay[ 16 ]     =  0;
-    ModemATBased::vcacucATResponse[ 16 ] =  &modem_deactive_gprs_dpd_ok;
+//    ModemATBased::vcacucATString[ 11 ]	 =  &modem_deactive_gprs_dpd;
+//    ModemATBased::vcacucATDelay[ 11 ]     =  0;
+//    ModemATBased::vcacucATResponse[ 11 ] =  &modem_deactive_gprs_dpd_ok;
     
     ModemATBased::vcpfOnFunction         =  vafpExtFuntion;
     
     ModemATBased::vcucpDataToCompare     =   0;
 	ModemATBased::vcucSMStepCompare      =   0;
     ModemATBased::vcucSMStep			 =   0;
-	ModemATBased::vcucSMTotalStep		 =  16;
+	ModemATBased::vcucSMTotalStep		 =  10;
 	ModemATBased::vcascPointerDataModem	 =  -1;
 	ModemATBased::StateMachineRun ();
 }
@@ -388,7 +401,19 @@ void ModemATBased::StateMachineRun ()
         while (true);
     }*/
     
-    ModemATBased::sendData ( * ( ModemATBased::vcacucATString[ ModemATBased::vcucSMStep ] ) );
+    String s = * ( ModemATBased::vcacucATString[ ModemATBased::vcucSMStep ] );
+    
+    if ( s.equals ( String ( "q" ) ) )
+    {
+//        Serial.println ( ModemATBased::vcsQueryString );
+        Serial.println ("entrou na query string");
+        ModemATBased::sendData ( ModemATBased::vcsQueryString );
+    }
+    else
+    {
+        ModemATBased::sendData ( * ( ModemATBased::vcacucATString[ ModemATBased::vcucSMStep ] ) );
+    }
+//    ModemATBased::sendData ( * ( ModemATBased::vcacucATString[ ModemATBased::vcucSMStep ] ) );
     delay ( ModemATBased::vcacucATDelay[ ModemATBased::vcucSMStep ] );
     
     if ( ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ] == 0 )
