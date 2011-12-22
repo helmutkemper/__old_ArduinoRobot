@@ -3,12 +3,14 @@
 
 #include "WProgram.h"
 
-/*extern "C"
+extern "C"
 {
-	typedef void (*voidPonteiroDeFuncao)( unsigned char );
-}*/
+	typedef void ( * ponteiroDeFuncao )( void );
+}
 
 #define debug_ModemATBased
+#define I_do_not_need_to_send_sms_in_my_program
+#define I_do_not_need_to_internet_in_my_program
 
 //#define kTelefon    0x80
 //#define kMessage    0x81
@@ -66,17 +68,24 @@ class ModemATBased
 		static void				StateMachineRun ();
 		
 	public:
-        static const unsigned char *    vcpucTelefone;
-        static const unsigned char *    vcpucMessage;
-        static String                   QueryString;
+    
+        static String           QueryString;
+        static String           Telefon;
+        static String           Message;
         
                                 ModemATBased ();
-		static void				setSerial ( eSerialPort vaeSerial );
-		static void				sendTextSms ( const String * vapcucTelefon, const String * vapcucMessage, void ( * vafpExtFuntion ) ( void ) );
-        static void             internetDataSendByGET ( const String * vapsHost, const String * vapsHostPort, void ( * vafpExtFuntion ) ( void ) );
-        static void             internetDisconnectToHost ( void ( * vafpExtFuntion ) ( void ) );
-        static void             internetConnectToHost ( const String * vapsHost, const String * vapsHostPort, void ( * vafpExtFuntion ) ( void ) );
-        static void             internetConnect ( void ( * vafpExtFuntion ) ( void ) );
+		static void				setSerial ( eSerialPort vaeSerial, unsigned int vauiSpeed );
+        
+        #ifndef I_do_not_need_to_send_sms_in_my_program
+        
+            static void				sendTextSms ( const String * vapcucTelefon, const String * vapcucMessage, ponteiroDeFuncao vafpExtFuntion );
+        
+        #endif
+        
+        static void             internetDataSendByGET ( const String * vapsHost, const String * vapsHostPort, ponteiroDeFuncao vafpExtFuntion );
+        static void             internetDisconnectToHost ( ponteiroDeFuncao vafpExtFuntion );
+        static void             internetConnectToHost ( const String * vapsHost, const String * vapsHostPort, ponteiroDeFuncao vafpExtFuntion );
+        static void             internetConnect ( ponteiroDeFuncao vafpExtFuntion );
 		static void				getDataModem ();
 };
 

@@ -21,7 +21,7 @@ void setup ()
       if ((unsigned char)Serial.read()=='c')
         break;
   }
-  ModemATBased::setSerial ( SerialPort::Port1 );
+  ModemATBased::setSerial ( SerialPort::Port1, 19200 );
   ModemATBased::internetConnect ( &internetConnect );
   
 

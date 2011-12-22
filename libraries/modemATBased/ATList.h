@@ -46,11 +46,16 @@ const String modem_sms_text_redy_to_send		 =  "> ";
 const String modem_echo_off						 =  "ATE0\r";//OK
 //const String modem_echo_on						 =  "ATE1\r";//OK
 
-const String modem_sms_text_mode				 =  "AT+CMGF=1\r";//OK
-const String modem_sms_send_confg_1of2           =  "AT+CMGS=\"";
-const String modem_sms_send_confg_2of2           =  "\"\r";
-const String modem_bye							 =  byte ( 0x1A );
-const String modem_bye_ok						 =  "SEND OK\r\n";
-//const String modem_sms_send_ok                   =  "";
+    #ifndef I_do_not_need_to_send_sms_in_my_program
+    
+        const String modem_sms_text_mode				 =  "AT+CMGF=1\r";//OK
+        const String modem_sms_send_confg_1of2           =  "AT+CMGS=\"";
+        const String modem_sms_send_confg_2of2           =  "\"\r";
+        
+    #endif
+    
+    const String modem_bye							 =  byte ( 0x1A );
+    const String modem_bye_ok						 =  "SEND OK\r\n";
+    //const String modem_sms_send_ok                   =  "";
 
 #endif
