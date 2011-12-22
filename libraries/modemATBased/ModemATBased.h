@@ -8,11 +8,11 @@
 	typedef void (*voidPonteiroDeFuncao)( unsigned char );
 }*/
 
-//#define debug_ModemATBased
+#define debug_ModemATBased
 
-#define kTelefon    0x80
-#define kMessage    0x81
-#define kAnyWare    0x82
+//#define kTelefon    0x80
+//#define kMessage    0x81
+//#define kAnyWare    0x82
 
 /*! \brief All Arduino Serial Ports.
  *  Sets the serial port used to communicate with the module.
@@ -54,7 +54,6 @@ class ModemATBased
 		static eSerialPort		vceSerial;
 		static const String *	vcacucATString[ 20 ];
 		static const String *	vcacucATResponse[ 20 ];
-        static int              vcacucATDelay[ 20 ];
 		static const String *	vcucpDataToCompare;
 		static unsigned char	vcucSMStep;
         static unsigned char    vcucSMStepCompare;
@@ -64,27 +63,21 @@ class ModemATBased
 		static void				sendData ( String vapucData );
 		static int				availableData ( );
 		static unsigned char	getData ( );
-//		static void				sendCommandConstBased ( const unsigned char * vapcucString );
 		static void				StateMachineRun ();
-//        static void             sendCommandExternalPointerBased ( unsigned char * vapucExternalPointer );
 		
 	public:
-		/**  Arquiva o número do telefone usado para envio
-         *   
-         */
         static const unsigned char *    vcpucTelefone;
         static const unsigned char *    vcpucMessage;
-        static String                   vcsQueryString;
+        static String                   QueryString;
         
                                 ModemATBased ();
 		static void				setSerial ( eSerialPort vaeSerial );
 		static void				sendTextSms ( const String * vapcucTelefon, const String * vapcucMessage, void ( * vafpExtFuntion ) ( void ) );
-//        static void             internetGETSend ( const String * vapsHost, const String * vapsHostPort, const String * vapsPathAndQueryString, void ( * vafpExtFuntion ) ( void ) );
-        static void             internetDataSendByGET ( const String * vapsHost, const String * vapsHostPort, const String * vapsPathAndQueryString, void ( * vafpExtFuntion ) ( void ) );
+        static void             internetDataSendByGET ( const String * vapsHost, const String * vapsHostPort, void ( * vafpExtFuntion ) ( void ) );
+        static void             internetDisconnectToHost ( void ( * vafpExtFuntion ) ( void ) );
         static void             internetConnectToHost ( const String * vapsHost, const String * vapsHostPort, void ( * vafpExtFuntion ) ( void ) );
         static void             internetConnect ( void ( * vafpExtFuntion ) ( void ) );
 		static void				getDataModem ();
-		
 };
 
 #endif

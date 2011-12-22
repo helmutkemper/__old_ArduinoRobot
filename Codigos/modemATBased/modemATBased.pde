@@ -1,3 +1,5 @@
+//#define debug_ModemATBased
+
 #include <ModemATBased.h>
 
 const String numero       =  "99268744";
@@ -23,16 +25,11 @@ void setup ()
   ModemATBased::internetConnect ( &internetConnect );
   
 
-  //ModemATBased::internetGETSend ( &host, &hostPort, &queryString, &pisca );
   //ModemATBased::sendTextSms ( &numero, &mensagem, &pisca );
-  
-//  ModemATBased::internetConnectToHost ( const String * vapsHost, const String * vapsHostPort, void ( * vafpExtFuntion ) ( void ) )
-//  ModemATBased::internetDataSendByGET ( const String * vapsHost, const String * vapsHostPort, const String * vapsPathAndQueryString, void ( * vafpExtFuntion ) ( void ) );
 }
 
 void internetConnect ()
 {
-//  ModemATBased::internetGETSend ( &host, &hostPort, &queryString, &pisca );
     ModemATBased::internetConnectToHost ( &host, &hostPort, &sendDataLoop );
 }
 
@@ -44,16 +41,16 @@ void sendDataLoop ()
   p = &data;*/
   
   
-  const String * a = &queryString;
+ /* const String * a = &queryString;
   String lixo;
   String b = "100";
   String c = "/modem/modem.php?contador=";//*a;
   String d = c.concat( b );
   const String * e = &c;
-  
-  ModemATBased::vcsQueryString =  "/modem/modem.php?contador=";
-  ModemATBased::vcsQueryString.concat ( String ( contadorLoop, DEC ) );
-  ModemATBased::internetDataSendByGET ( &host, &hostPort, &queryString, &sendDataLoop );
+  */
+  ModemATBased::QueryString =  "/modem/modem.php?contador=";
+  ModemATBased::QueryString.concat ( String ( contadorLoop, DEC ) );
+  ModemATBased::internetDataSendByGET ( &host, &hostPort, &sendDataLoop );
   contadorLoop ++;
 }
 
