@@ -2,9 +2,6 @@
 
 #include <ModemATBased.h>
 
-const String numero       =  "99268744";
-const String mensagem     =  "Ola mundo. Esta e uma nova mensagem de teste feita para ser transmitida pelo robo.";
-
 const String host         =  "kemper.com.br";
 const String hostPort     =  String ( 80, DEC );
 const String queryString  =  "/modem/modem.php?contador=";
@@ -13,6 +10,21 @@ unsigned int contadorLoop          =  0;
 
 void setup ()
 {
+ pinMode(9, OUTPUT); 
+ digitalWrite(9,LOW);
+ delay(1000);
+ digitalWrite(9,HIGH);
+ delay(2500);
+ digitalWrite(9,LOW);
+ delay(3500);
+
+  
+  
+  
+  
+  
+  
+  
   Serial.begin ( 19200 );
   
   while (true)
@@ -22,15 +34,18 @@ void setup ()
         break;
   }
   ModemATBased::setSerial ( SerialPort::Port1, 19200 );
-  ModemATBased::internetConnect ( &internetConnect );
+  //ModemATBased::internetConnect ( &internetConnect );
   
-
-  //ModemATBased::sendTextSms ( &numero, &mensagem, &pisca );
+  ModemATBased::Telefon =  "99268744";
+  ModemATBased::Message =  "Hello World! In Brasil, this message can be 128 characters per message";
+  ModemATBased::sendTextSms ( &pisca );
 }
 
 void internetConnect ()
 {
-    ModemATBased::internetConnectToHost ( &host, &hostPort, &sendDataLoop );
+  ModemATBased::Host        =  "kemper.com.br";
+  ModemATBased::HostPort    =  "80";
+  ModemATBased::internetConnectToHost ( &sendDataLoop );
 }
 
 void sendDataLoop ()
@@ -48,9 +63,11 @@ void sendDataLoop ()
   String d = c.concat( b );
   const String * e = &c;
   */
+
   ModemATBased::QueryString =  "/modem/modem.php?contador=";
   ModemATBased::QueryString.concat ( String ( contadorLoop, DEC ) );
-  ModemATBased::internetDataSendByGET ( &host, &hostPort, &sendDataLoop );
+  
+  ModemATBased::internetDataSendByGET ( &sendDataLoop );
   contadorLoop ++;
 }
 

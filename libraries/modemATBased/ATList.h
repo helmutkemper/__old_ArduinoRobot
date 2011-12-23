@@ -21,6 +21,8 @@ const String modem_header_get_send_1of3			 =  "GET ";
 const String modem_header_get_send_2of3          =  "q";
 const String modem_header_get_send_3of3			 =  " HTTP/1.1\r\n";
 const String modem_header_host					 =  "Host: ";
+const String modem_header_hostString             =  "h";
+const String modem_header_hostPort				 =  "p";
 const String modem_heafer_connection_alive		 =  "Connection: Keep-Alive\r\n";
 const String modem_header_accept				 =  "Accept: */*\r\n";
 const String modem_header_connection_close		 =  "Connection: close\r\n\r\n";
@@ -50,7 +52,9 @@ const String modem_echo_off						 =  "ATE0\r";//OK
     
         const String modem_sms_text_mode				 =  "AT+CMGF=1\r";//OK
         const String modem_sms_send_confg_1of2           =  "AT+CMGS=\"";
+        const String modem_sms_send_telefon              =  "t";
         const String modem_sms_send_confg_2of2           =  "\"\r";
+        const String modem_sms_send_message              =  "m";
         
     #endif
     

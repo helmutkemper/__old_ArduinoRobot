@@ -8,19 +8,24 @@
 void ( * ModemATBased::vcpfOnFunction ) ( void ) =  0;
 
 eSerialPort				ModemATBased::vceSerial;
-const String *          ModemATBased::vcacucATString[ 20 ];
-const String *          ModemATBased::vcacucATResponse[ 20 ];
+const String *          ModemATBased::vcacucATString[ 11 ];
+const String *          ModemATBased::vcacucATResponse[ 11 ];
 const String *          ModemATBased::vcucpDataToCompare;
 unsigned char			ModemATBased::vcucSMStep;
 unsigned char			ModemATBased::vcucSMTotalStep;
 unsigned char           ModemATBased::vcucSMStepCompare = 0;
 		 char			ModemATBased::vcascPointerDataModem = -1;
-                        
-String                  ModemATBased::QueryString;
-String                  ModemATBased::Telefon;
-String                  ModemATBased::Message;
 
-         
+String                  ModemATBased::Host;
+String                  ModemATBased::HostPort;
+String                  ModemATBased::QueryString;
+
+#ifndef I_do_not_need_to_send_sms_in_my_program
+
+    String                  ModemATBased::Telefon;
+    String                  ModemATBased::Message;
+    
+#endif
 
 ModemATBased::ModemATBased ()
 {
@@ -268,18 +273,18 @@ void ModemATBased::internetDisconnectToHost ( ponteiroDeFuncao vafpExtFuntion )
 
 }
 
-void ModemATBased::internetConnectToHost ( const String * vapsHost, const String * vapsHostPort, ponteiroDeFuncao vafpExtFuntion )
+void ModemATBased::internetConnectToHost ( ponteiroDeFuncao vafpExtFuntion )
 {
     ModemATBased::vcacucATString[ 0 ]	 =  &modem_connect_host_and_port_1of3;
     ModemATBased::vcacucATResponse[ 0 ]	 =  0;
     
-    ModemATBased::vcacucATString[ 1 ]	 =  vapsHost;
+    ModemATBased::vcacucATString[ 1 ]	 =  &modem_header_hostString;
     ModemATBased::vcacucATResponse[ 1 ]	 =  0;
     
     ModemATBased::vcacucATString[ 2 ]	 =  &modem_connect_host_and_port_2of3;
     ModemATBased::vcacucATResponse[ 2 ]	 =  0;
     
-    ModemATBased::vcacucATString[ 3 ]	 =  vapsHostPort;
+    ModemATBased::vcacucATString[ 3 ]	 =  &modem_header_hostPort;
     ModemATBased::vcacucATResponse[ 3 ]	 =  0;
     
     ModemATBased::vcacucATString[ 4 ]	 =  &modem_connect_host_and_port_3of3;
@@ -295,7 +300,7 @@ void ModemATBased::internetConnectToHost ( const String * vapsHost, const String
 	ModemATBased::StateMachineRun ();
 }
 
-void ModemATBased::internetDataSendByGET ( const String * vapsHost, const String * vapsHostPort, ponteiroDeFuncao vafpExtFuntion )
+void ModemATBased::internetDataSendByGET ( ponteiroDeFuncao vafpExtFuntion )
 {
     ModemATBased::vcacucATString[ 0 ]	 =  &modem_start_send_data_over_tcp_udp;
     ModemATBased::vcacucATResponse[ 0 ]	 =  &modem_sms_text_redy_to_send;
@@ -312,7 +317,7 @@ void ModemATBased::internetDataSendByGET ( const String * vapsHost, const String
     ModemATBased::vcacucATString[ 4 ]	 =  &modem_header_host;
     ModemATBased::vcacucATResponse[ 4 ]  =  0;
     
-    ModemATBased::vcacucATString[ 5 ]	 =  vapsHost;
+    ModemATBased::vcacucATString[ 5 ]	 =  &modem_header_hostString;
     ModemATBased::vcacucATResponse[ 5 ]  =  0;
     
     ModemATBased::vcacucATString[ 6 ]	 =  &modem_at_command_general_end_line;
@@ -342,7 +347,7 @@ void ModemATBased::internetDataSendByGET ( const String * vapsHost, const String
 
 #ifndef I_do_not_need_to_send_sms_in_my_program
 
-    void ModemATBased::sendTextSms ( const String * vapcucTelefon, const String * vapcucMessage, ponteiroDeFuncao vafpExtFuntion )
+    void ModemATBased::sendTextSms ( ponteiroDeFuncao vafpExtFuntion )
     {
         ModemATBased::vcacucATString[ 0 ]	 =  &modem_echo_off;
         ModemATBased::vcacucATResponse[ 0 ]	 =  &modem_modem_ok;
@@ -353,13 +358,13 @@ void ModemATBased::internetDataSendByGET ( const String * vapsHost, const String
         ModemATBased::vcacucATString[ 2 ]	 =  &modem_sms_send_confg_1of2;
         ModemATBased::vcacucATResponse[ 2 ]	 =  0;
         
-        ModemATBased::vcacucATString[ 3 ]	 =  vapcucTelefon;
+        ModemATBased::vcacucATString[ 3 ]	 =  &modem_sms_send_telefon;//vapcucTelefon;
         ModemATBased::vcacucATResponse[ 3 ]	 =  0;
         
         ModemATBased::vcacucATString[ 4 ]	 =  &modem_sms_send_confg_2of2;
         ModemATBased::vcacucATResponse[ 4 ]	 =  &modem_sms_text_redy_to_send;
         
-        ModemATBased::vcacucATString[ 5 ]	 =  vapcucMessage;
+        ModemATBased::vcacucATString[ 5 ]	 =  &modem_sms_send_message;//vapcucMessage;
         ModemATBased::vcacucATResponse[ 5 ]	 =  0;
         
         ModemATBased::vcacucATString[ 6 ]	 =  &modem_bye;
@@ -385,6 +390,26 @@ void ModemATBased::StateMachineRun ()
     {
         ModemATBased::sendData ( ModemATBased::QueryString );
     }
+    else if ( s.equals ( String ( "h" ) ) )
+    {
+        ModemATBased::sendData ( ModemATBased::Host );
+    }
+    else if ( s.equals ( String ( "p" ) ) )
+    {
+        ModemATBased::sendData ( ModemATBased::HostPort );
+    }
+    #ifndef I_do_not_need_to_send_sms_in_my_program
+        
+        else if ( s.equals ( String ( "t" ) ) )
+        {
+            ModemATBased::sendData ( ModemATBased::Telefon );
+        }
+        else if ( s.equals ( String ( "m" ) ) )
+        {
+            ModemATBased::sendData ( ModemATBased::Message );
+        }
+        
+    #endif
     else
     {
         ModemATBased::sendData ( * ( ModemATBased::vcacucATString[ ModemATBased::vcucSMStep ] ) );
