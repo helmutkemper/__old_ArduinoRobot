@@ -47,6 +47,23 @@ namespace SerialPort
 }
 using namespace SerialPort;
 
+const byte leitura_modem_expected_response   =  0;
+const byte leitura_modem_no_carryer          =  1;
+const byte leitura_modem_no_dialtone         =  2;
+const byte leitura_modem_no_dial_tone        =  3;
+const byte leitura_modem_answer              =  4;
+const byte leitura_modem_busy                =  5;
+const byte leitura_modem_cme_error           =  6;
+const byte leitura_modem_error               =  7;
+const byte leitura_modem_ring                =  0;
+const byte leitura_modem_new_sms             =  1;
+const byte leitura_modem_close               =  2;
+const byte leitura_modem_closed              =  3;
+
+const byte leitura_modem_continue            =  7;
+
+
+
 class ModemATBased
 {
 	private:
@@ -56,7 +73,13 @@ class ModemATBased
 		static eSerialPort		vceSerial;
 		static const String *	vcacucATString[ 11 ];
 		static const String *	vcacucATResponse[ 11 ];
-		static const String *	vcucpDataToCompare;
+        static String           vcsDadoSerial;
+        
+        static unsigned char    vcucFlagGroup1;
+        static unsigned char    vcucFlagGroup2;
+        static unsigned char    vcucFlagGroup3;
+        static unsigned char    vcucFlagGroup4;
+        
 		static unsigned char	vcucSMStep;
         static unsigned char    vcucSMStepCompare;
         static unsigned char    vcucSMTotalStep;

@@ -10,11 +10,17 @@ void ( * ModemATBased::vcpfOnFunction ) ( void ) =  0;
 eSerialPort				ModemATBased::vceSerial;
 const String *          ModemATBased::vcacucATString[ 11 ];
 const String *          ModemATBased::vcacucATResponse[ 11 ];
-const String *          ModemATBased::vcucpDataToCompare;
 unsigned char			ModemATBased::vcucSMStep;
 unsigned char			ModemATBased::vcucSMTotalStep;
 unsigned char           ModemATBased::vcucSMStepCompare = 0;
 		 char			ModemATBased::vcascPointerDataModem = -1;
+         
+unsigned char           ModemATBased::vcucFlagGroup1 =  0xFF;
+unsigned char           ModemATBased::vcucFlagGroup2 =  0xFF;
+unsigned char           ModemATBased::vcucFlagGroup3 =  0xFF;
+unsigned char           ModemATBased::vcucFlagGroup4 =  0xFF;
+
+String                  ModemATBased::vcsDadoSerial;
 
 String                  ModemATBased::Host;
 String                  ModemATBased::HostPort;
@@ -249,7 +255,6 @@ void ModemATBased::internetConnect ( ponteiroDeFuncao vafpExtFuntion )
     
     ModemATBased::vcpfOnFunction         =  vafpExtFuntion;
     
-    ModemATBased::vcucpDataToCompare     =  0;
 	ModemATBased::vcucSMStepCompare      =  0;
     ModemATBased::vcucSMStep			 =  0;
 	ModemATBased::vcucSMTotalStep		 =  5;
@@ -264,7 +269,6 @@ void ModemATBased::internetDisconnectToHost ( ponteiroDeFuncao vafpExtFuntion )
     
     ModemATBased::vcpfOnFunction         =  vafpExtFuntion;
     
-    ModemATBased::vcucpDataToCompare     =   0;
 	ModemATBased::vcucSMStepCompare      =   0;
     ModemATBased::vcucSMStep			 =   0;
 	ModemATBased::vcucSMTotalStep		 =   1;
@@ -292,7 +296,6 @@ void ModemATBased::internetConnectToHost ( ponteiroDeFuncao vafpExtFuntion )
     
     ModemATBased::vcpfOnFunction         =  vafpExtFuntion;
     
-    ModemATBased::vcucpDataToCompare     =   0;
 	ModemATBased::vcucSMStepCompare      =   0;
     ModemATBased::vcucSMStep			 =   0;
 	ModemATBased::vcucSMTotalStep		 =   4;
@@ -337,7 +340,6 @@ void ModemATBased::internetDataSendByGET ( ponteiroDeFuncao vafpExtFuntion )
     
     ModemATBased::vcpfOnFunction         =  vafpExtFuntion;
     
-    ModemATBased::vcucpDataToCompare     =   0;
 	ModemATBased::vcucSMStepCompare      =   0;
     ModemATBased::vcucSMStep			 =   0;
 	ModemATBased::vcucSMTotalStep		 =  10;
@@ -372,7 +374,6 @@ void ModemATBased::internetDataSendByGET ( ponteiroDeFuncao vafpExtFuntion )
         
         ModemATBased::vcpfOnFunction         =  vafpExtFuntion;
         
-        ModemATBased::vcucpDataToCompare     =  0;
         ModemATBased::vcucSMStepCompare      =  0;
         ModemATBased::vcucSMStep			 =  0;
         ModemATBased::vcucSMTotalStep		 =  6;
@@ -386,6 +387,10 @@ void ModemATBased::StateMachineRun ()
 {
     String s = * ( ModemATBased::vcacucATString[ ModemATBased::vcucSMStep ] );
     
+    /*
+     *  Please note: the Arduino compiler did not make the type conversion 
+     *  properly, therefore, an alternative method was used.
+     */
     if ( s.equals ( String ( "q" ) ) )
     {
         ModemATBased::sendData ( ModemATBased::QueryString );
@@ -427,28 +432,192 @@ void ModemATBased::StateMachineRun ()
 	else
 	{
 		ModemATBased::vcascPointerDataModem	 =  0;
-		ModemATBased::vcucpDataToCompare	 =  ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ];
 	}
 }
 
 void ModemATBased::getDataModem ()
 {
-	if ( ( ModemATBased::vcascPointerDataModem == -1 ) || ( ModemATBased::vcucpDataToCompare == 0) )
-	{
-        if (Serial1.available())
-        Serial.print( (unsigned char)Serial1.read() );
-		return;
-	}
-	
-	if ( ModemATBased::availableData () )
-	{
+    if ( ModemATBased::availableData () )
+    {
         unsigned char vlucSerialData =  ModemATBased::getData ();
         
-		if ( vlucSerialData == (unsigned char)(*ModemATBased::vcucpDataToCompare).charAt ( ModemATBased::vcucSMStepCompare ) )
+        if ( ( ( vlucSerialData == '\r' ) || ( vlucSerialData == '\n' ) ) && ( ModemATBased::vcucSMStep == 0 ) )
+        {
+            ModemATBased::vcucFlagGroup1 =  0xFF;
+            ModemATBased::vcucFlagGroup2 =  0xFF;
+            
+            bitClear ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            
+            return;
+        }
+        
+        else if ( ( ( vlucSerialData == '\r' ) || ( vlucSerialData == '\n' ) ) && ( ModemATBased::vcucSMStep != 0 ) )
+        {
+        
+        }
+        
+        else
+        {
+            // Expected Response
+            if ( vlucSerialData == (unsigned char)(*ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ]).charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup1, leitura_modem_expected_response );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_expected_response );
+            }
+            
+            // NO CARRYER
+            if ( vlucSerialData == (unsigned char) modem_response_no_carryer.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup1, leitura_modem_no_carryer );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitSet ( ModemATBased::vcucFlagGroup1, leitura_modem_no_carryer );
+            }
+            
+            // NO DIALTONE
+            if ( vlucSerialData == (unsigned char) modem_response_no_dialtone1.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dialtone );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitSet ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dialtone );
+            }
+            
+            // NO DIAL TONE
+            if ( vlucSerialData == (unsigned char) modem_response_no_dialtone2.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dial_tone );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dial_tone );
+            }
+            
+            // NO ANSWER
+            if ( vlucSerialData == (unsigned char) modem_response_no_answer.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup1, leitura_modem_answer );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_answer );
+            }
+            
+            // BUSY
+            if ( vlucSerialData == (unsigned char) modem_response_busy.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup1, leitura_modem_busy );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_busy );
+            }
+            
+            // +CME ERROR
+            if ( vlucSerialData == (unsigned char) modem_response_cme_error.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup1, leitura_modem_cme_error );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_cme_error );
+            }
+            
+            // ERROR
+            if ( vlucSerialData == (unsigned char) modem_response_error.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup1, leitura_modem_error );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_error );
+            }
+            
+            // RING
+            if ( vlucSerialData == (unsigned char) modem_response_ring.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_ring );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup2, leitura_modem_ring );
+            }
+            
+            // NEW SMS
+            if ( vlucSerialData == (unsigned char) modem_response_sms.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_new_sms );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup2, leitura_modem_new_sms );
+            }
+            
+            // CLOSE
+            if ( vlucSerialData == (unsigned char) modem_response_close.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2,  );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            // CLOSEED
+            if ( vlucSerialData == (unsigned char) modem_response_closed.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2,  );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            
+            
+            if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_continue ) == 1 )
+            {
+                ModemATBased::vcucSMStepCompare ++
+            }
+            
+            else
+            {
+                ModemATBased::vcucSMStepCompare =  0;
+                
+            }
+        }
+        
+        
+        
+        if ( ( ModemATBased::vcascPointerDataModem == -1 ) || ( ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ] == 0) )
+        {
+        
+        }
+        
+        else if ( vlucSerialData == (unsigned char)(*ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ]).charAt ( ModemATBased::vcucSMStepCompare ) )
 		{
 			ModemATBased::vcucSMStepCompare ++;
             
-			if ( (*ModemATBased::vcucpDataToCompare).length () == ModemATBased::vcucSMStepCompare )
+			if ( (*ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ]).length () == ModemATBased::vcucSMStepCompare )
 			{
                 if ( ModemATBased::vcucSMStep == ModemATBased::vcucSMTotalStep )
                 {
@@ -467,5 +636,5 @@ void ModemATBased::getDataModem ()
         {
             ModemATBased::vcucSMStepCompare =  0;
         }
-	}
+    }
 }

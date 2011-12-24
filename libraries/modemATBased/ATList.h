@@ -1,3 +1,25 @@
+/*
+como ler a qualidade de sinal
+at+csq
+resposta:
++CSQ: n,m
+se n = 0 sinal = -115dBm ou mais
+     = 1       = -111dBm
+     = 2...30  = -(2*n+54)dBm
+     = 31      = -52dBm
+     = 99      = desconectado ou muito baixo
+     
+COMO LER O NOME DA OEPRADORA
+AT+CSPN?
+RESPOSTA
++CSPN: "OPERADORA", N°
+
+COMO LER O NUMERO DE QUEM ESTA LIGANDO
+AT+CLCC
+RESPOSTA:
++CLCC: 1,1,4,0,0,"99268744",161,""
+*/
+
 #ifndef ModemATList_h
 #define ModemATList_h
 
@@ -61,5 +83,17 @@ const String modem_echo_off						 =  "ATE0\r";//OK
     const String modem_bye							 =  byte ( 0x1A );
     const String modem_bye_ok						 =  "SEND OK\r\n";
     //const String modem_sms_send_ok                   =  "";
+
+const String modem_response_no_carryer               =  "NO CARRYER";
+const String modem_response_no_dialtone1             =  "NO DIALTONE";
+const String modem_response_no_dialtone2             =  "NO DIAL TONE";
+const String modem_response_no_answer                =  "NO ANSWER";
+const String modem_response_busy                     =  "BUSY";
+const String modem_response_cme_error                =  "+CME ERROR";
+const String modem_response_error                    =  "ERROR";
+const String modem_response_ring                     =  "RING";
+const String modem_response_sms                      =  "+CMTI: ";
+const String modem_response_close                    =  "CLOSE";
+const String modem_response_closed                   =  "CLOSED";
 
 #endif
