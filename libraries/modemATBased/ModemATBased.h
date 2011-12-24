@@ -3,11 +3,6 @@
 
 #include "WProgram.h"
 
-extern "C"
-{
-	typedef void ( * ponteiroDeFuncao )( void );
-}
-
 #define debug_ModemATBased
 //#define I_do_not_need_to_send_sms_in_my_program
 //#define I_do_not_need_to_internet_in_my_program
@@ -47,8 +42,38 @@ namespace SerialPort
 }
 using namespace SerialPort;
 
+namespace Event
+{
+    enum eEvent
+    {
+        Ring,
+        SMSNew,
+        SMSSend,
+        InternetConnect,
+        InternetConnectToHost,
+        InternetDataSendByGET,
+        InternetDisconnectToHost,
+        NoCarrier,
+        NoDialTone,
+        NoAnswer,
+        Busy,
+        CmeError,
+        Error,
+        Close,
+        Closed
+    };
+}
+using namespace Event;
+
+extern "C"
+{
+	typedef void ( * ponteiroDeFuncao )( eEvent );
+}
+
+
+
 const byte leitura_modem_expected_response   =  0;
-const byte leitura_modem_no_carryer          =  1;
+const byte leitura_modem_no_carrier          =  1;
 const byte leitura_modem_no_dialtone         =  2;
 const byte leitura_modem_no_dial_tone        =  3;
 const byte leitura_modem_answer              =  4;
@@ -71,14 +96,10 @@ class ModemATBased
         static void ( * vcpfOnFunction ) ( void );
     
 		static eSerialPort		vceSerial;
+        static eEvent           vceEvent;
 		static const String *	vcacucATString[ 11 ];
 		static const String *	vcacucATResponse[ 11 ];
         static String           vcsDadoSerial;
-        
-        static unsigned char    vcucFlagGroup1;
-        static unsigned char    vcucFlagGroup2;
-        static unsigned char    vcucFlagGroup3;
-        static unsigned char    vcucFlagGroup4;
         
 		static unsigned char	vcucSMStep;
         static unsigned char    vcucSMStepCompare;
@@ -89,9 +110,14 @@ class ModemATBased
 		static int				availableData ( );
 		static unsigned char	getData ( );
 		static void				StateMachineRun ();
+        static void             clearFlags ();
 		
 	public:
-    
+        
+        static unsigned char    vcucFlagGroup1;
+        static unsigned char    vcucFlagGroup2;
+        
+        static ponteiroDeFuncao StateMachineEvent;
         static String           Host;
         static String           HostPort;
         static String           QueryString;
@@ -103,14 +129,14 @@ class ModemATBased
         
             static String       Telefon;
             static String       Message;
-            static void			sendTextSms ( ponteiroDeFuncao vafpExtFuntion );
+            static void			sendTextSms ();
         
         #endif
         
-        static void             internetDataSendByGET ( ponteiroDeFuncao vafpExtFuntion );
-        static void             internetDisconnectToHost ( ponteiroDeFuncao vafpExtFuntion );
-        static void             internetConnectToHost ( ponteiroDeFuncao vafpExtFuntion );
-        static void             internetConnect ( ponteiroDeFuncao vafpExtFuntion );
+        static void             internetDataSendByGET ();
+        static void             internetDisconnectToHost ();
+        static void             internetConnectToHost ();
+        static void             internetConnect ();
 		static void				getDataModem ();
 };
 

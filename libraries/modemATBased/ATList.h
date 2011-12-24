@@ -84,16 +84,16 @@ const String modem_echo_off						 =  "ATE0\r";//OK
     const String modem_bye_ok						 =  "SEND OK\r\n";
     //const String modem_sms_send_ok                   =  "";
 
-const String modem_response_no_carryer               =  "NO CARRYER";
-const String modem_response_no_dialtone1             =  "NO DIALTONE";
-const String modem_response_no_dialtone2             =  "NO DIAL TONE";
+const String modem_response_no_carrier               =  "NO CARRIER";
+const String modem_response_no_dialtone1             =  "NO DIALTONE\r\n";
+const String modem_response_no_dialtone2             =  "NO DIAL TONE\r\n";
 const String modem_response_no_answer                =  "NO ANSWER";
-const String modem_response_busy                     =  "BUSY";
+const String modem_response_busy                     =  "BUSY\r\n";
 const String modem_response_cme_error                =  "+CME ERROR";
-const String modem_response_error                    =  "ERROR";
+const String modem_response_error                    =  "ERROR\r\n";
 const String modem_response_ring                     =  "RING";
 const String modem_response_sms                      =  "+CMTI: ";
-const String modem_response_close                    =  "CLOSE";
-const String modem_response_closed                   =  "CLOSED";
+const String modem_response_close                    =  "CLOSE\r\n";
+const String modem_response_closed                   =  "CLOSED\r\n";
 
 #endif

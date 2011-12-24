@@ -12,26 +12,37 @@ void setup ()
 {
   Serial.begin ( 19200 );
   
-  while (true)
+  /*while (true)
   {
     if (Serial.available())
       if ((unsigned char)Serial.read()=='c')
         break;
-  }
+  }*/
   
+  ModemATBased::StateMachineEvent = &Evento;
   ModemATBased::setSerial ( SerialPort::Port1, 19200 );
-  ModemATBased::internetConnect ( &internetConnect );
+  //ModemATBased::internetConnect ();
   
   //ModemATBased::Telefon =  "99268744";
   //ModemATBased::Message =  "Hello World! In Brasil, this message can be 128 characters per message";
   //ModemATBased::sendTextSms ( &pisca );
 }
 
+void Evento ( eEvent e )
+{
+  switch ( e )
+  {
+    case Event::Ring:      Serial.println ( "tocando\r" ); break;
+    case Event::NoAnswer:  Serial.println ( "Parou de tocar\r" ); break;
+    case Event::NoCarrier: Serial.println ( "Parou de tocar 2\r" ); break;
+  }
+}
+
 void internetConnect ()
 {
   ModemATBased::Host        =  "kemper.com.br";
   ModemATBased::HostPort    =  "80";
-  ModemATBased::internetConnectToHost ( &sendDataLoop );
+  ModemATBased::internetConnectToHost ();
 }
 
 void sendDataLoop ()
@@ -39,7 +50,7 @@ void sendDataLoop ()
   ModemATBased::QueryString =  "/modem/modem.php?contador=";
   ModemATBased::QueryString.concat ( String ( contadorLoop, DEC ) );
   
-  ModemATBased::internetDataSendByGET ( &sendDataLoop );
+  ModemATBased::internetDataSendByGET ();
   contadorLoop ++;
 }
 
