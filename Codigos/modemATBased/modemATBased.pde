@@ -12,12 +12,12 @@ void setup ()
 {
   Serial.begin ( 19200 );
   
-  /*while (true)
+  while (true)
   {
     if (Serial.available())
       if ((unsigned char)Serial.read()=='c')
         break;
-  }*/
+  }
   
   ModemATBased::StateMachineEvent = &Evento;
   ModemATBased::setSerial ( SerialPort::Port1, 19200 );
@@ -33,30 +33,27 @@ void Evento ( eEvent e )
   switch ( e )
   {
     case Event::Ring:      Serial.println ( "tocando\r" ); break;
-    case Event::NoAnswer:  Serial.println ( "Parou de tocar\r" ); break;
-    case Event::NoCarrier: Serial.println ( "Parou de tocar 2\r" ); break;
+    case Event::NoCarrier: Serial.println ( "Parou de tocar\r" ); break;
+    case Event::InternetConnect:
+      Serial.println ( "internet connected" );
+      ModemATBased::Host        =  "kemper.com.br";
+      ModemATBased::HostPort    =  "80";
+      ModemATBased::internetConnectToHost ();
+      break;
+      
+    case Event::InternetConnectToHost:
+    case Event::InternetDataSendByGET:
+      Serial.println ( "sent data" );
+      ModemATBased::QueryString =  "/modem/modem.php?status=";
+      ModemATBased::QueryString.concat ( String ( contadorLoop, DEC ) );
+      ModemATBased::internetDataSendByGET ();
+      contadorLoop ++;
+      break;
+      
+    case Event::Closed: pisca(); break;
+    case Event::Error:  pisca(); break;
+    case Event::Close:  pisca(); break;
   }
-}
-
-void internetConnect ()
-{
-  ModemATBased::Host        =  "kemper.com.br";
-  ModemATBased::HostPort    =  "80";
-  ModemATBased::internetConnectToHost ();
-}
-
-void sendDataLoop ()
-{
-  ModemATBased::QueryString =  "/modem/modem.php?contador=";
-  ModemATBased::QueryString.concat ( String ( contadorLoop, DEC ) );
-  
-  ModemATBased::internetDataSendByGET ();
-  contadorLoop ++;
-}
-
-void internetSendData ()
-{
-  pisca ();
 }
 
 void pisca ()

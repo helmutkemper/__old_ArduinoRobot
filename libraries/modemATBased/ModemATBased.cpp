@@ -85,17 +85,17 @@ void ModemATBased::sendData ( String vasData )
 {
 	switch ( ModemATBased::vceSerial )
 	{
-		/*#ifndef debug_ModemATBased
+		#ifndef debug_ModemATBased
 		case SerialPort::Port0:	Serial.print ( vasData );
 			break;
-		#endif*/
+		#endif
         
         #if defined(UBRR1H)
         
 		case SerialPort::Port1:	Serial1.print ( vasData );
-            /*#ifdef debug_ModemATBased
+            #ifdef debug_ModemATBased
             Serial.print ( vasData );
-            #endif*/
+            #endif
             
 			break;
             
@@ -177,7 +177,7 @@ unsigned char ModemATBased::getData ( )
             #ifdef debug_ModemATBased
             
                 vlucSerialData   =  ( unsigned char ) Serial1.read ();
-                //Serial.print ( vlucSerialData );
+                Serial.print ( vlucSerialData );
             
                 return ( vlucSerialData );
                 
@@ -259,6 +259,7 @@ void ModemATBased::internetConnect ()
     ModemATBased::vcucSMStep			 =  0;
 	ModemATBased::vcucSMTotalStep		 =  5;
 	ModemATBased::vcascPointerDataModem	 = -1;
+    ModemATBased::clearFlags ();
 	ModemATBased::StateMachineRun ();
 }
 
@@ -274,6 +275,7 @@ void ModemATBased::internetDisconnectToHost ()
     ModemATBased::vcucSMStep			 =   0;
 	ModemATBased::vcucSMTotalStep		 =   1;
 	ModemATBased::vcascPointerDataModem	 =  -1;
+    ModemATBased::clearFlags ();
 	ModemATBased::StateMachineRun ();
 
 }
@@ -301,6 +303,7 @@ void ModemATBased::internetConnectToHost ()
     ModemATBased::vcucSMStep			 =   0;
 	ModemATBased::vcucSMTotalStep		 =   4;
 	ModemATBased::vcascPointerDataModem	 =  -1;
+    ModemATBased::clearFlags ();
 	ModemATBased::StateMachineRun ();
 }
 
@@ -345,6 +348,7 @@ void ModemATBased::internetDataSendByGET ()
     ModemATBased::vcucSMStep			 =   0;
 	ModemATBased::vcucSMTotalStep		 =  10;
 	ModemATBased::vcascPointerDataModem	 =  -1;
+    ModemATBased::clearFlags ();
 	ModemATBased::StateMachineRun ();
 }
 
@@ -379,6 +383,7 @@ void ModemATBased::internetDataSendByGET ()
         ModemATBased::vcucSMStep			 =  0;
         ModemATBased::vcucSMTotalStep		 =  6;
         ModemATBased::vcascPointerDataModem	 = -1;
+        ModemATBased::clearFlags ();
         ModemATBased::StateMachineRun ();
     }
 
@@ -450,333 +455,330 @@ void ModemATBased::getDataModem ()
     {
         unsigned char vlucSerialData =  ModemATBased::getData ();
         
-        if ( ( ( vlucSerialData == '\r' ) || ( vlucSerialData == '\n' ) ) && ( ModemATBased::vcucSMStep == 0 ) )
+        // Expected Response
+        if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_expected_response ) == 1 )
         {
-            clearFlags ();
-            return;
+            //Serial.print ( "\rEsperado: " );
+            //Serial.println ( (unsigned char)(*ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ]).charAt ( ModemATBased::vcucSMStepCompare ) );
+            //Serial.print ( "Recebeu: " );
+            //Serial.println ( vlucSerialData );
+            if ( vlucSerialData == (unsigned char)(*ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ]).charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+        
+            else
+            {
+                //Serial.println ( "nao deveria estar aqui" );
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_expected_response );
+            }
         }
         
-        /*else if ( ( ( vlucSerialData == '\r' ) || ( vlucSerialData == '\n' ) ) && ( ModemATBased::vcucSMStep != 0 ) )
+        // NO CARRYER
+        if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_carrier ) == 1 )
         {
-        
-        }*/
-        
-        else
-        {
-            // Expected Response
-            if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_expected_response ) == 1 )
+            if ( vlucSerialData == (unsigned char) modem_response_no_carrier.charAt ( ModemATBased::vcucSMStepCompare ) )
             {
-                if ( vlucSerialData == (unsigned char)(*ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ]).charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-            
-                else
-                {
-                    bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_expected_response );
-                }
-            }
-            
-            // NO CARRYER
-            if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_carrier ) == 1 )
-            {
-                if ( vlucSerialData == (unsigned char) modem_response_no_carrier.charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    Serial.print( "Reconheceu: " );
-                    Serial.println( (unsigned char) modem_response_no_carrier.charAt ( ModemATBased::vcucSMStepCompare ) );
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-                
-                else
-                {
-                    bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_no_carrier );
-                }
-            }
-            
-            // NO DIALTONE
-            if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dialtone ) == 1 )
-            {
-                if ( vlucSerialData == (unsigned char) modem_response_no_dialtone1.charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-                
-                else
-                {
-                    bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dialtone );
-                }
-            }
-             
-            // NO DIAL TONE
-            if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dial_tone ) == 1 )
-            {    
-                if ( vlucSerialData == (unsigned char) modem_response_no_dialtone2.charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-                
-                else
-                {
-                    bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dial_tone );
-                }
-            }
-            
-            // NO ANSWER
-            if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_answer ) == 1 )
-            {
-                if ( vlucSerialData == (unsigned char) modem_response_no_answer.charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-                
-                else
-                {
-                    bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_answer );
-                }
-            }
-             
-            // BUSY
-            if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_busy ) == 1 )
-            {
-                if ( vlucSerialData == (unsigned char) modem_response_busy.charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-                
-                else
-                {
-                    bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_busy );
-                }
-            }
-            
-            // +CME ERROR
-            if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_cme_error ) == 1 )
-            {
-                if ( vlucSerialData == (unsigned char) modem_response_cme_error.charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-                
-                else
-                {
-                    bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_cme_error );
-                }
-            }
-                
-            // ERROR
-            if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_error ) == 1 )
-            {
-                if ( vlucSerialData == (unsigned char) modem_response_error.charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-                
-                else
-                {
-                    bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_error );
-                }
-            }
-            
-            // RING
-            if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_ring ) == 1 )
-            {
-                if ( vlucSerialData == (unsigned char) modem_response_ring.charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-                
-                else
-                {
-                    Serial.println( "clear bit ring" );
-                    bitClear ( ModemATBased::vcucFlagGroup2, leitura_modem_ring );
-                }
-             }
-                
-            // NEW SMS
-            if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_new_sms ) == 1 )
-            {
-                if ( vlucSerialData == (unsigned char) modem_response_sms.charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-                
-                else
-                {
-                    bitClear ( ModemATBased::vcucFlagGroup2, leitura_modem_new_sms );
-                }
-            }
-                
-            // CLOSE
-            if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_close ) == 1 )
-            {
-                if ( vlucSerialData == (unsigned char) modem_response_close.charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-                
-                else
-                {
-                    bitClear ( ModemATBased::vcucFlagGroup2, leitura_modem_close );
-                }
-            }
-                
-            // CLOSEED
-            if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_closed ) == 1 )
-            {
-                if ( vlucSerialData == (unsigned char) modem_response_closed.charAt ( ModemATBased::vcucSMStepCompare ) )
-                {
-                    bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
-                }
-                
-                else
-                {
-                    bitClear ( ModemATBased::vcucFlagGroup2, leitura_modem_closed );
-                }
-            }
-            
-            
-            if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_continue ) == 1 )
-            {
-                //clearFlags ();
-                
-                ModemATBased::vcucSMStepCompare ++;
-                
-                if ( ( (*ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ]).length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_expected_response ) == 1 ) )
-                {
-                    clearFlags ();
-                    if ( ModemATBased::vcucSMStep == ModemATBased::vcucSMTotalStep )
-                    {
-                        if ( ModemATBased::StateMachineEvent != 0 )
-                        {
-                            ModemATBased::StateMachineEvent ( ModemATBased::vceEvent );
-                        }
-                    }
-                    else
-                    {
-                        ModemATBased::vcucSMStepCompare =  0;
-                        ModemATBased::vcucSMStep ++;
-                        ModemATBased::StateMachineRun ();
-                    }
-                }
-                
-                if ( ( modem_response_no_carrier.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_carrier ) == 1 ) )
-                {   
-                    Serial.println( "Entrou" );
-                    clearFlags ();
-                    ModemATBased::vcucSMStepCompare =  0;
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {Serial.println( "Evento" );
-                        ModemATBased::StateMachineEvent ( Event::NoCarrier );
-                    }
-                }
-                
-                if ( ( modem_response_no_dialtone1.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dialtone ) == 1 ) )
-                {
-                    clearFlags ();
-                    ModemATBased::vcucSMStepCompare =  0;
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {
-                        ModemATBased::StateMachineEvent ( Event::NoDialTone );
-                    }
-                }
-                
-                if ( ( modem_response_no_dialtone2.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dialtone ) == 1 ) )
-                {
-                    clearFlags ();
-                    ModemATBased::vcucSMStepCompare =  0;
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {
-                        ModemATBased::StateMachineEvent ( Event::NoDialTone );
-                    }
-                }
-                
-                if ( ( modem_response_no_answer.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_answer ) == 1 ) )
-                {
-                    clearFlags ();
-                    ModemATBased::vcucSMStepCompare =  0;
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {
-                        ModemATBased::StateMachineEvent ( Event::NoAnswer );
-                    }
-                }
-                
-                if ( ( modem_response_busy.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_busy ) == 1 ) )
-                {
-                    clearFlags ();
-                    ModemATBased::vcucSMStepCompare =  0;
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {
-                        ModemATBased::StateMachineEvent ( Event::Busy );
-                    }
-                }
-                
-                if ( ( modem_response_cme_error.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_cme_error ) == 1 ) )
-                {
-                    clearFlags ();
-                    ModemATBased::vcucSMStepCompare =  0;
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {
-                        ModemATBased::StateMachineEvent ( Event::CmeError );
-                    }
-                }
-                
-                if ( ( modem_response_error.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_error ) == 1 ) )
-                {
-                    clearFlags ();
-                    ModemATBased::vcucSMStepCompare =  0;
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {
-                        ModemATBased::StateMachineEvent ( Event::Error );
-                    }
-                }
-                
-                if ( ( modem_response_ring.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_ring ) == 1 ) )
-                {
-                    clearFlags ();
-                    Serial.println ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_ring ), DEC );
-                    ModemATBased::vcucSMStepCompare =  0;
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {
-                        ModemATBased::StateMachineEvent ( Event::Ring );
-                    }
-                }
-                
-                if ( ( modem_response_sms.length () == ModemATBased::vcucSMStepCompare ) && bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_new_sms ) == 1 )
-                {
-                    clearFlags ();
-                    ModemATBased::vcucSMStepCompare =  0;
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {
-                        ModemATBased::StateMachineEvent ( Event::SMSNew );
-                    }
-                }
-                
-                if ( ( modem_response_close.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_close ) == 1 ) )
-                {
-                    clearFlags ();
-                    ModemATBased::vcucSMStepCompare =  0;
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {
-                        ModemATBased::StateMachineEvent ( Event::Close );
-                    }
-                }
-                
-                if ( ( modem_response_closed.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_closed ) == 1 ) )
-                {
-                    clearFlags ();
-                    ModemATBased::vcucSMStepCompare =  0;
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {
-                        ModemATBased::StateMachineEvent ( Event::Closed );
-                    }
-                }
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
             }
             
             else
             {
-                ModemATBased::vcucSMStepCompare =  0;
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_no_carrier );
             }
         }
+        
+        // NO DIALTONE
+        if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dialtone ) == 1 )
+        {
+            if ( vlucSerialData == (unsigned char) modem_response_no_dialtone1.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dialtone );
+            }
+        }
+         
+        // NO DIAL TONE
+        if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dial_tone ) == 1 )
+        {    
+            if ( vlucSerialData == (unsigned char) modem_response_no_dialtone2.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dial_tone );
+            }
+        }
+        
+        // NO ANSWER
+        if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_answer ) == 1 )
+        {
+            if ( vlucSerialData == (unsigned char) modem_response_no_answer.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_answer );
+            }
+        }
+         
+        // BUSY
+        if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_busy ) == 1 )
+        {
+            if ( vlucSerialData == (unsigned char) modem_response_busy.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_busy );
+            }
+        }
+        
+        // +CME ERROR
+        if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_cme_error ) == 1 )
+        {
+            if ( vlucSerialData == (unsigned char) modem_response_cme_error.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_cme_error );
+            }
+        }
+            
+        // ERROR
+        if ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_error ) == 1 )
+        {
+            if ( vlucSerialData == (unsigned char) modem_response_error.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup1, leitura_modem_error );
+            }
+        }
+        
+        // RING
+        if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_ring ) == 1 )
+        {
+            if ( vlucSerialData == (unsigned char) modem_response_ring.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup2, leitura_modem_ring );
+            }
+         }
+            
+        // NEW SMS
+        if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_new_sms ) == 1 )
+        {
+            if ( vlucSerialData == (unsigned char) modem_response_sms.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup2, leitura_modem_new_sms );
+            }
+        }
+            
+        // CLOSE
+        if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_close ) == 1 )
+        {
+            if ( vlucSerialData == (unsigned char) modem_response_close.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup2, leitura_modem_close );
+            }
+        }
+            
+        // CLOSED
+        if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_closed ) == 1 )
+        {
+            if ( vlucSerialData == (unsigned char) modem_response_closed.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                Serial.print( "Reconheceu: " );
+                Serial.println( (unsigned char) modem_response_closed.charAt ( ModemATBased::vcucSMStepCompare ) );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup2, leitura_modem_closed );
+            }
+        }
+        
+        
+        if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_continue ) == 1 )
+        {
+            //ModemATBased::clearFlags ();
+            
+            ModemATBased::vcucSMStepCompare ++;
+            //Serial.println ( "Step Compare ++" );
+            if ( ( (*ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ]).length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_expected_response ) == 1 ) )
+            {
+                //Serial.println ( "Esperado: tamanho ok" );
+                ModemATBased::clearFlags ();
+                if ( ModemATBased::vcucSMStep == ModemATBased::vcucSMTotalStep )
+                {
+                    if ( ModemATBased::StateMachineEvent != 0 )
+                    {
+                        //Serial.println ( "Esperado: evento" );
+                        ModemATBased::StateMachineEvent ( ModemATBased::vceEvent );
+                    }
+                }
+                else
+                {
+                    //Serial.println ( "Esperado: proximo passo" );
+                    ModemATBased::vcucSMStepCompare =  0;
+                    ModemATBased::vcucSMStep ++;
+                    ModemATBased::StateMachineRun ();
+                }
+            }
+            
+            if ( ( modem_response_no_carrier.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_carrier ) == 1 ) )
+            {   
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::NoCarrier );
+                }
+            }
+            
+            if ( ( modem_response_no_dialtone1.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dialtone ) == 1 ) )
+            {
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::NoDialTone );
+                }
+            }
+            
+            if ( ( modem_response_no_dialtone2.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_no_dialtone ) == 1 ) )
+            {
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::NoDialTone );
+                }
+            }
+            
+            if ( ( modem_response_no_answer.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_answer ) == 1 ) )
+            {
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::NoAnswer );
+                }
+            }
+            
+            if ( ( modem_response_busy.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_busy ) == 1 ) )
+            {
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::Busy );
+                }
+            }
+            
+            if ( ( modem_response_cme_error.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_cme_error ) == 1 ) )
+            {
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::CmeError );
+                }
+            }
+            
+            if ( ( modem_response_error.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup1, leitura_modem_error ) == 1 ) )
+            {
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::Error );
+                }
+            }
+            
+            if ( ( modem_response_ring.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_ring ) == 1 ) )
+            {
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::Ring );
+                }
+            }
+            
+            if ( ( modem_response_sms.length () == ModemATBased::vcucSMStepCompare ) && bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_new_sms ) == 1 )
+            {
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::SMSNew );
+                }
+            }
+            
+            if ( ( modem_response_close.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_close ) == 1 ) )
+            {
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::Close );
+                }
+            }
+            
+            if ( ( modem_response_closed.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_closed ) == 1 ) )
+            {
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::Closed );
+                }
+            }
+        }
+        
+        else
+        {
+            ModemATBased::clearFlags ();
+            ModemATBased::vcucSMStepCompare =  0;
+        }
+        
+        /*if ( ( vlucSerialData == '\r' ) || ( vlucSerialData == '\n' ) )
+        {
+            ModemATBased::vcucSMStepCompare =  0;
+        }*/
         
         
         /*
