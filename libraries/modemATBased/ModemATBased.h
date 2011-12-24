@@ -60,7 +60,8 @@ namespace Event
         CmeError,
         Error,
         Close,
-        Closed
+        Closed,
+        ConnectionFailed
     };
 }
 using namespace Event;
@@ -84,6 +85,7 @@ const byte leitura_modem_ring                =  0;
 const byte leitura_modem_new_sms             =  1;
 const byte leitura_modem_close               =  2;
 const byte leitura_modem_closed              =  3;
+const byte leitura_connection_failed         =  4;
 
 const byte leitura_modem_continue            =  7;
 

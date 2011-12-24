@@ -630,6 +630,20 @@ void ModemATBased::getDataModem ()
             }
         }
         
+        if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_connection_failed ) == 1 )
+        {
+            if ( vlucSerialData == (unsigned char) modem_response_connection_failed.charAt ( ModemATBased::vcucSMStepCompare ) )
+            {
+                Serial.print( "Reconheceu: " );
+                Serial.println( (unsigned char) modem_response_connection_failed.charAt ( ModemATBased::vcucSMStepCompare ) );
+                bitSet ( ModemATBased::vcucFlagGroup2, leitura_modem_continue );
+            }
+            
+            else
+            {
+                bitClear ( ModemATBased::vcucFlagGroup2, leitura_connection_failed );
+            }
+        }
         
         if ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_modem_continue ) == 1 )
         {
@@ -767,18 +781,29 @@ void ModemATBased::getDataModem ()
                     ModemATBased::StateMachineEvent ( Event::Closed );
                 }
             }
+            
+            if ( ( modem_response_connection_failed.length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vcucFlagGroup2, leitura_connection_failed ) == 1 ) )
+            {
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( Event::ConnectionFailed );
+                }
+            }
         }
         
-        else
+        /*else
+        {
+            ModemATBased::clearFlags ();
+            ModemATBased::vcucSMStepCompare =  0;
+        }*/
+        
+        if ( ( vlucSerialData == '\r' ) || ( vlucSerialData == '\n' ) )
         {
             ModemATBased::clearFlags ();
             ModemATBased::vcucSMStepCompare =  0;
         }
-        
-        /*if ( ( vlucSerialData == '\r' ) || ( vlucSerialData == '\n' ) )
-        {
-            ModemATBased::vcucSMStepCompare =  0;
-        }*/
         
         
         /*

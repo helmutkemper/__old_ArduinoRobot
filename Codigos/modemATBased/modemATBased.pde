@@ -21,7 +21,7 @@ void setup ()
   
   ModemATBased::StateMachineEvent = &Evento;
   ModemATBased::setSerial ( SerialPort::Port1, 19200 );
-  //ModemATBased::internetConnect ();
+  ModemATBased::internetConnect ();
   
   //ModemATBased::Telefon =  "99268744";
   //ModemATBased::Message =  "Hello World! In Brasil, this message can be 128 characters per message";
@@ -35,7 +35,7 @@ void Evento ( eEvent e )
     case Event::Ring:      Serial.println ( "tocando\r" ); break;
     case Event::NoCarrier: Serial.println ( "Parou de tocar\r" ); break;
     case Event::InternetConnect:
-      Serial.println ( "internet connected" );
+      Serial.println ( "\rinternet connected" );
       ModemATBased::Host        =  "kemper.com.br";
       ModemATBased::HostPort    =  "80";
       ModemATBased::internetConnectToHost ();
@@ -43,16 +43,24 @@ void Evento ( eEvent e )
       
     case Event::InternetConnectToHost:
     case Event::InternetDataSendByGET:
-      Serial.println ( "sent data" );
+      Serial.println ( "\rsent data" );
       ModemATBased::QueryString =  "/modem/modem.php?status=";
       ModemATBased::QueryString.concat ( String ( contadorLoop, DEC ) );
       ModemATBased::internetDataSendByGET ();
       contadorLoop ++;
       break;
       
-    case Event::Closed: pisca(); break;
-    case Event::Error:  pisca(); break;
-    case Event::Close:  pisca(); break;
+    case Event::ConnectionFailed: Serial.println ( "\rconnection failed\r" ); 
+                                  pisca(); 
+                                  break;
+    
+    case Event::Closed:           ModemATBased::Host        =  "kemper.com.br";
+                                  ModemATBased::HostPort    =  "80";
+                                  ModemATBased::internetConnectToHost ();
+                                  break;
+                                  
+    case Event::Error:            Serial.println ( "\rerror\r" ); pisca(); break;
+    case Event::Close:            Serial.println ( "\rclose\r" ); pisca(); break;
   }
 }
 

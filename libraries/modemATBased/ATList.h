@@ -95,6 +95,7 @@ const String modem_response_ring                     =  "RING";
 const String modem_response_sms                      =  "+CMTI: ";
 const String modem_response_close                    =  "CLOSE\r";
 const String modem_response_closed                   =  "CLOSED\r";
+
 const String modem_response_connection_failed        =  "CONNECTION FAILED\r";
 
 #endif
