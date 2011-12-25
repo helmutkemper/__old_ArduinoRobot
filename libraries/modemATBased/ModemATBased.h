@@ -46,6 +46,7 @@ namespace Event
 {
     enum eEvent
     {
+        None,
         Ring,
         SMSNew,
         SMSSend,
@@ -61,33 +62,41 @@ namespace Event
         Error,
         Close,
         Closed,
-        ConnectionFailed
+        ConnectionFailed,
+        CallReady,
+        PowerDown,
+        internetConnectFunction,
+        internetDisconnectToHostFunction,
+        internetConnectToHostFunction,
+        internetDataSendByGETFunction,
+        sendTextSmsFunction
     };
 }
 using namespace Event;
 
 extern "C"
 {
-	typedef void ( * ponteiroDeFuncao )( eEvent );
+	typedef void ( * ponteiroDeFuncao )( eEvent, eEvent );
 }
 
 
 
-const byte leitura_modem_expected_response   =  0;
-const byte leitura_modem_no_carrier          =  1;
-const byte leitura_modem_no_dialtone         =  2;
-const byte leitura_modem_no_dial_tone        =  3;
-const byte leitura_modem_answer              =  4;
-const byte leitura_modem_busy                =  5;
-const byte leitura_modem_cme_error           =  6;
-const byte leitura_modem_error               =  7;
-const byte leitura_modem_ring                =  0;
-const byte leitura_modem_new_sms             =  1;
-const byte leitura_modem_close               =  2;
-const byte leitura_modem_closed              =  3;
-const byte leitura_connection_failed         =  4;
-
-const byte leitura_modem_continue            =  7;
+const byte modem_read_expected_response   =  0;
+const byte modem_read_no_carrier          =  1;
+const byte modem_read_no_dialtone         =  2;
+const byte modem_read_no_dial_tone        =  3;
+const byte modem_read_answer              =  4;
+const byte modem_read_busy                =  5;
+const byte modem_read_cme_error           =  6;
+const byte modem_read_error               =  7;
+const byte modem_read_ring                =  0;
+const byte modem_read_new_sms             =  1;
+const byte modem_read_close               =  2;
+const byte modem_read_closed              =  3;
+const byte leitura_connection_failed      =  4;
+const byte leitura_call_ready             =  5;
+const byte leitura_normal_power_down      =  6;
+const byte modem_read_continue            =  7;
 
 
 
@@ -99,9 +108,9 @@ class ModemATBased
     
 		static eSerialPort		vceSerial;
         static eEvent           vceEvent;
+        static eEvent           vceEventDispatchedBy;
 		static const String *	vcacucATString[ 11 ];
 		static const String *	vcacucATResponse[ 11 ];
-        static String           vcsDadoSerial;
         
 		static unsigned char	vcucSMStep;
         static unsigned char    vcucSMStepCompare;

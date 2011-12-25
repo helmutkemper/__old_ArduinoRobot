@@ -20,6 +20,8 @@ RESPOSTA:
 +CLCC: 1,1,4,0,0,"99268744",161,""
 */
 
+
+// Please note, in AT String, '*' is used to capture character to memory
 #ifndef ModemATList_h
 #define ModemATList_h
 
@@ -92,10 +94,11 @@ const String modem_response_busy                     =  "BUSY\r\n";
 const String modem_response_cme_error                =  "+CME ERROR";
 const String modem_response_error                    =  "ERROR\r";
 const String modem_response_ring                     =  "RING";
-const String modem_response_sms                      =  "+CMTI: ";
+const String modem_response_sms                      =  "+CMTI: \"SM\",*";
 const String modem_response_close                    =  "CLOSE\r";
 const String modem_response_closed                   =  "CLOSED\r";
 
 const String modem_response_connection_failed        =  "CONNECTION FAILED\r";
-
+const String modem_response_call_ready               =  "Call Ready\r";
+const String modem_response_power_down               =  "NORMAL POWER DOWN\r";
 #endif

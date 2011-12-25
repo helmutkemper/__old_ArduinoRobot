@@ -23,15 +23,21 @@ void setup ()
   ModemATBased::setSerial ( SerialPort::Port1, 19200 );
   //ModemATBased::internetConnect ();
   
-  ModemATBased::Telefon =  "99268744";
-  ModemATBased::Message =  "Hello World! In Brasil, this message can be 128 characters per message";
-  ModemATBased::sendTextSms ();
+  //ModemATBased::Telefon =  "99268744";
+  //ModemATBased::Message =  "Hello World! In Brasil, this message can be 128 characters per message";
+  //ModemATBased::sendTextSms ();
 }
 
-void Evento ( eEvent e )
+void Evento ( eEvent e, eEvent d )
 {
   switch ( e )
   {
+    case Event::CallReady:              Serial.println ( "Modem pronto" );
+                                        break;
+                                        
+    case Event::PowerDown:              Serial.println ( "Modem desligado" );
+                                        break;
+                                        
     case Event::SMSSend:                Serial.println ( "SMS send" );
                                         break;
                                         
@@ -41,7 +47,7 @@ void Evento ( eEvent e )
     case Event::NoCarrier:              Serial.println ( "Parou de tocar\r" );
                                         break;
                                         
-     case Event::Closed:
+    case Event::Closed:
     case Event::InternetConnect:        Serial.println ( "\rinternet connected" );
                                         ModemATBased::Host        =  "kemper.com.br";
                                         ModemATBased::HostPort    =  "80";
