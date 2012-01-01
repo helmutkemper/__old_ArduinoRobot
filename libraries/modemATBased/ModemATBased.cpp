@@ -523,13 +523,13 @@ void ModemATBased::getDataModem ()
         ModemATBased::testCharacter ( &vlucSerialData, &modem_response_closed, &modem_read_closed );
         
         // CONNECTION FAILED
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_connection_failed, &leitura_connection_failed );
+        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_connection_failed, &modem_read_connection_failed );
         
         // CALL READY
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_call_ready, &leitura_call_ready );
+        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_call_ready, &modem_read_call_ready );
         
         // NORMAL POWER DOWN
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_power_down, &leitura_normal_power_down );
+        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_power_down, &modem_read_normal_power_down );
         
         if ( bitRead ( ModemATBased::vculFlags, modem_read_continue ) == 1 )
         {
@@ -579,11 +579,11 @@ void ModemATBased::getDataModem ()
             ModemATBased::testEvent ( &modem_response_closed, &modem_read_closed, Event::Closed );
             
             // Event Conection Failed
-            ModemATBased::testEvent ( &modem_response_connection_failed, &leitura_connection_failed, Event::ConnectionFailed );
+            ModemATBased::testEvent ( &modem_response_connection_failed, &modem_read_connection_failed, Event::ConnectionFailed );
             
-            ModemATBased::testEvent ( &modem_response_call_ready, &leitura_call_ready, Event::CallReady );
+            ModemATBased::testEvent ( &modem_response_call_ready, &modem_read_call_ready, Event::CallReady );
             
-            ModemATBased::testEvent ( &modem_response_power_down, &leitura_normal_power_down, Event::PowerDown );
+            ModemATBased::testEvent ( &modem_response_power_down, &modem_read_normal_power_down, Event::PowerDown );
         }
         
         if ( ( vlucSerialData == '\r' ) || ( vlucSerialData == '\n' ) )

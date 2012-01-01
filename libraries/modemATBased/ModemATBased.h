@@ -93,9 +93,9 @@ const byte modem_read_ring                =   8;
 const byte modem_read_new_sms             =   9;
 const byte modem_read_close               =  10;
 const byte modem_read_closed              =  11;
-const byte leitura_connection_failed      =  12;
-const byte leitura_call_ready             =  13;
-const byte leitura_normal_power_down      =  14;
+const byte modem_read_connection_failed   =  12;
+const byte modem_read_call_ready          =  13;
+const byte modem_read_normal_power_down   =  14;
 const byte modem_read_continue            =  15;
 
 
