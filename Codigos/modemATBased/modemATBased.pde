@@ -32,45 +32,48 @@ void Evento ( eEvent e, eEvent d )
 {
   switch ( e )
   {
-    case Event::CallReady:              Serial.println ( "Modem pronto" );
+    case Event::CallReady:              Serial.println ( "\r\nEvento: Modem pronto" );
                                         break;
                                         
-    case Event::PowerDown:              Serial.println ( "Modem desligado" );
+    case Event::PowerDown:              Serial.println ( "\r\nEvento: Modem desligado" );
                                         break;
                                         
-    case Event::SMSSend:                Serial.println ( "SMS send" );
+    case Event::SMSSend:                Serial.println ( "\r\nEvento: SMS send" );
                                         break;
                                         
-    case Event::Ring:                   Serial.println ( "tocando\r" ); 
+    case Event::SMSNew:                 Serial.println ( "\r\nEvento: Novo SMS\r" ); 
                                         break;
                                         
-    case Event::NoCarrier:              Serial.println ( "Parou de tocar\r" );
+    case Event::Ring:                   Serial.println ( "\r\nEvento: tocando\r" ); 
+                                        break;
+                                        
+    case Event::NoCarrier:              Serial.println ( "\r\nEvento: Parou de tocar\r" );
                                         break;
                                         
     case Event::Closed:
-    case Event::InternetConnect:        Serial.println ( "\rinternet connected" );
+    case Event::InternetConnect:        Serial.println ( "\r\nEvento: internet connected" );
                                         ModemATBased::Host        =  "kemper.com.br";
                                         ModemATBased::HostPort    =  "80";
                                         ModemATBased::internetConnectToHost ();
                                         break;
       
     case Event::InternetConnectToHost:
-    case Event::InternetDataSendByGET:  Serial.println ( "\rsent data" );
+    case Event::InternetDataSendByGET:  Serial.println ( "\r\nEvento: sent data" );
                                         ModemATBased::QueryString =  "/modem/modem.php?status=";
                                         ModemATBased::QueryString.concat ( String ( contadorLoop, DEC ) );
                                         ModemATBased::internetDataSendByGET ();
                                         contadorLoop ++;
                                         break;
       
-    case Event::ConnectionFailed:       Serial.println ( "\rconnection failed\r" ); 
+    case Event::ConnectionFailed:       Serial.println ( "\r\nEvento: connection failed\r" ); 
                                         pisca(); 
                                         break;
     
-    case Event::Error:                  Serial.println ( "\rerror\r" );
+    case Event::Error:                  Serial.println ( "\r\nEvento: error\r" );
                                         pisca();
                                         break;
                                         
-    case Event::Close:                  Serial.println ( "\rclose\r" );
+    case Event::Close:                  Serial.println ( "\r\nEvento: close\r" );
                                         pisca();
                                         break;
   }
