@@ -16,9 +16,6 @@ unsigned char			ModemATBased::vcucSMTotalStep;
 unsigned char           ModemATBased::vcucSMStepCompare = 0;
 		 char			ModemATBased::vcascPointerDataModem = -1;
          
-//unsigned char           ModemATBased::vcucFlagGroup1 =  0xFF;
-//unsigned char           ModemATBased::vcucFlagGroup2 =  0xFF;
-
 unsigned long           ModemATBased::vculFlags =  0xFFFFFFFF;
 
 String                  ModemATBased::Host;
@@ -27,8 +24,15 @@ String                  ModemATBased::QueryString;
 
 #ifndef I_do_not_need_to_send_sms_in_my_program
 
-    String                  ModemATBased::Telefon;
-    String                  ModemATBased::Message;
+    String              ModemATBased::Id;
+    String              ModemATBased::Day;
+    String              ModemATBased::Month;
+    String              ModemATBased::Year;
+    String              ModemATBased::Hour;
+    String              ModemATBased::Minute;
+    String              ModemATBased::Second;
+    String              ModemATBased::Telefon;
+    String              ModemATBased::Message;
     
 #endif
 
@@ -451,66 +455,6 @@ void ModemATBased::clearFlags ()
     bitClear ( ModemATBased::vculFlags, modem_read_continue );
 }
 
-void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent )
-{
-    if ( bitRead ( ModemATBased::vculFlags, *vapcstbtFlagAddress ) == 1 )
-    {
-        if ( *vapucSerialData == (unsigned char)(*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) )
-        {
-            bitSet ( ModemATBased::vculFlags, modem_read_continue );
-            
-            if ( (*vapcstsATCommand).length () == ( ModemATBased::vcucSMStepCompare + 1 ) )
-            {   
-                ModemATBased::clearFlags ();
-                ModemATBased::vcucSMStepCompare =  0;
-                if ( ModemATBased::StateMachineEvent != 0 )
-                {
-                    ModemATBased::StateMachineEvent ( vaenEvent, ModemATBased::vceEventDispatchedBy );
-                }
-            }
-        }
-    
-        else
-        {
-            bitClear ( ModemATBased::vculFlags, *vapcstbtFlagAddress );
-        }
-    }
-}
-
-void ModemATBased::testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress )
-{
-    if ( bitRead ( ModemATBased::vculFlags, *vapcstbtFlagAddress ) == 1 )
-    {
-        if ( *vapucSerialData == (unsigned char)(*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) )
-        {
-            bitSet ( ModemATBased::vculFlags, modem_read_continue );
-            
-            if ( (*vapcstsATCommand).length () == ( ModemATBased::vcucSMStepCompare + 1 ) )
-            {   
-                ModemATBased::clearFlags ();
-                if ( ModemATBased::vcucSMStep == ModemATBased::vcucSMTotalStep )
-                {
-                    if ( ModemATBased::StateMachineEvent != 0 )
-                    {
-                        ModemATBased::StateMachineEvent ( ModemATBased::vceEvent, ModemATBased::vceEventDispatchedBy );
-                    }
-                }
-                else
-                {
-                    ModemATBased::vcucSMStepCompare =  0;
-                    ModemATBased::vcucSMStep ++;
-                    ModemATBased::StateMachineRun ();
-                }
-            }
-        }
-    
-        else
-        {
-            bitClear ( ModemATBased::vculFlags, *vapcstbtFlagAddress );
-        }
-    }
-}
-
 void ModemATBased::getDataModem ()
 {
     if ( ModemATBased::availableData () )
@@ -571,6 +515,66 @@ void ModemATBased::getDataModem ()
         {
             ModemATBased::clearFlags ();
             ModemATBased::vcucSMStepCompare =  0;
+        }
+    }
+}
+
+void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent )
+{
+    if ( bitRead ( ModemATBased::vculFlags, *vapcstbtFlagAddress ) == 1 )
+    {
+        if ( *vapucSerialData == (unsigned char)(*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) )
+        {
+            bitSet ( ModemATBased::vculFlags, modem_read_continue );
+            
+            if ( (*vapcstsATCommand).length () == ( ModemATBased::vcucSMStepCompare + 1 ) )
+            {   
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( vaenEvent, ModemATBased::vceEventDispatchedBy );
+                }
+            }
+        }
+    
+        else
+        {
+            bitClear ( ModemATBased::vculFlags, *vapcstbtFlagAddress );
+        }
+    }
+}
+
+void ModemATBased::testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress )
+{
+    if ( bitRead ( ModemATBased::vculFlags, *vapcstbtFlagAddress ) == 1 )
+    {
+        if ( *vapucSerialData == (unsigned char)(*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) )
+        {
+            bitSet ( ModemATBased::vculFlags, modem_read_continue );
+            
+            if ( (*vapcstsATCommand).length () == ( ModemATBased::vcucSMStepCompare + 1 ) )
+            {   
+                ModemATBased::clearFlags ();
+                if ( ModemATBased::vcucSMStep == ModemATBased::vcucSMTotalStep )
+                {
+                    if ( ModemATBased::StateMachineEvent != 0 )
+                    {
+                        ModemATBased::StateMachineEvent ( ModemATBased::vceEvent, ModemATBased::vceEventDispatchedBy );
+                    }
+                }
+                else
+                {
+                    ModemATBased::vcucSMStepCompare =  0;
+                    ModemATBased::vcucSMStep ++;
+                    ModemATBased::StateMachineRun ();
+                }
+            }
+        }
+    
+        else
+        {
+            bitClear ( ModemATBased::vculFlags, *vapcstbtFlagAddress );
         }
     }
 }

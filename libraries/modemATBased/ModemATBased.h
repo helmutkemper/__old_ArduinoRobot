@@ -140,6 +140,13 @@ class ModemATBased
         
         #ifndef I_do_not_need_to_send_sms_in_my_program
         
+            static String       Id;
+            static String       Day;
+            static String       Month;
+            static String       Year;
+            static String       Hour;
+            static String       Minute;
+            static String       Second;
             static String       Telefon;
             static String       Message;
             static void			sendTextSms ();
