@@ -81,22 +81,22 @@ extern "C"
 
 
 
-const byte modem_read_expected_response   =  0;
-const byte modem_read_no_carrier          =  1;
-const byte modem_read_no_dialtone         =  2;
-const byte modem_read_no_dial_tone        =  3;
-const byte modem_read_answer              =  4;
-const byte modem_read_busy                =  5;
-const byte modem_read_cme_error           =  6;
-const byte modem_read_error               =  7;
-const byte modem_read_ring                =  0;
-const byte modem_read_new_sms             =  1;
-const byte modem_read_close               =  2;
-const byte modem_read_closed              =  3;
-const byte leitura_connection_failed      =  4;
-const byte leitura_call_ready             =  5;
-const byte leitura_normal_power_down      =  6;
-const byte modem_read_continue            =  7;
+const byte modem_read_expected_response   =   0;
+const byte modem_read_no_carrier          =   1;
+const byte modem_read_no_dialtone         =   2;
+const byte modem_read_no_dial_tone        =   3;
+const byte modem_read_answer              =   4;
+const byte modem_read_busy                =   5;
+const byte modem_read_cme_error           =   6;
+const byte modem_read_error               =   7;
+const byte modem_read_ring                =   8;
+const byte modem_read_new_sms             =   9;
+const byte modem_read_close               =  10;
+const byte modem_read_closed              =  11;
+const byte leitura_connection_failed      =  12;
+const byte leitura_call_ready             =  13;
+const byte leitura_normal_power_down      =  14;
+const byte modem_read_continue            =  15;
 
 
 
@@ -122,11 +122,16 @@ class ModemATBased
 		static unsigned char	getData ( );
 		static void				StateMachineRun ();
         static void             clearFlags ();
+        
+        static void             testCharacter ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress );
+        static void             testEvent ( const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent );
 		
 	public:
         
-        static unsigned char    vcucFlagGroup1;
-        static unsigned char    vcucFlagGroup2;
+//        static unsigned char    vcucFlagGroup1;
+//        static unsigned char    vcucFlagGroup2;
+        
+        static unsigned long    vculFlags;
         
         static ponteiroDeFuncao StateMachineEvent;
         static String           Host;
