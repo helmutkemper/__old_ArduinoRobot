@@ -123,13 +123,10 @@ class ModemATBased
 		static void				StateMachineRun ();
         static void             clearFlags ();
         
-        static void             testCharacter ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress );
-        static void             testEvent ( const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent );
+        static void             testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress );
+        static void             testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent );
 		
 	public:
-        
-//        static unsigned char    vcucFlagGroup1;
-//        static unsigned char    vcucFlagGroup2;
         
         static unsigned long    vculFlags;
         

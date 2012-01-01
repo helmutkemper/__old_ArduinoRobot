@@ -451,13 +451,23 @@ void ModemATBased::clearFlags ()
     bitClear ( ModemATBased::vculFlags, modem_read_continue );
 }
 
-void ModemATBased::testCharacter ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress )
+void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent )
 {
     if ( bitRead ( ModemATBased::vculFlags, *vapcstbtFlagAddress ) == 1 )
     {
         if ( *vapucSerialData == (unsigned char)(*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) )
         {
             bitSet ( ModemATBased::vculFlags, modem_read_continue );
+            
+            if ( (*vapcstsATCommand).length () == ( ModemATBased::vcucSMStepCompare + 1 ) )
+            {   
+                ModemATBased::clearFlags ();
+                ModemATBased::vcucSMStepCompare =  0;
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( vaenEvent, ModemATBased::vceEventDispatchedBy );
+                }
+            }
         }
     
         else
@@ -467,75 +477,16 @@ void ModemATBased::testCharacter ( unsigned char * vapucSerialData, const String
     }
 }
 
-void ModemATBased::testEvent ( const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent )
+void ModemATBased::testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress )
 {
-    if ( ( (*vapcstsATCommand).length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vculFlags, *vapcstbtFlagAddress ) == 1 ) )
-    {   
-        ModemATBased::clearFlags ();
-        ModemATBased::vcucSMStepCompare =  0;
-        if ( ModemATBased::StateMachineEvent != 0 )
-        {
-            ModemATBased::StateMachineEvent ( vaenEvent, ModemATBased::vceEventDispatchedBy );
-        }
-    }
-}
-
-void ModemATBased::getDataModem ()
-{
-    if ( ModemATBased::availableData () )
+    if ( bitRead ( ModemATBased::vculFlags, *vapcstbtFlagAddress ) == 1 )
     {
-        unsigned char vlucSerialData =  ModemATBased::getData ();
-        
-        // Expected Response
-        ModemATBased::testCharacter ( &vlucSerialData, ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ], &modem_read_expected_response );
-        
-        // NO CARRYER
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_no_carrier, &modem_read_no_carrier );
-        
-        // NO DIALTONE
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_no_dialtone1, &modem_read_no_dialtone );
-         
-        // NO DIAL TONE
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_no_dialtone2, &modem_read_no_dial_tone );
-        
-        // NO ANSWER
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_no_answer, &modem_read_answer );
-         
-        // BUSY
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_busy, &modem_read_busy );
-        
-        // +CME ERROR
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_cme_error, &modem_read_cme_error );
-            
-        // ERROR
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_error, &modem_read_error );
-        
-        // RING
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_ring, &modem_read_ring );
-            
-        // NEW SMS
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_sms, &modem_read_new_sms );
-            
-        // CLOSE
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_close, &modem_read_close );
-            
-        // CLOSED
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_closed, &modem_read_closed );
-        
-        // CONNECTION FAILED
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_connection_failed, &modem_read_connection_failed );
-        
-        // CALL READY
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_call_ready, &modem_read_call_ready );
-        
-        // NORMAL POWER DOWN
-        ModemATBased::testCharacter ( &vlucSerialData, &modem_response_power_down, &modem_read_normal_power_down );
-        
-        if ( bitRead ( ModemATBased::vculFlags, modem_read_continue ) == 1 )
+        if ( *vapucSerialData == (unsigned char)(*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) )
         {
-            ModemATBased::vcucSMStepCompare ++;
-            if ( ( (*ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ]).length () == ModemATBased::vcucSMStepCompare ) && ( bitRead ( ModemATBased::vculFlags, modem_read_expected_response ) == 1 ) )
-            {
+            bitSet ( ModemATBased::vculFlags, modem_read_continue );
+            
+            if ( (*vapcstsATCommand).length () == ( ModemATBased::vcucSMStepCompare + 1 ) )
+            {   
                 ModemATBased::clearFlags ();
                 if ( ModemATBased::vcucSMStep == ModemATBased::vcucSMTotalStep )
                 {
@@ -551,41 +502,71 @@ void ModemATBased::getDataModem ()
                     ModemATBased::StateMachineRun ();
                 }
             }
-            
-            ModemATBased::testEvent ( &modem_response_no_carrier, &modem_read_no_carrier, Event::NoCarrier );
-            
-            ModemATBased::testEvent ( &modem_response_no_dialtone1, &modem_read_no_dialtone, Event::NoDialTone );
-            
-            ModemATBased::testEvent ( &modem_response_no_dialtone2, &modem_read_no_dialtone, Event::NoDialTone );
-            
-            ModemATBased::testEvent ( &modem_response_no_answer, &modem_read_answer, Event::NoAnswer );
-            
-            ModemATBased::testEvent ( &modem_response_busy, &modem_read_busy, Event::Busy );
-            
-            ModemATBased::testEvent ( &modem_response_cme_error, &modem_read_cme_error, Event::CmeError );
-            
-            ModemATBased::testEvent ( &modem_response_error, &modem_read_error, Event::Error );
-            
-            // Event RING
-            ModemATBased::testEvent ( &modem_response_ring, &modem_read_ring, Event::Ring );
-            
-            // Event New SMS
-            ModemATBased::testEvent ( &modem_response_sms, &modem_read_new_sms, Event::SMSNew );
-            
-            // Event Close
-            ModemATBased::testEvent ( &modem_response_close, &modem_read_close, Event::Close );
-            
-            // Event Closed
-            ModemATBased::testEvent ( &modem_response_closed, &modem_read_closed, Event::Closed );
-            
-            // Event Conection Failed
-            ModemATBased::testEvent ( &modem_response_connection_failed, &modem_read_connection_failed, Event::ConnectionFailed );
-            
-            ModemATBased::testEvent ( &modem_response_call_ready, &modem_read_call_ready, Event::CallReady );
-            
-            ModemATBased::testEvent ( &modem_response_power_down, &modem_read_normal_power_down, Event::PowerDown );
         }
+    
+        else
+        {
+            bitClear ( ModemATBased::vculFlags, *vapcstbtFlagAddress );
+        }
+    }
+}
+
+void ModemATBased::getDataModem ()
+{
+    if ( ModemATBased::availableData () )
+    {
+        unsigned char vlucSerialData =  ModemATBased::getData ();
         
+        // Expected Response
+        ModemATBased::testCharacterAndRunStateMachine ( &vlucSerialData, ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ], &modem_read_expected_response );
+        
+        // NO CARRYER
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_no_carrier, &modem_read_no_carrier, Event::NoCarrier );
+        
+        // NO DIALTONE
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_no_dialtone1, &modem_read_no_dialtone, Event::NoDialTone );
+         
+        // NO DIAL TONE
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_no_dialtone2, &modem_read_no_dial_tone, Event::NoDialTone );
+        
+        // NO ANSWER
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_no_answer, &modem_read_answer, Event::NoAnswer );
+         
+        // BUSY
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_busy, &modem_read_busy, Event::Busy );
+        
+        // +CME ERROR
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_cme_error, &modem_read_cme_error, Event::CmeError );
+            
+        // ERROR
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_error, &modem_read_error, Event::Error );
+        
+        // RING
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_ring, &modem_read_ring, Event::Ring );
+            
+        // NEW SMS
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_sms, &modem_read_new_sms, Event::SMSNew );
+            
+        // CLOSE
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_close, &modem_read_close, Event::Close );
+            
+        // CLOSED
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_closed, &modem_read_closed, Event::Closed );
+        
+        // CONNECTION FAILED
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_connection_failed, &modem_read_connection_failed, Event::ConnectionFailed );
+        
+        // CALL READY
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_call_ready, &modem_read_call_ready, Event::CallReady );
+        
+        // NORMAL POWER DOWN
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_power_down, &modem_read_normal_power_down, Event::PowerDown );
+        
+        if ( bitRead ( ModemATBased::vculFlags, modem_read_continue ) == 1 )
+        {
+            ModemATBased::vcucSMStepCompare ++;
+        }
+                
         if ( ( vlucSerialData == '\r' ) || ( vlucSerialData == '\n' ) )
         {
             ModemATBased::clearFlags ();
