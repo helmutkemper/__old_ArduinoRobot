@@ -450,7 +450,10 @@ void ModemATBased::StateMachineRun ()
 
 void ModemATBased::clearFlags ()
 {
-    ModemATBased::vculFlags  =  0xFFFFFFFF;
+    /*
+     *  This value refer to modem_read_... consts
+     */
+    ModemATBased::vculFlags  =  0x00FFFFFF;
     
     bitClear ( ModemATBased::vculFlags, modem_read_continue );
 }
@@ -505,6 +508,8 @@ void ModemATBased::getDataModem ()
         
         // NORMAL POWER DOWN
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_power_down, &modem_read_normal_power_down, Event::PowerDown );
+        
+        //modem_read_capturing_numbers
         
         if ( bitRead ( ModemATBased::vculFlags, modem_read_continue ) == 1 )
         {

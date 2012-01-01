@@ -81,24 +81,34 @@ extern "C"
 
 
 
-const byte modem_read_expected_response   =   0;
-const byte modem_read_no_carrier          =   1;
-const byte modem_read_no_dialtone         =   2;
-const byte modem_read_no_dial_tone        =   3;
-const byte modem_read_answer              =   4;
-const byte modem_read_busy                =   5;
-const byte modem_read_cme_error           =   6;
-const byte modem_read_error               =   7;
-const byte modem_read_ring                =   8;
-const byte modem_read_new_sms             =   9;
-const byte modem_read_close               =  10;
-const byte modem_read_closed              =  11;
-const byte modem_read_connection_failed   =  12;
-const byte modem_read_call_ready          =  13;
-const byte modem_read_normal_power_down   =  14;
-const byte modem_read_continue            =  15;
+const byte modem_read_expected_response         =   0;
+const byte modem_read_no_carrier                =   1;
+const byte modem_read_no_dialtone               =   2;
+const byte modem_read_no_dial_tone              =   3;
+const byte modem_read_answer                    =   4;
+const byte modem_read_busy                      =   5;
+const byte modem_read_cme_error                 =   6;
+const byte modem_read_error                     =   7;
+const byte modem_read_ring                      =   8;
+const byte modem_read_new_sms                   =   9;
+const byte modem_read_close                     =  10;
+const byte modem_read_closed                    =  11;
+const byte modem_read_connection_failed         =  12;
+const byte modem_read_call_ready                =  13;
+const byte modem_read_normal_power_down         =  14;
+const byte modem_read_continue                  =  15;
 
-
+/*
+ *  Please, note: change this values, afect "ModemATBased::clearFlags ()"
+ */
+const byte modem_read_capturing_numbers         =  24;
+const byte modem_read_capturing_quoted          =  25;
+const byte modem_read_capturing_quoted_started  =  26;
+const byte modem_read_capturing_quoted_ended    =  27;
+const byte modem_read_reserved_0                =  28;
+const byte modem_read_reserved_1                =  29;
+const byte modem_read_reserved_2                =  30;
+const byte modem_read_reserved_3                =  31;
 
 class ModemATBased
 {
