@@ -93,24 +93,26 @@ extern "C"
 
 
 
-const byte modem_read_expected_response         =   0;
-const byte modem_read_no_carrier                =   1;
-const byte modem_read_no_dialtone               =   2;
-const byte modem_read_no_dial_tone              =   3;
-const byte modem_read_answer                    =   4;
-const byte modem_read_busy                      =   5;
-const byte modem_read_cme_error                 =   6;
-const byte modem_read_error                     =   7;
-const byte modem_read_ring                      =   8;
-const byte modem_read_new_sms                   =   9;
-const byte modem_read_close                     =  10;
-const byte modem_read_closed                    =  11;
-const byte modem_read_connection_failed         =  12;
-const byte modem_read_call_ready                =  13;
-const byte modem_read_normal_power_down         =  14;
-const byte modem_read_continue                  =  15;
-const byte modem_read_sms_read                  =  16;
-
+const byte modem_read_expected_response         	=   0;
+const byte modem_read_no_carrier                	=   1;
+const byte modem_read_no_dialtone               	=   2;
+const byte modem_read_no_dial_tone              	=   3;
+const byte modem_read_answer                    	=   4;
+const byte modem_read_busy                      	=   5;
+const byte modem_read_cme_error                 	=   6;
+const byte modem_read_error                     	=   7;
+const byte modem_read_ring                      	=   8;
+const byte modem_read_new_sms                   	=   9;
+const byte modem_read_close                     	=  10;
+const byte modem_read_closed                    	=  11;
+const byte modem_read_connection_failed         	=  12;
+const byte modem_read_call_ready                	=  13;
+const byte modem_read_normal_power_down         	=  14;
+const byte modem_read_continue                  	=  15;
+const byte modem_read_sms_read                  	=  16;
+const byte modem_read_capturing_anything			=  17;
+const byte modem_read_capturing_anything_started	=  18;
+const byte modem_read_capturing_anything_ended		=  19;
 /*
  *  Please, note: change this values, afect "ModemATBased::clearFlags ()"
  */
