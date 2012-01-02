@@ -688,7 +688,7 @@ void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, 
             
             switch ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare + 1 ) )
             {
-                case 'i':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Id, Event::StatusCaptured );
+                case 'i':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Id, Event::IdCaptured );
                             break;
                           
                 case 'd':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Day, Event::DayCaptured );
@@ -715,7 +715,7 @@ void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, 
                 case 'g':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Message, Event::MessageCaptured );
                             break;
                 
-                case 'S':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Status, Event::IdCaptured );
+                case 'S':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Status, Event::StatusCaptured );
                             break; 
             }
         }
