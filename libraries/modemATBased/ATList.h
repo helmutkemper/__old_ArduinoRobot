@@ -35,6 +35,7 @@ RESPOSTA:
 
 // Please note, in AT String, '&' is used to capture number to memory
 //                            '%' is used to capture quoted String
+//                            '$' is used to capture any data ( equivales to exp reg '^.*?[\r\n]' )
 //                            'i' is used to indicate Id address
 //                            'd' is used to indicate Day address
 //                            'M' is used to indicate Month address
