@@ -50,6 +50,7 @@ namespace Event
         Ring,
         SMSNew,
         SMSSend,
+        SMSRead,
         InternetConnect,
         InternetConnectToHost,
         InternetDataSendByGET,
@@ -65,6 +66,17 @@ namespace Event
         ConnectionFailed,
         CallReady,
         PowerDown,
+        IdCaptured,
+        DayCaptured,
+        MonthCaptured,
+        YearCaptured,
+        HourCaptured,
+        MinuteCaptured,
+        SecondCaptured,
+        TelefonCaptured,
+        MessageCaptured,
+        StatusCaptured,
+        
         internetConnectFunction,
         internetDisconnectToHostFunction,
         internetConnectToHostFunction,
@@ -97,18 +109,18 @@ const byte modem_read_connection_failed         =  12;
 const byte modem_read_call_ready                =  13;
 const byte modem_read_normal_power_down         =  14;
 const byte modem_read_continue                  =  15;
+const byte modem_read_sms_read                  =  16;
 
 /*
  *  Please, note: change this values, afect "ModemATBased::clearFlags ()"
  */
-const byte modem_read_capturing_numbers         =  24;
-const byte modem_read_capturing_quoted          =  25;
-const byte modem_read_capturing_quoted_started  =  26;
-const byte modem_read_capturing_quoted_ended    =  27;
-const byte modem_read_reserved_0                =  28;
-const byte modem_read_reserved_1                =  29;
-const byte modem_read_reserved_2                =  30;
-const byte modem_read_reserved_3                =  31;
+const byte modem_read_clear_data                =  26;
+const byte modem_read_capturing_number_started  =  27;
+
+const byte modem_read_capturing_number_ended    =  28;
+const byte modem_read_capturing_quoted          =  29;
+const byte modem_read_capturing_quoted_started  =  30;
+const byte modem_read_capturing_quoted_ended    =  31;
 
 class ModemATBased
 {
@@ -125,6 +137,7 @@ class ModemATBased
 		static unsigned char	vcucSMStep;
         static unsigned char    vcucSMStepCompare;
         static unsigned char    vcucSMTotalStep;
+        static unsigned char    vcucStringLenghtCorrector;
         static          char    vcascPointerDataModem;
     
 		static void				sendData ( String vapucData );
@@ -133,6 +146,7 @@ class ModemATBased
 		static void				StateMachineRun ();
         static void             clearFlags ();
         
+        static void             testSpecialCharacter ( unsigned char * vapucSerialData, String * vapstVariable, eEvent vaenEvent );
         static void             testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress );
         static void             testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent );
 		
@@ -159,7 +173,9 @@ class ModemATBased
             static String       Second;
             static String       Telefon;
             static String       Message;
+            static String       Status;
             static void			sendTextSms ();
+            static void         readTextSms ();
         
         #endif
         

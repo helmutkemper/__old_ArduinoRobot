@@ -12,26 +12,57 @@ void setup ()
 {
   Serial.begin ( 19200 );
   
-  while (true)
-  {
-    if (Serial.available())
-      if ((unsigned char)Serial.read()=='c')
-        break;
-  }
-  
   ModemATBased::StateMachineEvent = &Evento;
   ModemATBased::setSerial ( SerialPort::Port1, 19200 );
-  //ModemATBased::internetConnect ();
   
   ModemATBased::Telefon =  "97344690";
   ModemATBased::Message =  "Hello World! In Brasil, this message can be 128 characters per message";
-  ModemATBased::sendTextSms ();
 }
 
 void Evento ( eEvent e, eEvent d )
 {
   switch ( e )
   {
+    case Event::IdCaptured:             Serial.print ( "\r\nEvento: Id - " );
+                                        Serial.println ( ModemATBased::Id );
+                                        break;
+                                        
+    case Event::DayCaptured:            Serial.print ( "\r\nEvento: Day - " );
+                                        Serial.println ( ModemATBased::Day );
+                                        break;
+                                        
+    case Event::MonthCaptured:          Serial.print ( "\r\nEvento: Month - " );
+                                        Serial.println ( ModemATBased::Month );
+                                        break;
+                                        
+    case Event::YearCaptured:           Serial.print ( "\r\nEvento: Year - " );
+                                        Serial.println ( ModemATBased::Year );
+                                        break;
+                                        
+    case Event::HourCaptured:           Serial.print ( "\r\nEvento: Hour - " );
+                                        Serial.println ( ModemATBased::Hour );
+                                        break;
+                                        
+    case Event::MinuteCaptured:         Serial.print ( "\r\nEvento: Minute - " );
+                                        Serial.println ( ModemATBased::Minute );
+                                        break;
+                                        
+    case Event::SecondCaptured:         Serial.print ( "\r\nEvento: Second - " );
+                                        Serial.println ( ModemATBased::Second );
+                                        break;
+                                        
+    case Event::TelefonCaptured:        Serial.print ( "\r\nEvento: Telefon - " );
+                                        Serial.println ( ModemATBased::Telefon );
+                                        break;
+                                        
+    case Event::MessageCaptured:        Serial.print ( "\r\nEvento: Message - " );
+                                        Serial.println ( ModemATBased::Message );
+                                        break;
+                                        
+    case Event::StatusCaptured:         Serial.print ( "\r\nEvento: Status - " );
+                                        Serial.println ( ModemATBased::Status );
+                                        break;
+                                        
     case Event::CallReady:              Serial.println ( "\r\nEvento: Modem pronto" );
                                         break;
                                         
@@ -41,7 +72,8 @@ void Evento ( eEvent e, eEvent d )
     case Event::SMSSend:                Serial.println ( "\r\nEvento: SMS send" );
                                         break;
                                         
-    case Event::SMSNew:                 Serial.println ( "\r\nEvento: Novo SMS\r" ); 
+    case Event::SMSNew:                 Serial.println ( "\r\nEvento: Novo SMS\r" );
+                                        ModemATBased::readTextSms ();
                                         break;
                                         
     case Event::Ring:                   Serial.println ( "\r\nEvento: tocando\r" ); 
@@ -70,11 +102,9 @@ void Evento ( eEvent e, eEvent d )
                                         break;
     
     case Event::Error:                  Serial.println ( "\r\nEvento: error\r" );
-                                        pisca();
                                         break;
                                         
     case Event::Close:                  Serial.println ( "\r\nEvento: close\r" );
-                                        pisca();
                                         break;
   }
 }
@@ -93,5 +123,22 @@ void pisca ()
 
 void loop ()
 {
+  unsigned char data;
+  
+  if ( Serial.available() )
+  {
+    data = Serial.read();
+    
+    if ( ( data == 's' ) || ( data == 'S' ) )
+    {
+      ModemATBased::sendTextSms ();
+    }
+    
+    else if ( ( data == 'i' ) || ( data == 'I' ) )
+    {
+      ModemATBased::internetConnect ();
+    }
+  }
+  
   ModemATBased::getDataModem ();
 }

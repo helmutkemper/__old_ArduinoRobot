@@ -14,6 +14,7 @@ const String *          ModemATBased::vcacucATResponse[ 11 ];
 unsigned char			ModemATBased::vcucSMStep;
 unsigned char			ModemATBased::vcucSMTotalStep;
 unsigned char           ModemATBased::vcucSMStepCompare = 0;
+unsigned char           ModemATBased::vcucStringLenghtCorrector = 0;
 		 char			ModemATBased::vcascPointerDataModem = -1;
          
 unsigned long           ModemATBased::vculFlags =  0xFFFFFFFF;
@@ -33,6 +34,7 @@ String                  ModemATBased::QueryString;
     String              ModemATBased::Second;
     String              ModemATBased::Telefon;
     String              ModemATBased::Message;
+    String              ModemATBased::Status;
     
 #endif
 
@@ -393,6 +395,31 @@ void ModemATBased::internetDataSendByGET ()
         ModemATBased::clearFlags ();
         ModemATBased::StateMachineRun ();
     }
+    
+    void ModemATBased::readTextSms ()
+    {
+        ModemATBased::vcacucATString[ 0 ]	 =  &modem_sms_text_mode;
+        ModemATBased::vcacucATResponse[ 0 ]	 =  &modem_modem_ok;
+        
+        ModemATBased::vcacucATString[ 1 ]	 =  &modem_sms_read_message;
+        ModemATBased::vcacucATResponse[ 1 ]	 =  0;
+        
+        ModemATBased::vcacucATString[ 2 ]	 =  &modem_variable_id;
+        ModemATBased::vcacucATResponse[ 2 ]	 =  0;
+        
+        ModemATBased::vcacucATString[ 3 ]	 =  &modem_at_command_general_end_line;
+        ModemATBased::vcacucATResponse[ 3 ]	 =  0;
+        
+        ModemATBased::vceEvent               =  Event::SMSSend;
+        ModemATBased::vceEventDispatchedBy   =  Event::sendTextSmsFunction;
+        
+        ModemATBased::vcucSMStepCompare      =  0;
+        ModemATBased::vcucSMStep			 =  0;
+        ModemATBased::vcucSMTotalStep		 =  3;
+        ModemATBased::vcascPointerDataModem	 = -1;
+        ModemATBased::clearFlags ();
+        ModemATBased::StateMachineRun ();
+    }
 
 #endif
 
@@ -408,7 +435,7 @@ void ModemATBased::StateMachineRun ()
     {
         ModemATBased::sendData ( ModemATBased::QueryString );
     }
-    else if ( s.equals ( String ( "h" ) ) )
+    else if ( s.equals ( String ( "H" ) ) )
     {
         ModemATBased::sendData ( ModemATBased::Host );
     }
@@ -422,12 +449,44 @@ void ModemATBased::StateMachineRun ()
         {
             ModemATBased::sendData ( ModemATBased::Telefon );
         }
-        else if ( s.equals ( String ( "m" ) ) )
+        else if ( s.equals ( String ( "g" ) ) )
         {
             ModemATBased::sendData ( ModemATBased::Message );
         }
         
     #endif
+    else if ( s.equals ( String ( "i" ) ) )
+    {
+        ModemATBased::sendData ( ModemATBased::Id );
+    }
+    else if ( s.equals ( String ( "d" ) ) )
+    {
+        ModemATBased::sendData ( ModemATBased::Day );
+    }
+    else if ( s.equals ( String ( "M" ) ) )
+    {
+        ModemATBased::sendData ( ModemATBased::Month );
+    }
+    else if ( s.equals ( String ( "y" ) ) )
+    {
+        ModemATBased::sendData ( ModemATBased::Year );
+    }
+    else if ( s.equals ( String ( "h" ) ) )
+    {
+        ModemATBased::sendData ( ModemATBased::Hour );
+    }
+    else if ( s.equals ( String ( "m" ) ) )
+    {
+        ModemATBased::sendData ( ModemATBased::Minute );
+    }
+    else if ( s.equals ( String ( "s" ) ) )
+    {
+        ModemATBased::sendData ( ModemATBased::Second );
+    }
+    else if ( s.equals ( String ( "S" ) ) )
+    {
+        ModemATBased::sendData ( ModemATBased::Status );
+    }
     else
     {
         ModemATBased::sendData ( * ( ModemATBased::vcacucATString[ ModemATBased::vcucSMStep ] ) );
@@ -453,7 +512,7 @@ void ModemATBased::clearFlags ()
     /*
      *  This value refer to modem_read_... consts
      */
-    ModemATBased::vculFlags  =  0x00FFFFFF;
+    ModemATBased::vculFlags  =  0x03FFFFFF;
     
     bitClear ( ModemATBased::vculFlags, modem_read_continue );
 }
@@ -493,6 +552,9 @@ void ModemATBased::getDataModem ()
             
         // NEW SMS
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_sms, &modem_read_new_sms, Event::SMSNew );
+        
+        // SMS READ
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_sms_read, &modem_read_sms_read, Event::SMSRead );
             
         // CLOSE
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_close, &modem_read_close, Event::Close );
@@ -515,7 +577,20 @@ void ModemATBased::getDataModem ()
         {
             ModemATBased::vcucSMStepCompare ++;
         }
-                
+        
+        else if ( ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_number_ended ) == 1 ) && ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended ) == 1 ) )
+        {
+            Serial.println( "\r\nvcucSMStepCompare=vcucSMStepCompare + 2;" );
+            ModemATBased::vcucSMStepCompare =  ModemATBased::vcucSMStepCompare + 2;
+            
+            bitClear ( ModemATBased::vculFlags, modem_read_capturing_number_started );
+            bitClear ( ModemATBased::vculFlags, modem_read_capturing_number_ended );
+            
+            bitClear ( ModemATBased::vculFlags, modem_read_capturing_quoted );
+            bitClear ( ModemATBased::vculFlags, modem_read_capturing_quoted_started );
+            bitClear ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended );
+        }
+        
         if ( ( vlucSerialData == '\r' ) || ( vlucSerialData == '\n' ) )
         {
             ModemATBased::clearFlags ();
@@ -524,26 +599,146 @@ void ModemATBased::getDataModem ()
     }
 }
 
+void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, String * vapstVariable, eEvent vaenEvent )
+{
+    if ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_number_started ) == 1 )
+    {
+        if ( ( *vapucSerialData >= 0x30 ) && ( *vapucSerialData <= 0x39 ) )
+        {
+            (*vapstVariable).concat ( String ( *vapucSerialData ) );
+        }
+        
+        else
+        {
+            ModemATBased::vcucSMStepCompare += 2;
+            
+            bitSet ( ModemATBased::vculFlags, modem_read_capturing_number_ended );
+            bitSet ( ModemATBased::vculFlags, modem_read_continue );
+            
+            if ( ModemATBased::StateMachineEvent != 0 )
+            {
+                ModemATBased::StateMachineEvent ( vaenEvent, ModemATBased::vceEventDispatchedBy );
+            }
+        }
+    }
+    
+    if ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_quoted ) == 1 )
+    {
+        if ( ( *vapucSerialData == '"' ) && bitRead ( ModemATBased::vculFlags, modem_read_capturing_quoted_started ) == 0 )
+        {
+            bitSet ( ModemATBased::vculFlags, modem_read_capturing_quoted_started );
+        }
+        
+        else if ( ( *vapucSerialData == '"' ) && bitRead ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended ) == 0 )
+        {
+            bitSet ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended );
+            
+            if ( ModemATBased::StateMachineEvent != 0 )
+            {
+                ModemATBased::StateMachineEvent ( vaenEvent, ModemATBased::vceEventDispatchedBy );
+            }
+        }
+        
+        else if ( ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_quoted_started ) == 1 ) && ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended ) == 0 ) )
+        {
+            (*vapstVariable).concat ( String ( *vapucSerialData ) );
+        }
+    }
+}
+
 void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent )
 {
     if ( bitRead ( ModemATBased::vculFlags, *vapcstbtFlagAddress ) == 1 )
     {
+        if ( ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) == '%' ) || ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) == '&' ) )
+        {
+            bitClear ( ModemATBased::vculFlags, modem_read_continue );
+            
+            if ( ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) == '%' ) && ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_quoted ) == 0 ) )
+            {
+                ModemATBased::vcucStringLenghtCorrector += 2;
+                
+                bitSet ( ModemATBased::vculFlags, modem_read_capturing_quoted );
+                bitClear ( ModemATBased::vculFlags, modem_read_capturing_quoted_started );
+                bitClear ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended );
+            }
+            
+            if ( ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) == '&' ) && ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_number_started ) == 0 ) )
+            {
+                ModemATBased::vcucStringLenghtCorrector += 2;
+                
+                bitSet ( ModemATBased::vculFlags, modem_read_capturing_number_started );
+                bitClear ( ModemATBased::vculFlags, modem_read_capturing_number_ended );
+            }
+            
+            if ( bitRead ( ModemATBased::vculFlags, modem_read_clear_data ) == 0 )
+            {
+                bitSet ( ModemATBased::vculFlags, modem_read_clear_data );
+                
+                ModemATBased::Id       =  String ();
+                ModemATBased::Day      =  String ();
+                ModemATBased::Month    =  String ();
+                ModemATBased::Year     =  String ();
+                ModemATBased::Hour     =  String ();
+                ModemATBased::Minute   =  String ();
+                ModemATBased::Second   =  String ();
+                ModemATBased::Telefon  =  String ();
+                ModemATBased::Message  =  String ();
+            }
+            
+            switch ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare + 1 ) )
+            {
+                case 'i':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Id, Event::StatusCaptured );
+                            break;
+                          
+                case 'd':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Day, Event::DayCaptured );
+                            break;
+                         
+                case 'M':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Month, Event::MonthCaptured );
+                            break;
+                         
+                case 'y':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Year, Event::YearCaptured );
+                            break;
+                         
+                case 'h':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Hour, Event::HourCaptured );
+                            break;
+                         
+                case 'm':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Minute, Event::MinuteCaptured );
+                            break;
+                         
+                case 's':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Second, Event::SecondCaptured );
+                            break;
+                         
+                case 't':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Telefon, Event::TelefonCaptured );
+                            break;
+                         
+                case 'g':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Message, Event::MessageCaptured );
+                            break;
+                
+                case 'S':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Status, Event::IdCaptured );
+                            break; 
+            }
+        }
+        
         if ( *vapucSerialData == (unsigned char)(*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) )
         {
             bitSet ( ModemATBased::vculFlags, modem_read_continue );
             
             if ( (*vapcstsATCommand).length () == ( ModemATBased::vcucSMStepCompare + 1 ) )
             {   
+                ModemATBased::vcucStringLenghtCorrector =  0;
+                ModemATBased::vcucSMStepCompare         =  0;
+                
                 ModemATBased::clearFlags ();
-                ModemATBased::vcucSMStepCompare =  0;
+                
                 if ( ModemATBased::StateMachineEvent != 0 )
                 {
                     ModemATBased::StateMachineEvent ( vaenEvent, ModemATBased::vceEventDispatchedBy );
                 }
             }
         }
-    
-        else
+        
+        else if ( bitRead ( ModemATBased::vculFlags, modem_read_continue ) == 1 )
         {
             bitClear ( ModemATBased::vculFlags, *vapcstbtFlagAddress );
         }

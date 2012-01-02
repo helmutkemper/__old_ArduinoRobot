@@ -1,4 +1,16 @@
 /*
+
+AT+CMGF=1
+AT+CMGR=20
+
++CMGR: "REC READ","08197344690","","12/01/01,20:10:43-12"
+Hello World! In Brasil, this message can be 128 characters per message
+
+OK
+
+
+
+
 como ler a qualidade de sinal
 at+csq
 resposta:
@@ -21,7 +33,20 @@ RESPOSTA:
 */
 
 
-// Please note, in AT String, '*' is used to capture character to memory
+// Please note, in AT String, '&' is used to capture number to memory
+//                            '%' is used to capture quoted String
+//                            'i' is used to indicate Id address
+//                            'd' is used to indicate Day address
+//                            'M' is used to indicate Month address
+//                            'y' is used to indicate Year address
+//                            'h' is used to indicate Hour address
+//                            'm' is used to indicate Minute address
+//                            's' is used to indicate Second address
+//                            't' is used to indicate Telefon address
+//                            'g' is used to indicate Message address
+//                            'S' is used to indicate Status address
+// Example: "+CMTI: \"SM\",&i", where, '&i' is 'capture number and put in Id address'
+
 #ifndef ModemATList_h
 #define ModemATList_h
 
@@ -45,7 +70,7 @@ const String modem_header_get_send_1of3			 =  "GET ";
 const String modem_header_get_send_2of3          =  "q";
 const String modem_header_get_send_3of3			 =  " HTTP/1.1\r\n";
 const String modem_header_host					 =  "Host: ";
-const String modem_header_hostString             =  "h";
+const String modem_header_hostString             =  "H";
 const String modem_header_hostPort				 =  "p";
 const String modem_heafer_connection_alive		 =  "Connection: Keep-Alive\r\n";
 const String modem_header_accept				 =  "Accept: */*\r\n";
@@ -78,23 +103,27 @@ const String modem_echo_off						 =  "ATE0\r";//OK
         const String modem_sms_send_confg_1of2           =  "AT+CMGS=\"";
         const String modem_sms_send_telefon              =  "t";
         const String modem_sms_send_confg_2of2           =  "\"\r";
-        const String modem_sms_send_message              =  "m";
+        const String modem_sms_send_message              =  "g";
+        const String modem_sms_read_message              =  "AT+CMGR=";
+        const String modem_response_sms_read             =  "+CMGR: %S,\"&t\",\"\",\"&y/&M/&d,&h:&m:&s-&i\"\r\n";
         
     #endif
     
-    const String modem_bye							 =  byte ( 0x1A );
-    const String modem_bye_ok						 =  "SEND OK\r\n";
-    //const String modem_sms_send_ok                   =  "";
+const String modem_variable_id                       =  "i";
+    
+const String modem_bye                               =  byte ( 0x1A );
+const String modem_bye_ok                            =  "SEND OK\r\n";
+//const String modem_sms_send_ok                     =  "";
 
-const String modem_response_no_carrier               =  "NO CARRIER";
+const String modem_response_no_carrier               =  "NO CARRIER\r";
 const String modem_response_no_dialtone1             =  "NO DIALTONE\r";
 const String modem_response_no_dialtone2             =  "NO DIAL TONE\r";
-const String modem_response_no_answer                =  "NO ANSWER";
-const String modem_response_busy                     =  "BUSY\r\n";
-const String modem_response_cme_error                =  "+CME ERROR";
+const String modem_response_no_answer                =  "NO ANSWER\r";
+const String modem_response_busy                     =  "BUSY\r";
+const String modem_response_cme_error                =  "+CME ERROR\r";
 const String modem_response_error                    =  "ERROR\r";
-const String modem_response_ring                     =  "RING";
-const String modem_response_sms                      =  "+CMTI: \"SM\",*";
+const String modem_response_ring                     =  "RING\r";
+const String modem_response_sms                      =  "+CMTI: \"SM\",&i\r";
 const String modem_response_close                    =  "CLOSE\r";
 const String modem_response_closed                   =  "CLOSED\r";
 
