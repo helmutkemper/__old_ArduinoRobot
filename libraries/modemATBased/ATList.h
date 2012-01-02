@@ -35,7 +35,9 @@ RESPOSTA:
 
 // Please note, in AT String, '&' is used to capture number to memory
 //                            '%' is used to capture quoted String
-//                            '$' is used to capture any data ( equivales to exp reg '^.*?[\r\n]' )
+//     						  '$' is used to capture any data ( equivales to exp reg '^.*?[\r\n]' )
+//                            '#n' is used to ignore any number ( equivales to exp reg '[^0-9]' )
+//                            '#s' is used to ignore any String ( ASCII Table 0x20 to 0x7E, except ASCII 0x22 or " )
 //                            'i' is used to indicate Id address
 //                            'd' is used to indicate Day address
 //                            'M' is used to indicate Month address
@@ -106,7 +108,7 @@ const String modem_echo_off						 =  "ATE0\r";//OK
         const String modem_sms_send_confg_2of2           =  "\"\r";
         const String modem_sms_send_message              =  "g";
         const String modem_sms_read_message              =  "AT+CMGR=";
-        const String modem_response_sms_read             =  "+CMGR: %S,\"&t\",\"\",\"&y/&M/&d,&h:&m:&s-&i\"\r\n";
+        const String modem_response_sms_read             =  "+CMGR: %S,\"&t\",\"\",\"&y/&M/&d,&h:&m:&s-#&\"\r";
         
     #endif
     
