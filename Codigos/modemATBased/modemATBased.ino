@@ -16,7 +16,7 @@ void setup ()
   ModemATBased::setSerial ( SerialPort::Port1, 19200 );
   
   ModemATBased::Telefon =  "97344690";
-  ModemATBased::Message =  ">Hello World! In Brasil, this message can be 128 characters per message";
+  ModemATBased::Message =  "!data:Hello World! In Brasil, this message can be 128 characters per message";
 }
 
 void Evento ( eEvent e, eEvent d )
