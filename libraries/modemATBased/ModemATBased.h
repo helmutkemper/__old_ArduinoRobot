@@ -80,6 +80,7 @@ namespace Event
         TelefonCaptured,
         MessageCaptured,
         StatusCaptured,
+        TimeZoneCaptured,
         
         internetConnectFunction,
         internetDisconnectToHostFunction,
@@ -180,6 +181,7 @@ class ModemATBased
             static String       Telefon;
             static String       Message;
             static String       Status;
+            static String       TimeZone;
             static void			sendTextSms ();
             static void         readTextSms ();
         

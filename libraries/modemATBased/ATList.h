@@ -33,11 +33,9 @@ RESPOSTA:
 */
 
 
-// Please note, in AT String, '&' is used to capture number to memory
+// Please note, in AT String, '&' is used to capture number to memory ( equivales to exp reg '[\-\+0-9]+' )
 //                            '%' is used to capture quoted String
 //     						  '$' is used to capture any data ( equivales to exp reg '^.*?[\r\n]' )
-//                            '#n' is used to ignore any number ( equivales to exp reg '[^0-9]' )
-//                            '#s' is used to ignore any String ( ASCII Table 0x20 to 0x7E, except ASCII 0x22 or " )
 //                            'i' is used to indicate Id address
 //                            'd' is used to indicate Day address
 //                            'M' is used to indicate Month address
@@ -48,6 +46,7 @@ RESPOSTA:
 //                            't' is used to indicate Telefon address
 //                            'g' is used to indicate Message address
 //                            'S' is used to indicate Status address
+//                            'z' is used to indicate Time Zone address
 // Example: "+CMTI: \"SM\",&i", where, '&i' is 'capture number and put in Id address'
 
 #ifndef ModemATList_h
@@ -108,7 +107,7 @@ const String modem_echo_off						 =  "ATE0\r";//OK
         const String modem_sms_send_confg_2of2           =  "\"\r";
         const String modem_sms_send_message              =  "g";
         const String modem_sms_read_message              =  "AT+CMGR=";
-        const String modem_response_sms_read             =  "+CMGR: %S,\"&t\",\"\",\"&y/&M/&d,&h:&m:&s-#&\"\r";
+        const String modem_response_sms_read             =  "+CMGR: %S,\"&t\",\"\",\"&y/&M/&d,&h:&m:&s&z\"\r";
         
     #endif
     

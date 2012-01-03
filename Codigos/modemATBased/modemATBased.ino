@@ -16,13 +16,17 @@ void setup ()
   ModemATBased::setSerial ( SerialPort::Port1, 19200 );
   
   ModemATBased::Telefon =  "97344690";
-  ModemATBased::Message =  ">dado:Hello World! In Brasil, this message can be 128 characters per message";
+  ModemATBased::Message =  ">Hello World! In Brasil, this message can be 128 characters per message";
 }
 
 void Evento ( eEvent e, eEvent d )
 {
   switch ( e )
   {
+    case Event::TimeZoneCaptured:       Serial.print ( "\r\nEvento: Time Zone - " );
+                                        Serial.println ( ModemATBased::TimeZone );
+                                        break;
+    
     case Event::IdCaptured:             Serial.print ( "\r\nEvento: Id - " );
                                         Serial.println ( ModemATBased::Id );
                                         break;
