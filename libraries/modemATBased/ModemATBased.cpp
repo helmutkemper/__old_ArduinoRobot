@@ -615,7 +615,8 @@ void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, Strin
         {
             ModemATBased::vcucSMStepCompare += 2;
             
-            bitSet ( ModemATBased::vculFlags, modem_read_capturing_number_ended );
+            bitClear ( ModemATBased::vculFlags, modem_read_capturing_number_started );
+            bitClear ( ModemATBased::vculFlags, modem_read_capturing_number_ended );
             bitSet ( ModemATBased::vculFlags, modem_read_continue );
             
             if ( ModemATBased::StateMachineEvent != 0 )
@@ -634,7 +635,14 @@ void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, Strin
         
         else if ( ( ( *vapucSerialData == '"' ) || ( *vapucSerialData == '\'' ) ) && bitRead ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended ) == 0 )
         {
-            bitSet ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended );
+            //bitSet ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended );
+            
+            bitClear ( ModemATBased::vculFlags, modem_read_capturing_quoted );
+            bitClear ( ModemATBased::vculFlags, modem_read_capturing_quoted_started );
+            bitClear ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended );
+
+            
+            ModemATBased::vcucSMStepCompare += 2;
             
             if ( ModemATBased::StateMachineEvent != 0 )
             {
@@ -696,7 +704,6 @@ void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, 
                 ModemATBased::Telefon  =  String ();
                 ModemATBased::Message  =  String ();
             }
-            
             switch ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare + 1 ) )
             {
                 case 'i':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Id, Event::IdCaptured );
