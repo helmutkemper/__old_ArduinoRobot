@@ -117,14 +117,14 @@ const byte modem_read_sms_read                  		=  16;
 const byte modem_read_capturing_anything				=  17;
 const byte modem_read_capturing_anything_started		=  18;
 const byte modem_read_capturing_anything_ended			=  19;
-const byte modem_read_capture_ignore_anything_number	=  20;
+const byte modem_read_capture_ignore_anything_number    =  20;
 /*
  *  Please, note: change this values, afect "ModemATBased::clearFlags ()"
  */
 const byte modem_read_clear_data                =  26;
 const byte modem_read_capturing_number_started  =  27;
 
-const byte modem_read_capturing_number_ended    =  28;
+const byte modem_read_capturing_number_ended    =  28;//sem uso
 const byte modem_read_capturing_quoted          =  29;
 const byte modem_read_capturing_quoted_started  =  30;
 const byte modem_read_capturing_quoted_ended    =  31;
