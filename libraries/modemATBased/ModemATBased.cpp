@@ -578,20 +578,20 @@ void ModemATBased::getDataModem ()
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_power_down, &modem_read_normal_power_down, Event::PowerDown );
         
         // USER DATA CAPTURED
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_data, &modem_read_data, Event::IdByDataUserCaptured );
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_data, &modem_read_data, Event::DataByDataUserCaptured );
         
         // USER TELEFON CAPTURED
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_telefon, &modem_read_telefon, Event::TelefonByDataUserCaptured );
         
         // USER ID CAPTURED
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_id, &modem_read_id, Event::DataByDataUserCaptured );
+        /*ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_id, &modem_read_id, Event::IdByDataUserCaptured );
         
         // USER MESSAGE CAPTURED
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_message, &modem_read_message, Event::MessageByDataUserCaptured );
         
         // USER STATUS CAPTURED
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_status, &modem_read_status, Event::StatusByDataUserCaptured );
-        
+        */
         
         
         
@@ -614,6 +614,11 @@ void ModemATBased::getDataModem ()
 
 void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, String * vapstVariable, eEvent vaenEvent )
 {
+    if ( bitRead ( ModemATBased::vculFlags, modem_read_ignore_spaces_on ) == 1 )
+    {
+    
+    }
+    
     if ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_number_started ) == 1 )
     {
         if ( ( ( ( *vapucSerialData >= 0x30 ) && ( *vapucSerialData <= 0x39 ) ) || ( *vapucSerialData == '-' ) || ( *vapucSerialData == '+' ) ) && ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_number_first_element ) == 0 ) )
@@ -705,27 +710,20 @@ void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, 
         		( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) == '@' )
            )
         {
+            bitClear ( ModemATBased::vculFlags, modem_read_continue );
             
-            if ( ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) == '@' ) && ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare + 1 ) == 'o' ) )
+            if ( ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) == '@' ) && ( bitRead ( ModemATBased::vculFlags, modem_read_ignore_spaces_on ) == 0 ) )
             {
             	bitSet   ( ModemATBased::vculFlags, modem_read_ignore_spaces_on );
-            	ModemATBased::vcucSMStepCompare += 2;
-            	return;
             }
             
-            else if ( ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) == '@' ) && ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare + 1 ) == 'f' ) )
+            /*else if ( ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) == '@' ) && ( bitRead ( ModemATBased::vculFlags, modem_read_ignore_spaces_on ) == 0 ) )
             {
             	bitClear ( ModemATBased::vculFlags, modem_read_ignore_spaces_on );
+                bitSet ( ModemATBased::vculFlags, modem_read_continue );
             	ModemATBased::vcucSMStepCompare += 2;
             	return;
-            }
-            
-            if ( ( bitRead ( ModemATBased::vculFlags, modem_read_ignore_spaces_on ) == 1 ) && ( ( *vapucSerialData == ' ' ) || ( *vapucSerialData == '\t' ) ) )
-            {
-            	return;
-            }
-            
-            bitClear ( ModemATBased::vculFlags, modem_read_continue );
+            }*/
             
             if ( ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare ) == '$' ) && ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_anything_data ) == 0 ) )
             {
@@ -798,7 +796,13 @@ void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, 
                             break;
                             
                 case 'D':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Data, Event::DataCaptured );
-                            break; 
+                            break;
+                            
+                case 'o':   ModemATBased::testSpecialCharacter ( vapucSerialData, 0, Event::None );
+                            break;
+                            
+                case 'f':   ModemATBased::testSpecialCharacter ( vapucSerialData, 0, Event::None );
+                            break;
             }
         }
         

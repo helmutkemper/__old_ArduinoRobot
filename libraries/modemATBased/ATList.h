@@ -137,9 +137,9 @@ const String modem_response_call_ready               =  "Call Ready\r";
 const String modem_response_power_down               =  "NORMAL POWER DOWN\r";
 
 const String modem_user_response_data				 =  "!data:$D";
-const String modem_user_response_telefon			 =  "@o!telefon:&t";
-const String modem_user_response_id					 =  "@o!id:&i";
-const String modem_user_response_message			 =  "!message:$M";
-const String modem_user_response_status				 =  "!status:$S";
+const String modem_user_response_telefon			 =  "!telefon:&t";//"@o!telefon:&t";
+const String modem_user_response_id					 =  "!id:&i";//"@o!id:&i";
+const String modem_user_response_message			 =  "!message:$M";//"!message:$M";
+const String modem_user_response_status				 =  "!status:$S";//"!status:$S";
 
 #endif
