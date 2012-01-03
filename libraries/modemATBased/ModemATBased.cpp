@@ -40,6 +40,7 @@ String                  ModemATBased::QueryString;
     String              ModemATBased::Message;
     String              ModemATBased::Status;
     String              ModemATBased::TimeZone;
+    String				ModemATBased::Data;
     
 #endif
 
@@ -748,6 +749,7 @@ void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, 
             {
                 bitSet ( ModemATBased::vculFlags, modem_read_clear_data );
                 
+                
                 ModemATBased::Id       =  String ();
                 ModemATBased::Day      =  String ();
                 ModemATBased::Month    =  String ();
@@ -757,6 +759,8 @@ void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, 
                 ModemATBased::Second   =  String ();
                 ModemATBased::Telefon  =  String ();
                 ModemATBased::Message  =  String ();
+                ModemATBased::TimeZone =  String ();
+                ModemATBased::Data 	   =  String ();
             }
             switch ( (*vapcstsATCommand).charAt ( ModemATBased::vcucSMStepCompare + 1 ) )
             {
@@ -791,6 +795,9 @@ void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, 
                             break;
                             
                 case 'z':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::TimeZone, Event::TimeZoneCaptured );
+                            break;
+                            
+                case 'D':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Data, Event::DataCaptured );
                             break; 
             }
         }
