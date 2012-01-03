@@ -119,6 +119,7 @@ const byte modem_read_capturing_anything				=  17;
 const byte modem_read_capturing_anything_started		=  18;
 const byte modem_read_capturing_anything_ended			=  19;
 const byte modem_read_capture_ignore_anything_number    =  20;
+
 /*
  *  Please, note: change this values, afect "ModemATBased::clearFlags ()"
  */
