@@ -1,7 +1,11 @@
 #ifndef ModemATBased_h
 #define ModemATBased_h
 
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "Arduino.h"
+#else
 #include "WProgram.h"
+#endif
 
 #define debug_ModemATBased
 //#define I_do_not_need_to_send_sms_in_my_program

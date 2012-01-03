@@ -114,7 +114,7 @@ const String modem_echo_off						 =  "ATE0\r";//OK
     
 const String modem_variable_id                       =  "i";
     
-const String modem_bye                               =  byte ( 0x1A );
+const String modem_bye                               =  String(char(0x1A));
 const String modem_bye_ok                            =  "SEND OK\r\n";
 //const String modem_sms_send_ok                     =  "";
 

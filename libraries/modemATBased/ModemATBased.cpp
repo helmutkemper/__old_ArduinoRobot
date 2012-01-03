@@ -1,6 +1,11 @@
 //#include "ATList.h"
 
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "Arduino.h"
+#else
 #include "WProgram.h"
+#endif
+
 #include "ModemATBased.h"
 
 #include "ATList.h"
@@ -98,7 +103,7 @@ void ModemATBased::sendData ( String vasData )
         
 		case SerialPort::Port1:	Serial1.print ( vasData );
             #ifdef debug_ModemATBased
-            Serial.print ( vasData );
+            Serial.print ( String ( vasData ) );
             #endif
             
 			break;
@@ -180,8 +185,8 @@ unsigned char ModemATBased::getData ( )
             
             #ifdef debug_ModemATBased
             
-                vlucSerialData   =  ( unsigned char ) Serial1.read ();
-                Serial.print ( vlucSerialData );
+                vlucSerialData   =  Serial1.read ();
+                Serial.write ( vlucSerialData );
             
                 return ( vlucSerialData );
                 
@@ -579,7 +584,6 @@ void ModemATBased::getDataModem ()
         
         else if ( ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_number_ended ) == 1 ) && ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended ) == 1 ) )
         {
-            Serial.println( "\r\nvcucSMStepCompare=vcucSMStepCompare + 2;" );
             ModemATBased::vcucSMStepCompare =  ModemATBased::vcucSMStepCompare + 2;
             
             bitClear ( ModemATBased::vculFlags, modem_read_capturing_number_started );
@@ -604,7 +608,7 @@ void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, Strin
     {
         if ( ( *vapucSerialData >= 0x30 ) && ( *vapucSerialData <= 0x39 ) )
         {
-            (*vapstVariable).concat ( String ( *vapucSerialData ) );
+            (*vapstVariable).concat ( String ( char(*vapucSerialData) ) );
         }
         
         else
@@ -640,7 +644,7 @@ void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, Strin
         
         else if ( ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_quoted_started ) == 1 ) && ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended ) == 0 ) )
         {
-            (*vapstVariable).concat ( String ( *vapucSerialData ) );
+            (*vapstVariable).concat ( String ( char(*vapucSerialData) ) );
         }
     }
     
