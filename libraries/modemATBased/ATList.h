@@ -25,7 +25,7 @@
  */
 namespace SerialPort
 {
-     enum eSerialPort
+	enum eSerialPort
 	{
 		#if defined(UBRR3H)
 		Port3,
@@ -81,6 +81,7 @@ namespace Event
         MessageCaptured,
         StatusCaptured,
         TimeZoneCaptured,
+        DataCaptured,
         
         TelefonByDataUserCaptured,
         MessageByDataUserCaptured,
@@ -177,6 +178,7 @@ class ModemATBased
         static String           Host;
         static String           HostPort;
         static String           QueryString;
+        static String           Data;
         
                                 ModemATBased ();
 		static void				setSerial ( eSerialPort vaeSerial, unsigned int vauiSpeed );
