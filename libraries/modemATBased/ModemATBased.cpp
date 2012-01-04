@@ -584,19 +584,13 @@ void ModemATBased::getDataModem ()
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_telefon, &modem_read_telefon, Event::TelefonByDataUserCaptured );
         
         // USER ID CAPTURED
-        /*ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_id, &modem_read_id, Event::IdByDataUserCaptured );
+        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_id, &modem_read_id, Event::IdByDataUserCaptured );
         
         // USER MESSAGE CAPTURED
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_message, &modem_read_message, Event::MessageByDataUserCaptured );
         
         // USER STATUS CAPTURED
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_status, &modem_read_status, Event::StatusByDataUserCaptured );
-        */
-        
-        
-        
-        
-        
         
         if ( bitRead ( ModemATBased::vculFlags, modem_read_continue ) == 1 )
         {
@@ -795,7 +789,7 @@ void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, 
                 case 'z':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::TimeZone, Event::TimeZoneCaptured );
                             break;
                             
-                case 'D':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Data, Event::DataCaptured );
+                case 'D':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Data, Event::None );
                             break;
                             
                 case 'o':   ModemATBased::testSpecialCharacter ( vapucSerialData, 0, Event::None );

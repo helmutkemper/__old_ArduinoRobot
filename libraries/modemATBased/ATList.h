@@ -34,10 +34,9 @@ RESPOSTA:
 
 
 // Please note, in AT String, '&' is used to capture number to memory ( equivales to exp reg '[\-\+0-9]+' )
-//                            '@o' is used 'turn ignore all spaces' on ( equivales to exp reg '[\t\s]' ) - caution: \r or \n turn 'ignore all spaces' off
-//                            '@f' is used 'turn ignore all spaces' off
+//                            '@' is used to capture number to memory ignoring all spaces( equivales to exp reg '((?![\s\t])[\-\+0-9]+)' )
 //                            '%' is used to capture quoted String
-//          					  '$' is used to capture any data, except new line ( equivales to exp reg '^.*?[\r\n]' )
+//                            '$' is used to capture any data, except new line ( equivales to exp reg '^.*?[\r\n]' )
 //                            'i' is used to indicate Id address
 //                            'd' is used to indicate Day address
 //                            'M' is used to indicate Month address
@@ -137,9 +136,9 @@ const String modem_response_call_ready               =  "Call Ready\r";
 const String modem_response_power_down               =  "NORMAL POWER DOWN\r";
 
 const String modem_user_response_data				 =  "!data:$D";
-const String modem_user_response_telefon			 =  "!telefon:&t";//"@o!telefon:&t";
-const String modem_user_response_id					 =  "!id:&i";//"@o!id:&i";
-const String modem_user_response_message			 =  "!message:$M";//"!message:$M";
-const String modem_user_response_status				 =  "!status:$S";//"!status:$S";
+const String modem_user_response_telefon			 =  "!telefon:@t";
+const String modem_user_response_id					 =  "!id:@i";
+const String modem_user_response_message			 =  "!message:$M";
+const String modem_user_response_status				 =  "!status:$S";
 
 #endif
