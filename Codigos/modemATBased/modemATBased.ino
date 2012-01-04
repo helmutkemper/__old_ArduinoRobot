@@ -17,7 +17,7 @@ void setup ()
   
   ModemATBased::Telefon =  "97344690";
 //  ModemATBased::Message =  "!data:Hello World! In Brasil, this message can be 128 characters per message";
-  ModemATBased::Message =  "!telefon:08199268744\r\n\r\n!data:Esta vivo!";
+  ModemATBased::Message =  "!telefon: 08199268744\r\n\r\n!data:Esta vivo!";
 }
 
 void Evento ( eEvent e, eEvent d )

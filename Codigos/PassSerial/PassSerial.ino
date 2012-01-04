@@ -25,15 +25,15 @@ void loop()
       dadoSerial =  ( unsigned char ) Serial.read ();
       
       if ( dadoSerial == '#' )
-        Serial1.print(26,BYTE);
+        Serial1.print(26);
         
       else
-        Serial1.print( dadoSerial );
+        Serial1.write( dadoSerial );
     }  
     
     if(Serial1.available())
     {
-       Serial.print((unsigned char)Serial1.read());
+       Serial.write((unsigned char)Serial1.read());
      }   
  
 }

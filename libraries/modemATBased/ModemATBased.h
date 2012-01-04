@@ -133,7 +133,7 @@ const byte modem_read_status							=  21;
 /*
  *  Please, note: change this values, afect "ModemATBased::clearFlags ()"
  */
-const byte modem_read_ignore_spaces_on             		=  24;
+const byte modem_read_capturing_number_ignore_spaces    =  24;
 const byte modem_read_capturing_anything_data			=  25;
 const byte modem_read_clear_data                		=  26;
 const byte modem_read_capturing_number_started  		=  27;
