@@ -752,37 +752,94 @@ void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, 
                 case 'i':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Id, Event::IdCaptured );
                             break;
                           
+                case 'I':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Id, Event::None );
+                            break;
+                          
+                
+                
                 case 'd':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Day, Event::DayCaptured );
                             break;
                          
-                case 'M':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Month, Event::MonthCaptured );
+                case 'D':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Day, Event::None );
                             break;
                          
+                
+                
+                case 'm':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Month, Event::MonthCaptured );
+                            break;
+                         
+                case 'M':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Month, Event::None );
+                            break;
+                         
+                
+                
                 case 'y':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Year, Event::YearCaptured );
                             break;
                          
+                case 'Y':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Year, Event::None );
+                            break;
+                         
+                
+                
                 case 'h':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Hour, Event::HourCaptured );
                             break;
                          
-                case 'm':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Minute, Event::MinuteCaptured );
+                case 'H':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Hour, Event::None );
                             break;
                          
+                
+                
+                case 'n':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Minute, Event::MinuteCaptured );
+                            break;
+                         
+                case 'N':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Minute, Event::None );
+                            break;
+                         
+                
+                
                 case 's':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Second, Event::SecondCaptured );
                             break;
                          
+                case 'S':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Second, Event::None );
+                            break;
+                         
+                
+                
                 case 't':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Telefon, Event::TelefonCaptured );
                             break;
                          
+                case 'T':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Telefon, Event::None );
+                            break;
+                         
+                
+                
                 case 'g':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Message, Event::MessageCaptured );
                             break;
                 
-                case 'S':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Status, Event::StatusCaptured );
+                case 'G':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Message, Event::None );
+                            break;
+                
+                
+                
+                case 'u':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Status, Event::StatusCaptured );
                             break;
                             
+                case 'U':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Status, Event::None );
+                            break;
+                            
+                
+                
                 case 'z':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::TimeZone, Event::TimeZoneCaptured );
                             break;
                             
-                case 'D':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Data, Event::None );
+                case 'Z':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::TimeZone, Event::None );
+                            break;
+                            
+                            
+                case 'a':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Data, Event::DataByDataUserCaptured );
+                            break;
+                
+                case 'A':   ModemATBased::testSpecialCharacter ( vapucSerialData, &ModemATBased::Data, Event::None );
                             break;
             }
         }

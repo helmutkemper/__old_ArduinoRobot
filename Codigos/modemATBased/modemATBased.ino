@@ -14,10 +14,6 @@ void setup ()
   
   ModemATBased::StateMachineEvent = &Evento;
   ModemATBased::setSerial ( SerialPort::Port1, 19200 );
-  
-  ModemATBased::Telefon =  "97344690";
-//  ModemATBased::Message =  "!data:Hello World! In Brasil, this message can be 128 characters per message";
-  ModemATBased::Message =  "!telefon: 08199268744\r\n\r\n!data:Esta vivo!";
 }
 
 void Evento ( eEvent e, eEvent d )
@@ -28,7 +24,7 @@ void Evento ( eEvent e, eEvent d )
                                                  Serial.println ( ModemATBased::Data );
                                                  break;
     
-    case Event::TelefonByDataUserCaptured:       Serial.print ( "\r\nEvento: User Telefon -" );
+    case Event::TelefonByDataUserCaptured:       Serial.print ( "\r\nEvento: User Telefon - " );
                                                  Serial.println ( ModemATBased::Telefon );
                                                  break;
     
@@ -160,6 +156,9 @@ void loop ()
     
     if ( ( data == 's' ) || ( data == 'S' ) )
     {
+      ModemATBased::Telefon =  "97344690";
+      //  ModemATBased::Message =  "!data:Hello World! In Brasil, this message can be 128 characters per message";
+      ModemATBased::Message =  "!telefon: 08199268744\r!data:Esta vivo!\r!id:666";
       ModemATBased::sendTextSms ();
     }
     

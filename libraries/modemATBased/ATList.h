@@ -37,18 +37,18 @@ RESPOSTA:
 //                            '@' is used to capture number to memory ignoring all spaces( equivales to exp reg '((?![\s\t])[\-\+0-9]+)' )
 //                            '%' is used to capture quoted String
 //                            '$' is used to capture any data, except new line ( equivales to exp reg '^.*?[\r\n]' )
-//                            'i' is used to indicate Id address
-//                            'd' is used to indicate Day address
-//                            'M' is used to indicate Month address
-//                            'y' is used to indicate Year address
-//                            'h' is used to indicate Hour address
-//                            'm' is used to indicate Minute address
-//                            's' is used to indicate Second address
-//                            't' is used to indicate Telefon address
-//                            'g' is used to indicate Message address
-//                            'S' is used to indicate Status address
-//                            'z' is used to indicate Time Zone address
-//                            'D' is used to indicate Data address
+//                            'i' - id
+//                            'd' - day
+//                            'm' - month
+//                            'y' - year
+//                            'h' - hour
+//                            'n' - Minute
+//                            's' - Second
+//                            't' - Telefon
+//                            'g' - Message
+//                            'u' - Status
+//                            'z' - Time Zone
+//                            'a' - Data by User
 // Example: "+CMTI: \"SM\",&i", where, '&i' is 'capture number and put in Id address'
 
 #ifndef ModemATList_h
@@ -135,10 +135,10 @@ const String modem_response_connection_failed        =  "CONNECTION FAILED\r";
 const String modem_response_call_ready               =  "Call Ready\r";
 const String modem_response_power_down               =  "NORMAL POWER DOWN\r";
 
-const String modem_user_response_data				 =  "!data:$D";
-const String modem_user_response_telefon			 =  "!telefon:@t";
-const String modem_user_response_id					 =  "!id:@i";
-const String modem_user_response_message			 =  "!message:$M";
-const String modem_user_response_status				 =  "!status:$S";
+const String modem_user_response_data				 =  "!data:$D\r";
+const String modem_user_response_telefon			 =  "!telefon:@t\r";
+const String modem_user_response_id					 =  "!id:&i\r";
+const String modem_user_response_message			 =  "!message:$M\r";
+const String modem_user_response_status				 =  "!status:$S\r";
 
 #endif
