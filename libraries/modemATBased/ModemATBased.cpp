@@ -416,12 +416,50 @@ void ModemATBased::internetDataSendByGET ()
         ModemATBased::vcacucATString[ 3 ]	 =  &modem_at_command_general_end_line;
         ModemATBased::vcacucATResponse[ 3 ]	 =  0;
         
-        ModemATBased::vceEvent               =  Event::SMSSend;
+        ModemATBased::vceEvent               =  Event::SMSRead;
         ModemATBased::vceEventDispatchedBy   =  Event::readTextSmsFunction;
         
         ModemATBased::vcucSMStepCompare      =  0;
         ModemATBased::vcucSMStep			 =  0;
         ModemATBased::vcucSMTotalStep		 =  3;
+        ModemATBased::vcascPointerDataModem	 = -1;
+        ModemATBased::clearFlags ();
+        ModemATBased::StateMachineRun ();
+    }
+    
+    void ModemATBased::deleteSmsById ()
+    {
+        ModemATBased::vcacucATString[ 0 ]	 =  &modem_sms_delete_by_id;
+        ModemATBased::vcacucATResponse[ 0 ]	 =  0;
+        
+        ModemATBased::vcacucATString[ 1 ]	 =  &modem_variable_id;
+        ModemATBased::vcacucATResponse[ 1 ]	 =  &modem_modem_ok;
+        
+        ModemATBased::vceEvent               =  Event::SMSDeleted;
+        ModemATBased::vceEventDispatchedBy   =  Event::deleteTextSmsByIdFunction;
+        
+        ModemATBased::vcucSMStepCompare      =  0;
+        ModemATBased::vcucSMStep			 =  0;
+        ModemATBased::vcucSMTotalStep		 =  1;
+        ModemATBased::vcascPointerDataModem	 = -1;
+        ModemATBased::clearFlags ();
+        ModemATBased::StateMachineRun ();
+    }
+    
+    void ModemATBased::deleteSmsByStatus ()
+    {
+        ModemATBased::vcacucATString[ 0 ]	 =  &modem_sms_delete_by_status;
+        ModemATBased::vcacucATResponse[ 0 ]	 =  0;
+        
+        ModemATBased::vcacucATString[ 1 ]	 =  &modem_variable_status;
+        ModemATBased::vcacucATResponse[ 1 ]	 =  &modem_modem_ok;
+        
+        ModemATBased::vceEvent               =  Event::SMSDeleted;
+        ModemATBased::vceEventDispatchedBy   =  Event::deleteTextSmsByStatusFunction;
+        
+        ModemATBased::vcucSMStepCompare      =  0;
+        ModemATBased::vcucSMStep			 =  0;
+        ModemATBased::vcucSMTotalStep		 =  1;
         ModemATBased::vcascPointerDataModem	 = -1;
         ModemATBased::clearFlags ();
         ModemATBased::StateMachineRun ();

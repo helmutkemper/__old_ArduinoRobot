@@ -55,6 +55,7 @@ namespace Event
         SMSNew,
         SMSSend,
         SMSRead,
+        SMSDeleted,
         InternetConnect,
         InternetConnectToHost,
         InternetDataSendByGET,
@@ -94,7 +95,9 @@ namespace Event
         internetConnectToHostFunction,
         internetDataSendByGETFunction,
         sendTextSmsFunction,
-        readTextSmsFunction
+        readTextSmsFunction,
+        deleteTextSmsByIdFunction,
+        deleteTextSmsByStatusFunction
     };
 }
 using namespace Event;
@@ -200,6 +203,8 @@ class ModemATBased
             static String       TimeZone;
             static void			sendTextSms ();
             static void         readTextSms ();
+            static void         deleteSmsById ();
+            static void         deleteSmsByStatus ();
         
         #endif
         

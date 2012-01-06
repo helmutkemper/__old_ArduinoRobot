@@ -6,6 +6,8 @@ const String host         =  "kemper.com.br";
 const String hostPort     =  String ( 80, DEC );
 const String queryString  =  "/modem/modem.php?contador=";
 
+String IdSmsToDelete;
+
 unsigned int contadorLoop          =  0;
 
 void setup ()
@@ -22,6 +24,9 @@ void Evento ( eEvent e, eEvent d )
   {
     case Event::DataCaptured:                    Serial.print ( "\r\nEvento: Data - " );
                                                  Serial.println ( ModemATBased::Data );
+                                                 break;
+                                                 
+    case Event::SMSDeleted:                      Serial.print ( "\r\nEvento: SMS Deleted" );
                                                  break;
     
     case Event::TelefonByDataUserCaptured:       Serial.print ( "\r\nEvento: User Telefon - " );
@@ -42,6 +47,8 @@ void Evento ( eEvent e, eEvent d )
     
     case Event::DataByDataUserCaptured:          Serial.print ( "\r\nEvento: User Data - " );
                                                  Serial.println ( ModemATBased::Data );
+                                                 ModemATBased::Id = IdSmsToDelete;
+                                                 ModemATBased::deleteSmsById ();
                                                  break;
     
     case Event::TimeZoneCaptured:                Serial.print ( "\r\nEvento: Time Zone - " );
@@ -98,6 +105,7 @@ void Evento ( eEvent e, eEvent d )
                                                  break;
                                         
     case Event::SMSNew:                          Serial.println ( "\r\nEvento: Novo SMS\r" );
+                                                 IdSmsToDelete =  ModemATBased::Id;
                                                  ModemATBased::readTextSms ();
                                                  break;
                                         
@@ -158,7 +166,7 @@ void loop ()
     {
       ModemATBased::Telefon =  "97344690";
       //  ModemATBased::Message =  "!data:Hello World! In Brasil, this message can be 128 characters per message";
-      ModemATBased::Message =  "!telefon: 08199268744\r!data:Esta vivo!\r!id:666";
+      ModemATBased::Message =  "!telefon: 08199268744\r!data:Esta vivo!\r";
       ModemATBased::sendTextSms ();
     }
     

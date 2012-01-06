@@ -96,7 +96,6 @@ const String modem_at_command_general_end_line   =  "\r\n";
 
 
 //const String modem_sms_read_all					 =  "CMGL=\"ALL\"";
-//const String modem_sms_delete_by_id				 =  "CMGD=";
 //const String modem_sms_read_by_id				 =  "CMGR=";
 //const String modem_sms_new_message				 =  "CNMI:";
 //const String modem_modem_status					 =  "CPAS";//0 call ready - 2 unknow - 3 tocando - 4 em ligacao
@@ -120,12 +119,14 @@ const String modem_echo_off						 =  "ATE0\r";//OK
         const String modem_sms_send_confg_2of2           =  "\"\r";
         const String modem_sms_send_message              =  "g";
         const String modem_sms_read_message              =  "AT+CMGR=";
+        const String modem_sms_delete_by_id				 =  "AT+CMGD=";
+        const String modem_sms_delete_by_status			 =  "AT+CMGDA=";
         const String modem_response_sms_read             =  "+CMGR: %u,\"&T\",\"\",\"&Y/&M/&D,&H:&N:&S-&z\"\r";
         
     #endif
     
 const String modem_variable_id                       =  "i";
-    
+const String modem_variable_status                   =  "S";    
 const String modem_bye                               =  String(char(0x1A));
 const String modem_bye_ok                            =  "SEND OK\r\n";
 //const String modem_sms_send_ok                     =  "";
