@@ -528,7 +528,11 @@ void ModemATBased::getDataModem ()
     if ( ModemATBased::availableData () )
     {
         unsigned char vlucSerialData =  ModemATBased::getData ();
-        
+        /*
+        Serial.write ( "recebido: " );
+        Serial.write ( vlucSerialData );
+        Serial.write ( "\r\n" );
+        */
         // Expected Response
         ModemATBased::testCharacterAndRunStateMachine ( &vlucSerialData, ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ], &modem_read_expected_response );
         
@@ -592,6 +596,11 @@ void ModemATBased::getDataModem ()
         // USER STATUS CAPTURED
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_status, &modem_read_status, Event::StatusByDataUserCaptured );
         
+        if ( bitRead ( ModemATBased::vculFlags, teste_flag ) == 0 )
+        {
+            
+        }
+        
         if ( bitRead ( ModemATBased::vculFlags, modem_read_continue ) == 1 )
         {
             ModemATBased::vcucSMStepCompare ++;
@@ -629,9 +638,11 @@ void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, Strin
         {
             ModemATBased::vcucSMStepCompare += 2;
             
+            bitClear ( ModemATBased::vculFlags, teste_flag );
+            
             bitClear ( ModemATBased::vculFlags, modem_read_capturing_number_started );
             bitClear ( ModemATBased::vculFlags, modem_read_capturing_number_first_element );
-            bitSet ( ModemATBased::vculFlags, modem_read_continue );
+            bitSet   ( ModemATBased::vculFlags, modem_read_continue );
             
             if ( ModemATBased::StateMachineEvent != 0 )
             {
@@ -645,6 +656,8 @@ void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, Strin
     	if ( ( *vapucSerialData == '\r' ) || ( *vapucSerialData == '\n' ) )
     	{
     		ModemATBased::vcucSMStepCompare += 2;
+            
+            bitClear ( ModemATBased::vculFlags, teste_flag );
             
             bitClear ( ModemATBased::vculFlags, modem_read_capturing_anything_data );
             bitSet ( ModemATBased::vculFlags, modem_read_continue );
@@ -674,9 +687,10 @@ void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, Strin
             bitClear ( ModemATBased::vculFlags, modem_read_capturing_quoted );
             bitClear ( ModemATBased::vculFlags, modem_read_capturing_quoted_started );
             bitClear ( ModemATBased::vculFlags, modem_read_capturing_quoted_ended );
-
             
             ModemATBased::vcucSMStepCompare += 2;
+            
+            bitClear ( ModemATBased::vculFlags, teste_flag );
             
             if ( ModemATBased::StateMachineEvent != 0 )
             {

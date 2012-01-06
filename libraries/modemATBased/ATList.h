@@ -37,18 +37,29 @@ RESPOSTA:
 //                            '@' is used to capture number to memory ignoring all spaces( equivales to exp reg '((?![\s\t])[\-\+0-9]+)' )
 //                            '%' is used to capture quoted String
 //                            '$' is used to capture any data, except new line ( equivales to exp reg '^.*?[\r\n]' )
-//                            'i' - id
-//                            'd' - day
-//                            'm' - month
-//                            'y' - year
-//                            'h' - hour
-//                            'n' - Minute
-//                            's' - Second
-//                            't' - Telefon
-//                            'g' - Message
-//                            'u' - Status
-//                            'z' - Time Zone
-//                            'a' - Data by User
+//                            'i' id
+//                            'd' day
+//                            'D' day
+//                            'm' month
+//                            'M' month
+//                            'y' year
+//                            'Y' year
+//                            'h' hour
+//                            'H' hour
+//                            'n' Minute
+//                            'N' Minute
+//                            's' Second
+//                            'S' Second
+//                            't' Telefon
+//                            'T' Telefon
+//                            'g' Message
+//                            'G' Message
+//                            'u' Status
+//                            'U' Status
+//                            'z' Time Zone
+//                            'Z' Time Zone
+//                            'a' Data by User
+//                            'A' Data by User
 // Example: "+CMTI: \"SM\",&i", where, '&i' is 'capture number and put in Id address'
 
 #ifndef ModemATList_h
@@ -109,7 +120,7 @@ const String modem_echo_off						 =  "ATE0\r";//OK
         const String modem_sms_send_confg_2of2           =  "\"\r";
         const String modem_sms_send_message              =  "g";
         const String modem_sms_read_message              =  "AT+CMGR=";
-        const String modem_response_sms_read             =  "+CMGR: %S,\"&t\",\"\",\"&y/&M/&d,&h:&m:&s&z\"\r";
+        const String modem_response_sms_read             =  "+CMGR: %u,\"&T\",\"\",\"&Y/&M/&D,&H:&N:&S-&z\"\r";
         
     #endif
     
@@ -127,7 +138,7 @@ const String modem_response_busy                     =  "BUSY\r";
 const String modem_response_cme_error                =  "+CME ERROR\r";
 const String modem_response_error                    =  "ERROR\r";
 const String modem_response_ring                     =  "RING\r";
-const String modem_response_sms                      =  "+CMTI: \"SM\",&i\r";
+const String modem_response_sms                      =  "+CMTI: \"SM\",&I\r";
 const String modem_response_close                    =  "CLOSE\r";
 const String modem_response_closed                   =  "CLOSED\r";
 
@@ -135,10 +146,10 @@ const String modem_response_connection_failed        =  "CONNECTION FAILED\r";
 const String modem_response_call_ready               =  "Call Ready\r";
 const String modem_response_power_down               =  "NORMAL POWER DOWN\r";
 
-const String modem_user_response_data				 =  "!data:$D\r";
-const String modem_user_response_telefon			 =  "!telefon:@t\r";
-const String modem_user_response_id					 =  "!id:&i\r";
-const String modem_user_response_message			 =  "!message:$M\r";
-const String modem_user_response_status				 =  "!status:$S\r";
+const String modem_user_response_data				 =  "!data:$A\r";
+const String modem_user_response_telefon			 =  "!telefon:@T\r";
+const String modem_user_response_id					 =  "!id:&I\r";
+const String modem_user_response_message			 =  "!message:$G\r";
+const String modem_user_response_status				 =  "!status:$U\r";
 
 #endif

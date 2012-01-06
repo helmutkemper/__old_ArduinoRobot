@@ -130,6 +130,8 @@ const byte modem_read_id								=  19;
 const byte modem_read_message							=  20;
 const byte modem_read_status							=  21;
 
+const byte teste_flag                                   =  22;
+
 /*
  *  Please, note: change this values, afect "ModemATBased::clearFlags ()"
  */
@@ -146,7 +148,7 @@ const byte modem_read_capturing_quoted_ended    		=  31;
 class ModemATBased
 {
 	private:
-	
+        
         static void ( * vcpfOnFunction ) ( void );
     
 		static eSerialPort		vceSerial;
