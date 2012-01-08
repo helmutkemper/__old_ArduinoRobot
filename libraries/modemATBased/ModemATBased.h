@@ -83,12 +83,15 @@ namespace Event
         StatusCaptured,
         TimeZoneCaptured,
         DataCaptured,
+        SignalQuality,
         
         TelefonByDataUserCaptured,
         MessageByDataUserCaptured,
         StatusByDataUserCaptured,
         IdByDataUserCaptured,
         DataByDataUserCaptured,
+        SignalQualityDbmCaptured,
+        SignalQualityPercentCaptured,
         
         internetConnectFunction,
         internetDisconnectToHostFunction,
@@ -97,7 +100,8 @@ namespace Event
         sendTextSmsFunction,
         readTextSmsFunction,
         deleteTextSmsByIdFunction,
-        deleteTextSmsByStatusFunction
+        deleteTextSmsByStatusFunction,
+        getSignalQualityFuntion
     };
 }
 using namespace Event;
@@ -132,8 +136,8 @@ const byte modem_read_telefon							=  18;
 const byte modem_read_id								=  19;
 const byte modem_read_message							=  20;
 const byte modem_read_status							=  21;
-
-const byte teste_flag                                   =  22;
+const byte modem_read_signal_quality                    =  22;
+const byte modem_read_ring_telefon                      =  23;
 
 /*
  *  Please, note: change this values, afect "ModemATBased::clearFlags ()"
@@ -184,6 +188,8 @@ class ModemATBased
         static String           HostPort;
         static String           QueryString;
         static String           Data;
+        static String           SignalQualityDbm;
+        static String           SignalQualityPercent;
         
                                 ModemATBased ();
 		static void				setSerial ( eSerialPort vaeSerial, unsigned int vauiSpeed );
@@ -213,6 +219,8 @@ class ModemATBased
         static void             internetConnectToHost ();
         static void             internetConnect ();
 		static void				getDataModem ();
+        static void             getSignalQuality ();
+        static void             getCurrentCallNumber ();
 };
 
 #endif

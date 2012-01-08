@@ -60,6 +60,10 @@ RESPOSTA:
 //                            'Z' Time Zone
 //                            'a' Data by User
 //                            'A' Data by User
+//                            'b' Signal quality dBm 
+//                            'B' Signal quality dBm
+//                            'p' Signal quality Percent
+//                            'P' Signal quality Percent
 // Example: "+CMTI: \"SM\",&i", where, '&i' is 'capture number and put in Id address'
 
 #ifndef ModemATList_h
@@ -91,6 +95,12 @@ const String modem_heafer_connection_alive		 =  "Connection: Keep-Alive\r\n";
 const String modem_header_accept				 =  "Accept: */*\r\n";
 const String modem_header_connection_close		 =  "Connection: close\r\n\r\n";
 const String modem_header_connection_close_ok	 =  "SEND OK\r";
+
+const String modem_header_signal_quality         =  "AT+CSQ\r";
+const String modem_header_signal_quality_response=  "+CSQ: &b,&p";
+
+const String modem_header_carrier_number         =  "AT+CLCC\r";
+const String modem_header_carrier_number_response=  "+CLCC: &x,&x,&x,&x,&x,\"&t\",&x,\"\"";
 
 const String modem_at_command_general_end_line   =  "\r\n";
 

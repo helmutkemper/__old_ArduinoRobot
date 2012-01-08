@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:../../../ATList.h">
+   </FileRef>
+   <FileRef
       location = "self:ModemATBased.xcodeproj">
    </FileRef>
 </Workspace>

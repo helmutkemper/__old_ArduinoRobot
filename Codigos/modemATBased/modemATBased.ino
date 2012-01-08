@@ -22,6 +22,14 @@ void Evento ( eEvent e, eEvent d )
 {
   switch ( e )
   {
+    case Event::SignalQualityDbmCaptured:        Serial.print ( "\r\nEvento: Quality dBm - " );
+                                                 Serial.println ( ModemATBased::SignalQualityDbm );
+                                                 break;
+                                                 
+    case Event::SignalQualityPercentCaptured:    Serial.print ( "\r\nEvento: Quality % - " );
+                                                 Serial.println ( ModemATBased::SignalQualityPercent );
+                                                 break;
+                                                 
     case Event::DataCaptured:                    Serial.print ( "\r\nEvento: Data - " );
                                                  Serial.println ( ModemATBased::Data );
                                                  break;
@@ -109,7 +117,8 @@ void Evento ( eEvent e, eEvent d )
                                                  ModemATBased::readTextSms ();
                                                  break;
                                         
-    case Event::Ring:                            Serial.println ( "\r\nEvento: tocando\r" ); 
+    case Event::Ring:                            Serial.println ( "\r\nEvento: tocando\r" );
+                                                 ModemATBased::getCurrentCallNumber ();
                                                  break;
                                         
     case Event::NoCarrier:                       Serial.println ( "\r\nEvento: Parou de tocar\r" );
@@ -174,6 +183,13 @@ void loop ()
     {
       ModemATBased::internetConnect ();
     }
+    
+    else if ( ( data == 'q' ) || ( data == 'Q' ) )
+    {
+      ModemATBased::getSignalQuality ();
+    }
+    
+    
   }
   
   ModemATBased::getDataModem ();
