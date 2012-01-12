@@ -1,5 +1,7 @@
 #include <ModemATBased.h>
 
+const unsigned char pinoLed   =  13;
+
 const String host         =  "kemper.com.br";
 const String hostPort     =  String ( 80, DEC );
 const String queryString  =  "/modem/modem.php?contador=";
@@ -10,6 +12,8 @@ unsigned int contadorLoop          =  0;
 
 void setup ()
 {
+  pinMode ( pinoLed, OUTPUT );
+  
   Serial.begin ( 19200 );
   
   ModemATBased::StateMachineEvent = &Evento;
@@ -51,12 +55,24 @@ void Evento ( eEvent e, eEvent d )
                                                  Serial.println ( ModemATBased::Id );
                                                  break;
     
-    case Event::DataByDataUserCaptured:          Serial.print ( "\r\nEvento: User Data - " );
+    case Event::DataByDataUserCaptured:          if ( ModemATBased::Data.equalsIgnoreCase ( "ligar" ) )
+                                                 {
+                                                   digitalWrite ( pinoLed, HIGH );
+                                                 }
+                                                 
+                                                 else if ( ModemATBased::Data.equalsIgnoreCase ( "desligar" ) )
+                                                 {
+                                                   digitalWrite ( pinoLed, LOW );
+                                                 }
+                                                 break;
+                                                 /*
+                                                 Serial.print ( "\r\nEvento: User Data - " );
                                                  Serial.println ( ModemATBased::Data );
                                                  ModemATBased::Id = IdSmsToDelete;
                                                  ModemATBased::deleteSmsById ();
                                                  break;
-    
+                                                 */
+                                                 
     case Event::TimeZoneCaptured:                Serial.print ( "\r\nEvento: Time Zone - " );
                                                  Serial.println ( ModemATBased::TimeZone );
                                                  break;
@@ -138,6 +154,7 @@ void Evento ( eEvent e, eEvent d )
                                                  break;
       
     case Event::ConnectionFailed:                Serial.println ( "\r\nEvento: connection failed\r" ); 
+                                                 //pisca(); 
                                                  break;
     
     case Event::Error:                           Serial.println ( "\r\nEvento: error\r" );

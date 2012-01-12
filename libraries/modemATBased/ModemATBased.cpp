@@ -1,4 +1,19 @@
-//#include "ATList.h"
+//    Copyright (C) 2012  Helmut Kemper - <helmut.kemper@gmail.com>
+//                                        <http:://www.kemper.com.br>
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU Affero General Public License as
+//    published by the Free Software Foundation, either version 3 of the
+//    License, or (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU Affero General Public License for more details.
+//
+//    You should have received a copy of the GNU Affero General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"
@@ -10,7 +25,7 @@
 
 #include "ATList.h"
 
-ponteiroDeFuncao        ModemATBased::StateMachineEvent =  0;
+functionPointer         ModemATBased::StateMachineEvent =  0;
 eSerialPort				ModemATBased::vceSerial;
 eEvent                  ModemATBased::vceEvent;
 eEvent                  ModemATBased::vceEventDispatchedBy =  Event::None;
