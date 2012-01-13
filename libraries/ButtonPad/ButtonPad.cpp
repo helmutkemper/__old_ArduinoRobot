@@ -36,8 +36,6 @@ const unsigned char *   ButtonPad::vcpucLine4;
 const int           *   ButtonPad::ClickInterval;
 const int           *   ButtonPad::FirstClickInterval;
 
-const unsigned char *   ButtonPad::DataMatrix[16];
-
 functionPointer         ButtonPad::eventFunction     =  0;
 
 unsigned char           ButtonPad::vcucKeyId         =  0;

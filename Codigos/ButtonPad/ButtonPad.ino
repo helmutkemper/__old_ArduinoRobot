@@ -27,7 +27,7 @@ const unsigned char kLine2   =  41;
 const unsigned char kLine1   =  43;
 const unsigned char kLine0   =  45;
 
-const int ClickInterval      =  700;
+const int ClickInterval      =  300;
 const int FirstClickInterval =  3000;
 
 
@@ -62,5 +62,4 @@ void event ( eEventButtonPad vaeEvent, unsigned char vaucKeyId )
   
   Serial.print ( vaucKeyId, HEX );
   Serial.write ( "\r\n" );
-
 }
