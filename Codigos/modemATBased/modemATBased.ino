@@ -122,6 +122,7 @@ void Evento ( eEvent e, eEvent d )
     case Event::NoCarrier:                       Serial.println ( "\r\nEvento: Parou de tocar\r" );
                                                  break;
                                         
+    case Event::Error:                            
     case Event::Closed:
     case Event::InternetConnect:                 Serial.println ( "\r\nEvento: internet connected" );
                                                  ModemATBased::Host        =  "kemper.com.br";
@@ -140,7 +141,9 @@ void Evento ( eEvent e, eEvent d )
     case Event::ConnectionFailed:                Serial.println ( "\r\nEvento: connection failed\r" ); 
                                                  break;
     
-    case Event::Error:                           Serial.println ( "\r\nEvento: error\r" );
+                               
+                                                 ModemATBased::internetDisconnectToHost ();
+                                                 delay ( 5000 );
                                                  break;
                                         
     case Event::Close:                           Serial.println ( "\r\nEvento: close\r" );
@@ -172,6 +175,11 @@ void loop ()
     else if ( ( data == 'q' ) || ( data == 'Q' ) )
     {
       ModemATBased::getSignalQuality ();
+    }
+    
+    else if ( ( data == 'd' ) || ( data == 'D' ) )
+    {
+      ModemATBased::internetDisconnectToHost ();
     }
     
     
