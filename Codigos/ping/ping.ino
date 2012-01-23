@@ -24,9 +24,15 @@
  
 // this constant won't change.  It's the pin number
 // of the sensor's output:
-const int pingPin = 7;
+const int pingPin = 52;
+
+const unsigned char A = 51;
+const unsigned char B = 53;
  
 void setup() {
+  pinMode ( A, OUTPUT );
+  pinMode ( B, OUTPUT );
+  
   // initialize serial communication:
   Serial.begin(9600);
 }
@@ -56,13 +62,13 @@ void loop()
   inches = microsecondsToInches(duration);
   cm = microsecondsToCentimeters(duration);
  
-  Serial.print(inches);
-  Serial.print("in, ");
+//  Serial.print(inches);
+//  Serial.print("in, ");
   Serial.print(cm);
   Serial.print("cm");
   Serial.println();
  
-  delay(100);
+  delay(300);
 }
  
 long microsecondsToInches(long microseconds)
@@ -81,4 +87,29 @@ long microsecondsToCentimeters(long microseconds)
   // The ping travels out and back, so to find the distance of the
   // object we take half of the distance travelled.
   return microseconds / 29 / 2;
+}
+
+void serialEvent()
+{
+  if ( Serial.available () )
+  {
+    switch ( Serial.read () )
+    {
+      case 'A':
+      case 'a': digitalWrite ( A, HIGH );
+                digitalWrite ( B, LOW );
+                Serial.write ( "A ok\r\n" );
+                break;
+                
+      case 'B':
+      case 'b': digitalWrite ( A, LOW );
+                digitalWrite ( B, HIGH );
+                Serial.write ( "B ok\r\n" );
+                break;
+                
+       default: digitalWrite ( A, LOW );
+                digitalWrite ( B, LOW );
+                Serial.write ( "Parou\r\n" );
+    }
+  }
 }

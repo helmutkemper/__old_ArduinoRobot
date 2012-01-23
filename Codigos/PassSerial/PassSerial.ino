@@ -3,14 +3,15 @@
 //at 19200 bps 8-N-1
 //Computer is connected to Hardware UART
 //GPRS Shield is connected to the Software UART 
- 
+//AT+CNMI=0,3,2 
 //
 //AT+CMGF=1
-//AT+CMGS="99268744"
+//AT+CMGS="97344690"
 //SIM900 and Arduino say Hi!
 //
  
 byte dadoSerial;
+byte dadoSerialModem;
 
 void setup()
 {
@@ -25,7 +26,7 @@ void loop()
       dadoSerial =  ( unsigned char ) Serial.read ();
       
       if ( dadoSerial == '#' )
-        Serial1.print(26);
+        Serial1.write(byte(26));
         
       else
         Serial1.write( dadoSerial );
@@ -33,7 +34,12 @@ void loop()
     
     if(Serial1.available())
     {
-       Serial.write((unsigned char)Serial1.read());
+      dadoSerialModem =  Serial1.read();
+      
+      if ( dadoSerialModem == NULL )
+        Serial.write ( "NULL detectado\r\n" );
+      
+       Serial.write(dadoSerialModem);
      }   
  
 }
