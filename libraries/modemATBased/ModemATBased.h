@@ -25,6 +25,7 @@
 #define ModemATBased_h
 
 #define debug_ModemATBased
+
 //#define I_do_not_need_to_send_sms_in_my_program
 //#define I_do_not_need_to_internet_in_my_program
 
@@ -175,6 +176,8 @@ class ModemATBased
         
 //        static void ( * vcpfOnFunction ) ( void );
     
+        
+        
 		static eSerialPort		vceSerial;
         static eEvent           vceEvent;
         static eEvent           vceEventDispatchedBy;
@@ -192,11 +195,14 @@ class ModemATBased
 		static void				StateMachineRun ();
         static void             clearFlags ();
         
-        static void             testSpecialCharacter ( unsigned char * vapucSerialData, String * vapstVariable, eEvent vaenEvent );
-        static void             testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress );
-        static void             testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent );
+        
+//        static void             testSpecialCharacter ( unsigned char * vapucSerialData, String * vapstVariable, eEvent vaenEvent );
+//        static void             testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress );
+//        static void             testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent );
 		
 	public:
+        
+        static String           vcsSerialBuffer;
         
         static unsigned long    vculFlags;
         

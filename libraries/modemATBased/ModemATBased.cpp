@@ -44,6 +44,8 @@ String                  ModemATBased::QueryString;
 String                  ModemATBased::SignalQualityDbm;
 String                  ModemATBased::SignalQualityPercent;
 
+String                  ModemATBased::vcsSerialBuffer =  "";
+
 #ifndef I_do_not_need_to_send_sms_in_my_program
 
     String              ModemATBased::Id;
@@ -87,7 +89,6 @@ void ModemATBased::setSerial ( eSerialPort vaeSerial, unsigned int vauiSpeed )
 		#endif
 		#if defined(UBRR1H)
 		case SerialPort::Port1:	Serial1.begin ( vauiSpeed );
-								
 			break;
 		#endif
 		#if defined(UBRR2H)
@@ -302,7 +303,7 @@ void ModemATBased::internetDisconnectToHost ()
     
 	ModemATBased::vcucSMStepCompare      =   0;
     ModemATBased::vcucSMStep			 =   0;
-	ModemATBased::vcucSMTotalStep		 =   1;
+	ModemATBased::vcucSMTotalStep		 =   0;
 	ModemATBased::vcascPointerDataModem	 =  -1;
     ModemATBased::clearFlags ();
 	ModemATBased::StateMachineRun ();
@@ -433,7 +434,7 @@ void ModemATBased::internetDataSendByGET ()
         ModemATBased::vcacucATString[ 3 ]	 =  &modem_at_command_general_end_line;
         ModemATBased::vcacucATResponse[ 3 ]	 =  0;
         
-        ModemATBased::vceEvent               =  Event::SMSRead;
+        ModemATBased::vceEvent               =  Event::None;
         ModemATBased::vceEventDispatchedBy   =  Event::readTextSmsFunction;
         
         ModemATBased::vcucSMStepCompare      =  0;
@@ -487,7 +488,7 @@ void ModemATBased::internetDataSendByGET ()
 void ModemATBased::getCurrentCallNumber ()
 {
     ModemATBased::vcacucATString[ 0 ]	 =  &modem_header_carrier_number;
-    ModemATBased::vcacucATResponse[ 0 ]	 =  0;//modem_header_signal_quality_response;
+    ModemATBased::vcacucATResponse[ 0 ]	 =  0;
     
     ModemATBased::vceEvent               =  Event::None;
     ModemATBased::vceEventDispatchedBy   =  Event::None;
@@ -612,60 +613,196 @@ void ModemATBased::clearFlags ()
 
 void ModemATBased::getDataModem ()
 {
+    int vlsiIndexOfStart;
+    int vlsiIndexOfEnd;
+    
     if ( ModemATBased::availableData () )
     {
         unsigned char vlucSerialData =  ModemATBased::getData ();
         
-        // Expected Response
-        ModemATBased::testCharacterAndRunStateMachine ( &vlucSerialData, ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ], &modem_read_expected_response );
+        ModemATBased::vcsSerialBuffer.concat ( char ( ( unsigned char ) vlucSerialData ) );
         
-        // NO CARRYER
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_no_carrier, &modem_read_no_carrier, Event::NoCarrier );
-        
-        // NO DIALTONE
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_no_dialtone1, &modem_read_no_dialtone, Event::NoDialTone );
-         
-        // NO DIAL TONE
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_no_dialtone2, &modem_read_no_dial_tone, Event::NoDialTone );
-        
-        // NO ANSWER
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_no_answer, &modem_read_answer, Event::NoAnswer );
-         
-        // BUSY
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_busy, &modem_read_busy, Event::Busy );
-        
-        // +CME ERROR
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_cme_error, &modem_read_cme_error, Event::CmeError );
+        if ( ( ModemATBased::vcsSerialBuffer.indexOf ( *ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ] ) != -1 ) && ( ModemATBased::vcacucATResponse[ ModemATBased::vcucSMStep ] != 0 ) )
+        {Serial.write ( "\r\n\r\n\r\n00\r\n\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
             
-        // ERROR
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_error, &modem_read_error, Event::Error );
+            if ( ModemATBased::vcucSMStep == ModemATBased::vcucSMTotalStep )
+            {
+                if ( ModemATBased::StateMachineEvent != 0 )
+                {
+                    ModemATBased::StateMachineEvent ( ModemATBased::vceEvent, ModemATBased::vceEventDispatchedBy );
+                }
+            }
+            else
+            {
+                ModemATBased::vcucSMStepCompare =  0;
+                ModemATBased::vcucSMStep ++;
+                ModemATBased::StateMachineRun ();
+            }
+        }
         
-        // RING
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_ring, &modem_read_ring, Event::Ring );
+        if ( ModemATBased::vcsSerialBuffer.endsWith ( "RING\r\n" ) )
+        {Serial.write ( "\r\n\r\n\r\n01\r\n\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::Ring, ModemATBased::vceEventDispatchedBy );
+        }
+        
+/*        if ( ModemATBased::vcsSerialBuffer.endsWith ( "NO CARRIER\r\n" ) )
+        {Serial.write ( "02\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::NoCarrier, ModemATBased::vceEventDispatchedBy );
+        }
+        
+        if ( ( ModemATBased::vcsSerialBuffer.endsWith ( "NO DIALTONE\r\n" ) ) || ( ModemATBased::vcsSerialBuffer.endsWith ( "NO DIAL TONE\r\n" ) ) )
+        {Serial.write ( "03\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::NoDialTone, ModemATBased::vceEventDispatchedBy );
+        }
+        
+        if ( ModemATBased::vcsSerialBuffer.endsWith ( "NO ANSWER\r\n" ) )
+        {Serial.write ( "04\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::NoAnswer, ModemATBased::vceEventDispatchedBy );
+        }
+        
+        if ( ModemATBased::vcsSerialBuffer.endsWith ( "BUSY\r\n" ) )
+        {Serial.write ( "05\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::Busy, ModemATBased::vceEventDispatchedBy );
+        }*/
+        
+        /*if ( ModemATBased::vcsSerialBuffer.endsWith ( "+CME ERROR\r\n" ) )
+        {Serial.write ( "06\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::CmeError, ModemATBased::vceEventDispatchedBy );
+        }*/
+        
+        if ( ModemATBased::vcsSerialBuffer.endsWith ( "ERROR\r\n" ) )
+        {Serial.write ( "\r\n\r\n\r\n07\r\n\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::Error, ModemATBased::vceEventDispatchedBy );
+        }
+        
+        if ( ModemATBased::vcsSerialBuffer.indexOf ( "+CMTI: \"SM\"," ) != -1 )
+        {Serial.write ( "\r\n\r\n\r\n08\r\n\r\n\r\n" );
+            ModemATBased::Id              =  ModemATBased::vcsSerialBuffer.substring ( ModemATBased::vcsSerialBuffer.indexOf ( "+CMTI: \"SM\"," ) + 11, ModemATBased::vcsSerialBuffer.indexOf ( "\r\n" ) );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::SMSNew, ModemATBased::vceEventDispatchedBy );
+        }
+        
+        if ( ( ModemATBased::vcsSerialBuffer.indexOf ( "+CSQ: " ) != -1 ) && ( ModemATBased::vcsSerialBuffer.endsWith ( "\r\nOK\r\n" ) ) )
+        {Serial.write ( "\r\n\r\n\r\n09\r\n\r\n\r\n" );
+            ModemATBased::SignalQualityDbm =  ModemATBased::vcsSerialBuffer.substring ( ModemATBased::vcsSerialBuffer.indexOf ( "+CSQ: " ) + 5, ModemATBased::vcsSerialBuffer.indexOf ( "," ) );
+            ModemATBased::StateMachineEvent ( Event::SignalQuality, ModemATBased::vceEventDispatchedBy );
+            ModemATBased::vcsSerialBuffer =  "";
+        }
+        
+        if ( ( ModemATBased::vcsSerialBuffer.indexOf ( "+CLCC: " ) != -1 ) && ( ModemATBased::vcsSerialBuffer.endsWith ( "\r\nOK\r\n" ) ) )
+        {Serial.write ( "\r\n\r\n\r\n10\r\n\r\n\r\n" );
+            vlsiIndexOfStart                =  ModemATBased::vcsSerialBuffer.indexOf ( "\"" );
+            vlsiIndexOfEnd                  =  ModemATBased::vcsSerialBuffer.indexOf ( "\"", vlsiIndexOfStart + 1 );
             
-        // NEW SMS
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_sms, &modem_read_new_sms, Event::SMSNew );
+            ModemATBased::Telefon           =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart, vlsiIndexOfEnd );
+            ModemATBased::StateMachineEvent ( Event::TelefonCaptured, ModemATBased::vceEventDispatchedBy );
+            ModemATBased::vcsSerialBuffer   =  "";
+        }
         
+        else if ( ModemATBased::vcsSerialBuffer.endsWith ( "CLOSE\r\n" ) )
+        {Serial.write ( "\r\n\r\n\r\n11\r\n\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::Close, ModemATBased::vceEventDispatchedBy );
+        }
+        
+        if ( ModemATBased::vcsSerialBuffer.endsWith ( "CLOSED\r\n" ) )
+        {Serial.write ( "\r\n\r\n\r\n12\r\n\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::Closed, ModemATBased::vceEventDispatchedBy );
+        }
+        
+        if ( ModemATBased::vcsSerialBuffer.endsWith ( "CONNECTION FAILED\r\n" ) )
+        {Serial.write ( "\r\n\r\n\r\n13\r\n\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::ConnectionFailed, ModemATBased::vceEventDispatchedBy );
+        }
+        
+        /*if ( ModemATBased::vcsSerialBuffer.endsWith ( "CALL READY\r\n" ) )
+        {Serial.write ( "\r\n\r\n\r\n14\r\n\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::CallReady, ModemATBased::vceEventDispatchedBy );
+        }
+        
+        if ( ModemATBased::vcsSerialBuffer.endsWith ( "NORMAL POWER DOWN\r\n" ) )
+        {Serial.write ( "\r\n\r\n\r\n15\r\n\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+            ModemATBased::StateMachineEvent ( Event::PowerDown, ModemATBased::vceEventDispatchedBy );
+        }*/
+        
+        /*if ( ( ModemATBased::vcsSerialBuffer.indexOf ( "+CMGR: " ) != -1 ) && ( ModemATBased::vcsSerialBuffer.indexOf ( "OK" ) != -1 ) )
+        {Serial.write ( "\r\n\r\n\r\n16\r\n\r\n\r\n" );
+            vlsiIndexOfStart        =  ModemATBased::vcsSerialBuffer.indexOf ( "\"" );
+            vlsiIndexOfEnd          =  ModemATBased::vcsSerialBuffer.indexOf ( "\"", vlsiIndexOfStart + 1 );
+            
+            ModemATBased::Status    =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 1, vlsiIndexOfEnd );
+                                                                                
+            vlsiIndexOfStart        =  ModemATBased::vcsSerialBuffer.indexOf ( "\",\"" );
+            vlsiIndexOfEnd          =  ModemATBased::vcsSerialBuffer.indexOf ( "\",\"", vlsiIndexOfStart + 1 );
+            
+            ModemATBased::Telefon   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 3, vlsiIndexOfEnd );
+            
+            vlsiIndexOfStart        =  ModemATBased::vcsSerialBuffer.indexOf ( "/", vlsiIndexOfEnd + 1 );
+            
+            ModemATBased::Year      =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart -  2, vlsiIndexOfStart -  2 + 2 );
+            ModemATBased::Month     =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart +  1, vlsiIndexOfStart +  1 + 2 );
+            ModemATBased::Day       =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart +  4, vlsiIndexOfStart +  4 + 2 );
+            ModemATBased::Hour      =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart +  7, vlsiIndexOfStart +  7 + 2 );
+            ModemATBased::Minute    =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 10, vlsiIndexOfStart + 10 + 2 );
+            ModemATBased::Second    =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 13, vlsiIndexOfStart + 13 + 2 );
+            
+            vlsiIndexOfStart        =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 13 + 2 );
+            vlsiIndexOfEnd          =  ModemATBased::vcsSerialBuffer.length ();
+            
+            ModemATBased::Message   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd - 7 );
+            
+            ModemATBased::StateMachineEvent ( Event::SMSRead, ModemATBased::vceEventDispatchedBy );
+            ModemATBased::vcsSerialBuffer =  "";
+        }*/
+        
+        if ( ( ModemATBased::vcsSerialBuffer.indexOf ( "HTTP/" ) != -1 ) && ( ModemATBased::vcsSerialBuffer.endsWith ( "\r\n" ) ) )
+        {Serial.write ( "\r\n\r\n\r\n\r\n17\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+        }
+        
+        if ( ( ModemATBased::vcsSerialBuffer.indexOf ( "Server" ) != -1 ) && ( ModemATBased::vcsSerialBuffer.endsWith ( "\r\n" ) ) )
+        {Serial.write ( "\r\n\r\n\r\n\r\n18\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+        }
+        
+/*        if ( ( ModemATBased::vcsSerialBuffer.indexOf ( "Content-Length" ) != -1 ) && ( ModemATBased::vcsSerialBuffer.endsWith ( "\r\n" ) ) )
+        {Serial.write ( "\r\n\r\n\r\n\r\n22\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+        }*/
+        
+        if ( ( ModemATBased::vcsSerialBuffer.indexOf ( "Content-Type" ) != -1 ) && ( ModemATBased::vcsSerialBuffer.endsWith ( "\r\n" ) ) )
+        {Serial.write ( "\r\n\r\n\r\n\r\n19\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+        }
+        
+        if ( ( ModemATBased::vcsSerialBuffer.indexOf ( "Cache" ) != -1 ) && ( ModemATBased::vcsSerialBuffer.endsWith ( "\r\n" ) ) )
+        {Serial.write ( "\r\n\r\n\r\n\r\n20\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+        }
+        
+        if ( ( ModemATBased::vcsSerialBuffer.indexOf ( "Pragma" ) != -1 ) && ( ModemATBased::vcsSerialBuffer.endsWith ( "\r\n" ) ) )
+        {Serial.write ( "\r\n\r\n\r\n\r\n21\r\n\r\n" );
+            ModemATBased::vcsSerialBuffer =  "";
+        }
+        
+        return;
         // SMS READ
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_sms_read, &modem_read_sms_read, Event::SMSRead );
+//        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_sms_read, &modem_read_sms_read, Event::SMSRead );
             
-        // CLOSE
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_close, &modem_read_close, Event::Close );
-            
-        // CLOSED
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_closed, &modem_read_closed, Event::Closed );
-        
-        // CONNECTION FAILED
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_connection_failed, &modem_read_connection_failed, Event::ConnectionFailed );
-        
-        // CALL READY
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_call_ready, &modem_read_call_ready, Event::CallReady );
-        
-        // NORMAL POWER DOWN
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_response_power_down, &modem_read_normal_power_down, Event::PowerDown );
-        
         // USER DATA CAPTURED
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_data, &modem_read_data, Event::DataByDataUserCaptured );
+/*        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_data, &modem_read_data, Event::DataByDataUserCaptured );
         
         // USER TELEFON CAPTURED
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_user_response_telefon, &modem_read_telefon, Event::TelefonByDataUserCaptured );
@@ -679,13 +816,6 @@ void ModemATBased::getDataModem ()
         // USER STATUS CAPTURED
         ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_header_signal_quality_response, &modem_read_status, Event::StatusByDataUserCaptured );
         
-        // SIGNAL QUALITY
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_header_signal_quality, &modem_read_signal_quality, Event::SignalQuality );
-        
-        // RING TELEFON CAPTURED
-        ModemATBased::testCharacterAndMakeEvent ( &vlucSerialData, &modem_header_carrier_number_response, &modem_read_ring_telefon, Event::TelefonCaptured );
-        
-        
         if ( bitRead ( ModemATBased::vculFlags, modem_read_continue ) == 1 )
         {
             ModemATBased::vcucSMStepCompare ++;
@@ -695,11 +825,11 @@ void ModemATBased::getDataModem ()
         {
         	ModemATBased::clearFlags ();
             ModemATBased::vcucSMStepCompare =  0;
-        }
+        }*/
     }
 }
 
-void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, String * vapstVariable, eEvent vaenEvent )
+/*void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, String * vapstVariable, eEvent vaenEvent )
 {
     if ( bitRead ( ModemATBased::vculFlags, modem_read_capturing_number_started ) == 1 )
     {
@@ -795,9 +925,9 @@ void ModemATBased::testSpecialCharacter ( unsigned char * vapucSerialData, Strin
             }
         }
     }
-}
+}*/
 
-void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent )
+/*void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent )
 {
     if ( bitRead ( ModemATBased::vculFlags, *vapcstbtFlagAddress ) == 1 )
     {
@@ -995,9 +1125,9 @@ void ModemATBased::testCharacterAndMakeEvent ( unsigned char * vapucSerialData, 
             bitClear ( ModemATBased::vculFlags, *vapcstbtFlagAddress );
         }
     }
-}
+}*/
 
-void ModemATBased::testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress )
+/*void ModemATBased::testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress )
 {
     if ( bitRead ( ModemATBased::vculFlags, *vapcstbtFlagAddress ) == 1 )
     {
@@ -1029,4 +1159,4 @@ void ModemATBased::testCharacterAndRunStateMachine ( unsigned char * vapucSerial
             bitClear ( ModemATBased::vculFlags, *vapcstbtFlagAddress );
         }
     }
-}
+}*/

@@ -130,7 +130,7 @@ const String modem_at_command_general_end_line   =  "\r\n";
 //const String modem_modem_status					 =  "CPAS";//0 call ready - 2 unknow - 3 tocando - 4 em ligacao
 //const String modem_modem_ring					 =  "RING";
 //const String modem_modem_no_carrier				 =  "NO CARRIER";
-const String modem_modem_ok						 =  "OK\r";
+const String modem_modem_ok						 =  "\r\nOK\r\n";
 const String modem_modem_error					 =  "ERROR\r";
 
 const String modem_sms_text_redy_to_send		 =  "> ";
@@ -150,7 +150,7 @@ const String modem_echo_off						 =  "ATE0\r";//OK
         const String modem_sms_read_message              =  "AT+CMGR=";
         const String modem_sms_delete_by_id				 =  "AT+CMGD=";
         const String modem_sms_delete_by_status			 =  "AT+CMGDA=";
-        const String modem_response_sms_read             =  "+CMGR: %u,\"&T\",\"\",\"&Y/&M/&D,&H:&N:&S-&z\"\r";
+//        const String modem_response_sms_read             =  "+CMGR: %u,\"&T\",\"\",\"&Y/&M/&D,&H:&N:&S-&z\"\r";
         
     #endif
     
@@ -160,26 +160,26 @@ const String modem_bye                               =  String(char(0x1A));
 const String modem_bye_ok                            =  "SEND OK\r\n";
 //const String modem_sms_send_ok                     =  "";
 
-const String modem_response_no_carrier               =  "NO CARRIER\r";
-const String modem_response_no_dialtone1             =  "NO DIALTONE\r";
-const String modem_response_no_dialtone2             =  "NO DIAL TONE\r";
-const String modem_response_no_answer                =  "NO ANSWER\r";
-const String modem_response_busy                     =  "BUSY\r";
-const String modem_response_cme_error                =  "+CME ERROR\r";
-const String modem_response_error                    =  "ERROR\r";
-const String modem_response_ring                     =  "RING\r";
-const String modem_response_sms                      =  "+CMTI: \"SM\",&I\r";
-const String modem_response_close                    =  "CLOSE\r";
-const String modem_response_closed                   =  "CLOSED\r";
+//const String modem_response_no_carrier               =  "NO CARRIER\r";
+//const String modem_response_no_dialtone1             =  "NO DIALTONE\r";
+//const String modem_response_no_dialtone2             =  "NO DIAL TONE\r";
+//const String modem_response_no_answer                =  "NO ANSWER\r";
+//const String modem_response_busy                     =  "BUSY\r";
+//const String modem_response_cme_error                =  "+CME ERROR\r";
+//const String modem_response_error                    =  "ERROR\r";
+//const String modem_response_ring                     =  "RING\r";
+//const String modem_response_sms                      =  "+CMTI: \"SM\",&I\r";
+//const String modem_response_close                    =  "CLOSE\r";
+//const String modem_response_closed                   =  "CLOSED\r";
 
-const String modem_response_connection_failed        =  "CONNECTION FAILED\r";
-const String modem_response_call_ready               =  "Call Ready\r";
-const String modem_response_power_down               =  "NORMAL POWER DOWN\r";
+//const String modem_response_connection_failed        =  "CONNECTION FAILED\r";
+//const String modem_response_call_ready               =  "Call Ready\r";
+//const String modem_response_power_down               =  "NORMAL POWER DOWN\r";
 
-const String modem_user_response_data				 =  "!data:$A\r";
-const String modem_user_response_telefon			 =  "!telefon:@T\r";
-const String modem_user_response_id					 =  "!id:&I\r";
-const String modem_user_response_message			 =  "!message:$G\r";
-const String modem_user_response_status				 =  "!status:$U\r";
+//const String modem_user_response_data				 =  "!data:$A\r";
+//const String modem_user_response_telefon			 =  "!telefon:@T\r";
+//const String modem_user_response_id					 =  "!id:&I\r";
+//const String modem_user_response_message			 =  "!message:$G\r";
+//const String modem_user_response_status				 =  "!status:$U\r";
 
 #endif
