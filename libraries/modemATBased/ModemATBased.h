@@ -195,6 +195,9 @@ class ModemATBased
 		static void				StateMachineRun ();
         static void             clearFlags ();
         
+        static void             testEndEvent ( String vapstSearch, eEvent vapeEvent );
+        static void             testHeader ( String vapstSearch );
+        
         
 //        static void             testSpecialCharacter ( unsigned char * vapucSerialData, String * vapstVariable, eEvent vaenEvent );
 //        static void             testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress );

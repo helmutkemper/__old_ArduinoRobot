@@ -307,7 +307,9 @@ void loop ()
       ModemATBased::readTextSms ();
     }
   }
-  
-  ModemATBased::getDataModem ();
 }
 
+void serialEvent1 ()
+{
+  ModemATBased::getDataModem ();
+}
