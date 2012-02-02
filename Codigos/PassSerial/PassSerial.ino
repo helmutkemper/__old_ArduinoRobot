@@ -15,8 +15,10 @@ byte dadoSerialModem;
 
 void setup()
 {
-  Serial1.begin(19200);               // the GPRS baud rate   
-  Serial.begin(19200);                 // the GPRS baud rate   
+  pinMode ( 2, INPUT );
+  pinMode ( 3, INPUT );
+  Serial1.begin(9600);               // the GPRS baud rate   
+  Serial.begin(9600);                 // the GPRS baud rate   
 }
  
 void loop()

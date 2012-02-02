@@ -127,9 +127,8 @@ using namespace Event;
 extern "C"
 {
 	typedef void ( * functionPointer )( eEvent, eEvent );
+    typedef void ( * functionExternalPointer )();
 }
-
-
 
 const byte modem_read_expected_response         		=   0;
 const byte modem_read_no_carrier                		=   1;
@@ -170,6 +169,10 @@ const byte modem_read_capturing_quoted          		=  29;
 const byte modem_read_capturing_quoted_started  		=  30;
 const byte modem_read_capturing_quoted_ended    		=  31;
 
+const byte kSMRun       =  0x00;
+const byte kStandBy     =  0x01;
+const byte kInternet    =  0x02;
+
 class ModemATBased
 {
 	private:
@@ -177,76 +180,75 @@ class ModemATBased
 //        static void ( * vcpfOnFunction ) ( void );
     
         
+        static byte                     ModemStatus;
+		static eSerialPort              vceSerial;
+        static eEvent                   vceEvent;
+        static eEvent                   vceEventDispatchedBy;
+		static const String *           vcacucATString[ 11 ];
+		static const String *           vcacucATResponse[ 11 ];
         
-		static eSerialPort		vceSerial;
-        static eEvent           vceEvent;
-        static eEvent           vceEventDispatchedBy;
-		static const String *	vcacucATString[ 11 ];
-		static const String *	vcacucATResponse[ 11 ];
-        
-		static unsigned char	vcucSMStep;
-        static unsigned char    vcucSMStepCompare;
-        static unsigned char    vcucSMTotalStep;
-        static          char    vcascPointerDataModem;
+		static unsigned char            vcucSMStep;
+        static unsigned char            vcucSMStepCompare;
+        static unsigned char            vcucSMTotalStep;
+        static          char            vcascPointerDataModem;
     
-		static void				sendData ( String vapucData );
-		static int				availableData ( );
-		static unsigned char	getData ( );
-		static void				StateMachineRun ();
-        static void             clearFlags ();
-        
-        static void             testEndEvent ( String vapstSearch, eEvent vapeEvent );
-        static void             testHeader ( String vapstSearch );
+		static void                     sendData ( String vapucData );
+		static int                      availableData ( );
+		static unsigned char            getData ( );
+		static void                     StateMachineRun ();
+        static void                     clearFlags ();
         
         
-//        static void             testSpecialCharacter ( unsigned char * vapucSerialData, String * vapstVariable, eEvent vaenEvent );
-//        static void             testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress );
-//        static void             testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent );
+//        static void                   testSpecialCharacter ( unsigned char * vapucSerialData, String * vapstVariable, eEvent vaenEvent );
+//        static void                   testCharacterAndRunStateMachine ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress );
+//        static void                   testCharacterAndMakeEvent ( unsigned char * vapucSerialData, const String * vapcstsATCommand, const byte * vapcstbtFlagAddress, eEvent vaenEvent );
 		
 	public:
         
-        static String           vcsSerialBuffer;
+        static String                   vcsSerialBuffer;
         
-        static unsigned long    vculFlags;
+        static unsigned long            vculFlags;
         
-        static functionPointer  StateMachineEvent;
-        static String           Host;
-        static String           HostPort;
-        static String           QueryString;
-        static String           Data;
-        static String           SignalQualityDbm;
-        static String           SignalQualityPercent;
+        static functionExternalPointer  DataEvent;
+        static functionPointer          StateMachineEvent;
+        static String                   Host;
+        static String                   HostPage;
+        static String                   HostPort;
+        static String                   QueryString;
+        static String                   Data;
+        static String                   SignalQualityDbm;
+        static String                   SignalQualityPercent;
         
-                                ModemATBased ();
-		static void				setSerial ( eSerialPort vaeSerial, unsigned int vauiSpeed );
+                                        ModemATBased ();
+		static void                     setSerial ( eSerialPort vaeSerial, unsigned int vauiSpeed );
         
         #ifndef I_do_not_need_to_send_sms_in_my_program
         
-            static String       Id;
-            static String       Day;
-            static String       Month;
-            static String       Year;
-            static String       Hour;
-            static String       Minute;
-            static String       Second;
-            static String       Telefon;
-            static String       Message;
-            static String       Status;
-            static String       TimeZone;
-            static void			sendTextSms ();
-            static void         readTextSms ();
-            static void         deleteSmsById ();
-            static void         deleteSmsByStatus ();
+            static String               Id;
+            static String               Day;
+            static String               Month;
+            static String               Year;
+            static String               Hour;
+            static String               Minute;
+            static String               Second;
+            static String               Telefon;
+            static String               Message;
+            static String               Status;
+            static String               TimeZone;
+            static void                 sendTextSms ();
+            static void                 readTextSms ();
+            static void                 deleteSmsById ();
+            static void                 deleteSmsByStatus ();
         
         #endif
         
-        static void             internetDataSendByGET ();
-        static void             internetDisconnectToHost ();
-        static void             internetConnectToHost ();
-        static void             internetConnect ();
-		static void				getDataModem ();
-        static void             getSignalQuality ();
-        static void             getCurrentCallNumber ();
+        static void                     internetDataSendByGET ();
+        static void                     internetDisconnectToHost ();
+        static void                     internetConnectToHost ();
+        static void                     internetConnect ();
+		static void                     getDataModem ();
+        static void                     getSignalQuality ();
+        static void                     getCurrentCallNumber ();
 };
 
 #endif

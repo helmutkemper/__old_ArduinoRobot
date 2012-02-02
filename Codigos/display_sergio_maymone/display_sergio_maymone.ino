@@ -1,4 +1,6 @@
   /*
+CONNECT FAIL
+
 Protocolo:
 
 	EEPROM:
@@ -17,13 +19,56 @@ Protocolo:
 
 const String host         =  "kemper.com.br";
 const String hostPort     =  String ( 80, DEC );
-const String queryString  =  "/modem/modem.php?contador=";
+      String queryString  =  "/modem/modem.php?id=";
+
+
 
 String IdSmsToDelete;
 
 unsigned int contadorLoop          =  0;
 
+const unsigned int kuiEepromAddressRecordedData   =  0x0000;
+const unsigned int kuiEepromAddressId             =  0x000F;
+const unsigned int kuiEepromAddressTelefon        =  0x002F;
+const unsigned int kuiEepromAddressUrl            =  0x0043;
+const unsigned int kuiEepromAddressPage           =  0x00C3;
+const unsigned int kuiEepromAddressMessage        =  0x0143;
+
+const unsigned char kucEepromGravada[]   =  "DATA_GRAV_OK";
+const unsigned char kucEepromVersion[]   =  "V1.0";
+
 unsigned long vgulMillis  =  millis ();
+
+void onDataEvent ()
+{
+  int vlsiIndexOfStart, vlsiIndexOfEnd;
+  
+  ModemATBased::Data   =  "";
+  
+  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "i:" );
+  vlsiIndexOfEnd       =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
+  ModemATBased::Data   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
+                          writeEepromData ( &kuiEepromAddressId, &ModemATBased::Data );
+  
+  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "h:" );
+  vlsiIndexOfEnd       =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
+  ModemATBased::Data   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
+                          writeEepromData ( &kuiEepromAddressUrl, &ModemATBased::Data );
+                          
+  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "p:" );
+  vlsiIndexOfEnd       =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
+  ModemATBased::Data   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
+                          writeEepromData ( &kuiEepromAddressPage, &ModemATBased::Data );
+                          
+  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "t:" );
+  vlsiIndexOfEnd       =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
+  ModemATBased::Data   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
+                          writeEepromData ( &kuiEepromAddressTelefon, &ModemATBased::Data );
+                          
+  ModemATBased::vcsSerialBuffer =  "";
+}
+
+
 
 void resetMillis ()
 {
@@ -47,21 +92,111 @@ boolean testMillis ( unsigned long vaulMillis )
 
 void setup ()
 {
-  Serial.begin ( 19200 );
+  Serial.begin ( 9600 );
   
   ModemATBased::StateMachineEvent = &Evento;
-  ModemATBased::setSerial ( SerialPort::Port1, 19200 );
+  ModemATBased::setSerial ( SerialPort::Port1, 9600 );
+  
+  ModemATBased::DataEvent = &onDataEvent;
 }
 
-void testEeprom ( unsigned char vaucAddress, unsigned char * vapucDataToTest )
+void makeEepromRecordedData ()
 {
+  const unsigned char * vlucpAddressData =  &kucEepromGravada[0];
+        unsigned int    vlucpAddress     =  kuiEepromAddressRecordedData;
+        
+  do
+  {
+    
+    EEPROM.write ( vlucpAddress, * vlucpAddressData );
+    
+    vlucpAddressData ++;
+    vlucpAddress ++;
+    
+  } while ( * vlucpAddressData != 0x00 );
   
+  EEPROM.write ( vlucpAddress, 0x00 );
+}
+
+boolean testEepromRecordedData ()
+{
+  unsigned int vluiAddress =  kuiEepromAddressRecordedData;
+  
+  while ( true )
+  {
+    if ( kucEepromGravada[ vluiAddress ] == 0x00 )
+    {
+      return true;
+    }
+    
+    else
+    {
+      if ( EEPROM.read ( vluiAddress ) == kucEepromGravada[ vluiAddress ] )
+      {
+        vluiAddress ++;
+      }
+      
+      else
+      {
+        return false;
+      }
+    }
+  }
+}
+
+void writeEepromData ( const unsigned int * vauipAddress, String * vastpDara )
+{
+  unsigned int  vluiEepromAddress =  * vauipAddress;
+  byte          vlbtStringAddress =    0;
+  
+  while ( true )
+  {
+    if ( (* vastpDara ).charAt ( vlbtStringAddress ) == 0x00 )
+    {
+      return;
+    }
+    
+    else
+    {
+      EEPROM.write ( vluiEepromAddress, (* vastpDara ).charAt ( vlbtStringAddress ) );
+    }
+    
+    vluiEepromAddress ++;
+    vlbtStringAddress ++;
+  }
 }
 
 void Evento ( eEvent e, eEvent d )
 {
   switch ( e )
   {
+    case Event::CallReady:                       ModemATBased::getSignalQuality ();
+                                                 break;
+                                                 
+    case Event::SignalQuality:                   Serial.print ( "Qualidade:" );
+                                                 Serial.println ( ModemATBased::SignalQualityDbm );
+                                                 Serial.print ( "\r\n\r\n" );
+                                                 if ( ModemATBased::SignalQualityDbm.equals ( "0" ) )
+                                                 {
+                                                   ModemATBased::getSignalQuality ();
+                                                 }
+                                                 
+                                                 else
+                                                 {
+                                                   if ( testEepromRecordedData () == true )
+                                                   {
+                                                     
+                                                   }
+                                                   
+                                                   else
+                                                   {
+                                                     queryString.concat ( "-1&q=" );
+                                                     queryString.concat ( ModemATBased::SignalQualityDbm );
+                                                   }
+                                                   
+                                                   ModemATBased::internetConnect ();
+                                                 }
+    /*
     case Event::SignalQuality:                   Serial.print ( "\r\nEvento: Quality dBm - " );
                                                  Serial.println ( ModemATBased::SignalQualityDbm );
                                                  //ModemATBased::internetConnect ();
@@ -218,7 +353,8 @@ void Evento ( eEvent e, eEvent d )
                                                  }
                                                  break;
                                                   
-    case Event::Closed:                          Serial.println ( "\r\nEvento: Closed" );
+    case Event::Closed:                          
+    case Event::Close:                           ModemATBased::internetDisconnectToHost ();
                                                  break;
                                                  
     case Event::InternetConnect:                 Serial.println ( "\r\nEvento: InternetConnect" );
@@ -246,9 +382,6 @@ void Evento ( eEvent e, eEvent d )
                                                  //delay ( 5000 );
                                                  break;
                                         
-    case Event::Close:                           Serial.println ( "\r\nEvento: close\r" );
-                                                 break;
-                                                 
     case Event::InternetDisconnectToHost:        if ( d == Event::internetDisconnectToHostFunction )
                                                  {
                                                    Serial.println ( "\r\nEvento: disconnect to host\r" );
@@ -256,7 +389,7 @@ void Evento ( eEvent e, eEvent d )
                                                    ModemATBased::readTextSms ();
                                                    break;
                                                  }
-                                                 
+    */
   }
 }
 
@@ -307,9 +440,8 @@ void loop ()
       ModemATBased::readTextSms ();
     }
   }
-}
-
-void serialEvent1 ()
-{
+  
   ModemATBased::getDataModem ();
 }
+
+
