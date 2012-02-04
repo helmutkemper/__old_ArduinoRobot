@@ -181,6 +181,7 @@ class ModemATBased
     
         
         static byte                     ModemStatus;
+        static byte                     ModemUserStatus;
 		static eSerialPort              vceSerial;
         static eEvent                   vceEvent;
         static eEvent                   vceEventDispatchedBy;
@@ -235,20 +236,22 @@ class ModemATBased
             static String               Message;
             static String               Status;
             static String               TimeZone;
-            static void                 sendTextSms ();
-            static void                 readTextSms ();
-            static void                 deleteSmsById ();
-            static void                 deleteSmsByStatus ();
+            static void                 sendTextSms ( byte vabtStatus = 0x00 );
+            static void                 readTextSms ( byte vabtStatus = 0x00 );
+            static void                 deleteSmsById ( byte vabtStatus = 0x00 );
+            static void                 deleteSmsByStatus ( byte vabtStatus = 0x00 );
         
         #endif
         
-        static void                     internetDataSendByGET ();
-        static void                     internetDisconnectToHost ();
-        static void                     internetConnectToHost ();
-        static void                     internetConnect ();
+        static void                     internetDataSendByGET ( byte vabtStatus = 0x00 );
+        static void                     internetDisconnectToHost ( byte vabtStatus = 0x00 );
+        static void                     internetConnectToHost ( byte vabtStatus = 0x00 );
+        static void                     internetConnect ( byte vabtStatus = 0x00 );
 		static void                     getDataModem ();
-        static void                     getSignalQuality ();
-        static void                     getCurrentCallNumber ();
+        static void                     getSignalQuality ( byte vabtStatus = 0x00 );
+        static void                     getCurrentCallNumber ( byte vabtStatus = 0x00 );
+        static void                     setUserStatus ( byte vabtStatus );
+        static byte                     getUserStatus ();
 };
 
 #endif

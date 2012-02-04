@@ -23,6 +23,7 @@ const byte kConnectingHost     =  0x02;
 const byte kConnectingPage     =  0x03;
 const byte kError              =  0x04;
 const byte kClosed             =  0x05;
+const byte kCallReady          =  0x06;
 
 const String host          =  "kemper.com.br";
 const String hostPort      =  String ( 80, DEC );
@@ -30,7 +31,7 @@ const String hostPort      =  String ( 80, DEC );
 byte vgbStatusCode         =  kReady;
 
 
-String IdSmsToDelete;
+
 
 const unsigned int kuiEepromAddressRecordedData   =  0x0000;
 const unsigned int kuiEepromAddressId             =  0x000F;
@@ -42,49 +43,146 @@ const unsigned int kuiEepromAddressMessage        =  0x0143;
 const unsigned char kucEepromGravada[]   =  "DATA_GRAV_OK";
 const unsigned char kucEepromVersion[]   =  "V1.0";
 
+String IdSmsToDelete;
+String IdLastMessage                              =  "0";
+String PowerLed                                   =  "1";
 unsigned long vgulMillis  =  millis ();
 
 void onDataEvent ()
 {
-  int vlsiIndexOfStart, vlsiIndexOfEnd;
+  int vlsiIndexOfStart, vlsiIndexOfEnd ;
+  String       vlstIdActualMesageReceived;
+  unsigned int vluiIdLastMesageReceived;
+  unsigned int vluiIdActualMesageReceived;
   
   ModemATBased::Data   =  "";
   
-  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "i:" );
-  vlsiIndexOfEnd       =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
-  ModemATBased::Data   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
-//                          writeEepromData ( &kuiEepromAddressId, &ModemATBased::Data );
+  // s - id da mensagem atual
+  vlsiIndexOfStart           =  ModemATBased::vcsSerialBuffer.indexOf ( "s:" );
+  vlsiIndexOfEnd             =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
+  vlstIdActualMesageReceived =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
+  vluiIdActualMesageReceived =  StringToUInt ( vlstIdActualMesageReceived );
   
-  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "h:" );
-  vlsiIndexOfEnd       =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
-  ModemATBased::Data   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
-//                          writeEepromData ( &kuiEepromAddressUrl, &ModemATBased::Data );
-                          
-  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "p:" );
-  vlsiIndexOfEnd       =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
-  ModemATBased::Data   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
-//                          writeEepromData ( &kuiEepromAddressPage, &ModemATBased::Data );
-                          
-  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "t:" );
-  vlsiIndexOfEnd       =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
-  ModemATBased::Data   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
-//                          writeEepromData ( &kuiEepromAddressTelefon, &ModemATBased::Data );
+  // id da ultima mensagem valida recebida
+  vluiIdLastMesageReceived   =  StringToUInt ( IdLastMessage );
   
+  // esta mensagem ja foi processada
+  if ( vluiIdLastMesageReceived >= vluiIdActualMesageReceived )
+  {
+    ModemATBased::vcsSerialBuffer =  "";
+    return;
+  }
+  
+  ModemATBased::Id       =  "";
+  ModemATBased::Telefon  =  "";
+  
+  // arquiva o id da nova mensagem
+  IdLastMessage          =  vlstIdActualMesageReceived;
+  
+  // i - id do novo modem
+  vlsiIndexOfStart       =  ModemATBased::vcsSerialBuffer.indexOf ( "i:" );
+  vlsiIndexOfEnd         =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
+  
+  if ( vlsiIndexOfStart != -1 )
+  {
+    ModemATBased::Id     =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
+  }
+    
+  // t - telefone do modem base na SMM
+  vlsiIndexOfStart       =  ModemATBased::vcsSerialBuffer.indexOf ( "t:" );
+  vlsiIndexOfEnd         =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
+  
+  if ( vlsiIndexOfStart != -1 )
+  {
+    ModemATBased::Telefon =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
+  }
+  
+  // Se houver um novo id e um novo telefone a eeprom e gravada
+  if ( ( ModemATBased::Id.length () > 0 ) && ( ModemATBased::Telefon.length () >= 7 ) )
+  {
+    writeEepromData ( &kuiEepromAddressId, &ModemATBased::Id );
+    writeEepromData ( &kuiEepromAddressTelefon, &ModemATBased::Telefon );
+    
+    makeEepromRecordedData ();
+    Serial.println ( "\r\nDados gravados na EEPROM" );
+  }
+  
+  // m - mensagem para o display
   vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "m:" );
   vlsiIndexOfEnd       =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
-  ModemATBased::Data   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
-//                          writeEepromData ( &kuiEepromAddressTelefon, &ModemATBased::Data );
-
-  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "s:" );
-  vlsiIndexOfEnd       =  ModemATBased::vcsSerialBuffer.indexOf ( "\r\n", vlsiIndexOfStart + 2 );
-  ModemATBased::Data   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
-//                          writeEepromData ( &kuiEepromAddressTelefon, &ModemATBased::Data );
-
-                          
-  ModemATBased::vcsSerialBuffer =  "";
+  
+  if ( vlsiIndexOfStart != -1 )
+  {
+    ModemATBased::Data   =  ModemATBased::vcsSerialBuffer.substring ( vlsiIndexOfStart + 2, vlsiIndexOfEnd );
+                            sendMessageToDisplay ( &ModemATBased::Data );
+  }
+  
+  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "shut-down\r\n" );
+  
+  if ( vlsiIndexOfStart != -1 )
+  {
+    PowerLed =  "0";
+    shutDownDisplay ( true );
+  }
+  
+  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "shut-up\r\n" );
+  
+  if ( vlsiIndexOfStart != -1 )
+  {
+    PowerLed =  "1";
+    shutDownDisplay ( false );
+  }
+  
+  vlsiIndexOfStart     =  ModemATBased::vcsSerialBuffer.indexOf ( "reset-message-id\r\n" );
+  
+  if ( vlsiIndexOfStart != -1 )
+  {
+    IdLastMessage      =  "0";
+    Serial.println ( "\r\nid da mesg zerado" );
+  }
 }
 
+void shutDownDisplay ( boolean vlbPowerToDisplay )
+{
+  if ( vlbPowerToDisplay == true )
+  {
+    Serial.println ( "\r\nDisplay desligado" );
+  }
+  
+  else
+  {
+    Serial.println ( "\r\nDisplay ligado" );
+  }
+}
 
+void sendMessageToDisplay ( String * vastpMessage )
+{
+  Serial.print ( "\r\nMensagem para o display: " );
+  Serial.println ( * vastpMessage );
+}
+
+unsigned int StringToUInt ( String vastIntString )
+{
+  unsigned int vluiNumber       =  0;
+  unsigned int vluiMultiplier   =  1;
+  byte         vlbtContador     =  0;
+  
+  while ( vastIntString.charAt ( vlbtContador ) != 0x00 )
+  {
+    vlbtContador ++;
+  }
+  
+  do
+  {
+    vluiNumber +=  ( int ( vastIntString.charAt ( -- vlbtContador ) ) - 0x30 ) * vluiMultiplier;
+    
+    vluiMultiplier *=  10;
+    
+  }
+  while ( vlbtContador != 0x00 );
+  
+  return vluiNumber;
+}
 
 void resetMillis ()
 {
@@ -172,12 +270,13 @@ void writeEepromData ( const unsigned int * vauipAddress, String * vastpDara )
   {
     if ( (* vastpDara ).charAt ( vlbtStringAddress ) == 0x00 )
     {
+      EEPROM.write ( vluiEepromAddress, 0x00 );
       return;
     }
     
     else
     {
-      EEPROM.write ( vluiEepromAddress, (* vastpDara ).charAt ( vlbtStringAddress ) );
+      EEPROM.write ( vluiEepromAddress, ( char )(* vastpDara ).charAt ( vlbtStringAddress ) );
     }
     
     vluiEepromAddress ++;
@@ -185,18 +284,35 @@ void writeEepromData ( const unsigned int * vauipAddress, String * vastpDara )
   }
 }
 
+void readEepromData ( const unsigned int * vauipAddress, String * vastpDara )
+{
+  unsigned int  vluiEepromAddress =  * vauipAddress;
+  byte          vlbtStringAddress =    0;
+  
+  while ( true )
+  {
+    if ( EEPROM.read ( vluiEepromAddress ) != 0x00 )
+    {
+      (* vastpDara ).concat ( ( char ) EEPROM.read ( vluiEepromAddress ++ ) );
+    }
+    
+    else
+    {
+      (* vastpDara ).concat ( ( char ) EEPROM.read ( vluiEepromAddress ++ ) );
+      return;
+    }
+  }
+}
+
 void Evento ( eEvent e, eEvent d )
-{Serial.print ( "Evento\r\n" );
+{
   switch ( e )
   {
     case Event::CallReady:                       resetMillis ();
                                                  ModemATBased::getSignalQuality ();
                                                  break;
                                                  
-    case Event::SignalQuality:                   Serial.print ( "Qualidade:" );
-                                                 Serial.println ( ModemATBased::SignalQualityDbm );
-                                                 Serial.print ( "\r\n\r\n" );
-                                                 resetMillis ();
+    case Event::SignalQuality:                   resetMillis ();
                                                  if ( ModemATBased::SignalQualityDbm.equals ( "0" ) )
                                                  {
                                                    ModemATBased::getSignalQuality ();
@@ -204,22 +320,27 @@ void Evento ( eEvent e, eEvent d )
                                                  
                                                  else
                                                  {
-                                                   ModemATBased::QueryString  =  "/modem/modem.php?id=";
+                                                   ModemATBased::QueryString  =  "/modem/modem.php?i=";
                                                    
                                                    if ( testEepromRecordedData () == true )
                                                    {
-                                                     
+                                                     ModemATBased::QueryString.concat ( "1" );
+                                                     ModemATBased::QueryString.concat ( "&q=" );
+                                                     ModemATBased::QueryString.concat ( ModemATBased::SignalQualityDbm );
+                                                     ModemATBased::QueryString.concat ( "&la=0&lo=0&s=" );
+                                                     ModemATBased::QueryString.concat ( IdLastMessage );
+                                                     ModemATBased::QueryString.concat ( "&p=" );
+                                                     ModemATBased::QueryString.concat ( PowerLed );
                                                    }
                                                    
                                                    else
                                                    {
                                                      ModemATBased::QueryString.concat ( "-1&q=" );
                                                      ModemATBased::QueryString.concat ( ModemATBased::SignalQualityDbm );
-                                                     ModemATBased::QueryString.concat ( "&la=0&lo=0&s=OK" );
+                                                     ModemATBased::QueryString.concat ( "&la=0&lo=0" );
                                                    }
                                                    
-                                                   vgbStatusCode =  kConnectingInternet;
-                                                   ModemATBased::internetConnect ();
+                                                   ModemATBased::internetConnect ( kConnectingInternet );
                                                  }
                                                  break;
                                                  
@@ -227,26 +348,22 @@ void Evento ( eEvent e, eEvent d )
                                                  ModemATBased::Host        =  "kemper.com.br";
                                                  ModemATBased::HostPort    =  "80";
                                                  resetMillis ();
-                                                 vgbStatusCode =  kConnectingHost;
-                                                 ModemATBased::internetConnectToHost ();
+                                                 ModemATBased::internetConnectToHost ( kConnectingHost );
                                                  break;
                                                  
     case Event::InternetConnectToHost:           Serial.println ( "\r\nEvento: connect to host" );
                                                  //ModemATBased::QueryString =  "/modem/modem.php?status=";
                                                  //ModemATBased::QueryString.concat ( String ( contadorLoop, DEC ) );
                                                  resetMillis ();
-                                                 vgbStatusCode =  kConnectingPage;
-                                                 ModemATBased::internetDataSendByGET ();
+                                                 ModemATBased::internetDataSendByGET ( kConnectingPage );
                                                  break;
     case Event::Error:
     case Event::ConnectionFailed:                resetMillis ();
-                                                 vgbStatusCode =  kError;
-                                                 ModemATBased::internetDisconnectToHost ();
+                                                 ModemATBased::internetDisconnectToHost ( kError );
                                                  break;
     case Event::Closed:                          
-    case Event::Close:                           vgbStatusCode =  kClosed;
                                                  resetMillis ();
-                                                 ModemATBased::internetDisconnectToHost ();
+                                                 ModemATBased::internetDisconnectToHost ( kClosed );
                                                  break;
     
                                
@@ -255,15 +372,13 @@ void Evento ( eEvent e, eEvent d )
                                                  break;
                                         
     case Event::InternetDisconnectToHost:        resetMillis ();
-                                                 switch ( vgbStatusCode )
+                                                 switch ( ModemATBased::getUserStatus () )
                                                  {
                                                    case kConnectingInternet: break;
-                                                   case kError:              resetMillis ();
+                                                   case kError:              
+                                                   case kClosed:             resetMillis ();
                                                                              ModemATBased::getSignalQuality ();
                                                                              break;
-                                                   case kClosed:
-                                                     ModemATBased::Id =  "1";
-                                                     ModemATBased::readTextSms ();
                                                    break;
                                                  }
     /*
@@ -467,7 +582,7 @@ void loop ()
 {
   unsigned char data;
   
-  if ( testMillis ( 30000 ) == true )
+  if ( testMillis ( 15000 ) == true )
   {
     Evento ( Event::Error, Event::None );
   }

@@ -26,7 +26,9 @@
 #include "ATList.h"
 #include <EEPROM.h>
 
-byte                    ModemATBased::ModemStatus =  kStandBy;
+byte                    ModemATBased::ModemStatus       =  kStandBy;
+byte                    ModemATBased::ModemUserStatus   =  0x00;
+
 
 functionExternalPointer ModemATBased::DataEvent         =  0;
 functionPointer         ModemATBased::StateMachineEvent =  0;
@@ -267,8 +269,28 @@ unsigned char ModemATBased::getData ( )
 	}
 }
 
-void ModemATBased::internetConnect ()
+void ModemATBased::setUserStatus ( byte vabtStatus )
 {
+    ModemATBased::ModemUserStatus =  vabtStatus;
+}
+
+byte ModemATBased::getUserStatus ()
+{
+    return ModemATBased::ModemUserStatus;
+}
+
+void ModemATBased::internetConnect ( byte vabtStatus )
+{
+    if ( ( vabtStatus != 0x00 ) && ( vabtStatus != 0xFF ) )
+    {
+        ModemATBased::ModemUserStatus =  vabtStatus;
+    }
+    
+    else if ( vabtStatus == 0xFF )
+    {
+        ModemATBased::ModemUserStatus =  0x00;
+    }
+    
     ModemATBased::vcacucATString[ 0 ]	 =  &modem_echo_off;
     ModemATBased::vcacucATResponse[ 0 ]	 =  &modem_modem_ok;
     
@@ -300,8 +322,18 @@ void ModemATBased::internetConnect ()
 	ModemATBased::StateMachineRun ();
 }
 
-void ModemATBased::internetDisconnectToHost ()
+void ModemATBased::internetDisconnectToHost ( byte vabtStatus )
 {
+    if ( ( vabtStatus != 0x00 ) && ( vabtStatus != 0xFF ) )
+    {
+        ModemATBased::ModemUserStatus =  vabtStatus;
+    }
+    
+    else if ( vabtStatus == 0xFF )
+    {
+        ModemATBased::ModemUserStatus =  0x00;
+    }
+    
     ModemATBased::vcacucATString[ 0 ]	 =  &modem_deactive_gprs_dpd;
     ModemATBased::vcacucATResponse[ 0 ]  =  &modem_deactive_gprs_dpd_ok;
     
@@ -319,8 +351,18 @@ void ModemATBased::internetDisconnectToHost ()
 
 }
 
-void ModemATBased::internetConnectToHost ()
+void ModemATBased::internetConnectToHost ( byte vabtStatus )
 {
+    if ( ( vabtStatus != 0x00 ) && ( vabtStatus != 0xFF ) )
+    {
+        ModemATBased::ModemUserStatus =  vabtStatus;
+    }
+    
+    else if ( vabtStatus == 0xFF )
+    {
+        ModemATBased::ModemUserStatus =  0x00;
+    }
+    
     ModemATBased::vcacucATString[ 0 ]	 =  &modem_connect_host_and_port_1of3;
     ModemATBased::vcacucATResponse[ 0 ]	 =  0;
     
@@ -349,8 +391,18 @@ void ModemATBased::internetConnectToHost ()
 	ModemATBased::StateMachineRun ();
 }
 
-void ModemATBased::internetDataSendByGET ()
+void ModemATBased::internetDataSendByGET ( byte vabtStatus )
 {
+    if ( ( vabtStatus != 0x00 ) && ( vabtStatus != 0xFF ) )
+    {
+        ModemATBased::ModemUserStatus =  vabtStatus;
+    }
+    
+    else if ( vabtStatus == 0xFF )
+    {
+        ModemATBased::ModemUserStatus =  0x00;
+    }
+    
     ModemATBased::vcacucATString[ 0 ]	 =  &modem_start_send_data_over_tcp_udp;
     ModemATBased::vcacucATResponse[ 0 ]	 =  &modem_sms_text_redy_to_send;
     
@@ -399,8 +451,18 @@ void ModemATBased::internetDataSendByGET ()
 
 #ifndef I_do_not_need_to_send_sms_in_my_program
 
-    void ModemATBased::sendTextSms ()
+    void ModemATBased::sendTextSms ( byte vabtStatus )
     {
+        if ( ( vabtStatus != 0x00 ) && ( vabtStatus != 0xFF ) )
+        {
+            ModemATBased::ModemUserStatus =  vabtStatus;
+        }
+        
+        else if ( vabtStatus == 0xFF )
+        {
+            ModemATBased::ModemUserStatus =  0x00;
+        }
+        
         ModemATBased::vcacucATString[ 0 ]	 =  &modem_echo_off;
         ModemATBased::vcacucATResponse[ 0 ]	 =  &modem_modem_ok;
         
@@ -435,8 +497,18 @@ void ModemATBased::internetDataSendByGET ()
         ModemATBased::StateMachineRun ();
     }
     
-    void ModemATBased::readTextSms ()
+    void ModemATBased::readTextSms ( byte vabtStatus )
     {
+        if ( ( vabtStatus != 0x00 ) && ( vabtStatus != 0xFF ) )
+        {
+            ModemATBased::ModemUserStatus =  vabtStatus;
+        }
+        
+        else if ( vabtStatus == 0xFF )
+        {
+            ModemATBased::ModemUserStatus =  0x00;
+        }
+        
         ModemATBased::vcacucATString[ 0 ]	 =  &modem_sms_text_mode;
         ModemATBased::vcacucATResponse[ 0 ]	 =  &modem_modem_ok;
         
@@ -462,8 +534,18 @@ void ModemATBased::internetDataSendByGET ()
         ModemATBased::StateMachineRun ();
     }
     
-    void ModemATBased::deleteSmsById ()
+    void ModemATBased::deleteSmsById ( byte vabtStatus )
     {
+        if ( ( vabtStatus != 0x00 ) && ( vabtStatus != 0xFF ) )
+        {
+            ModemATBased::ModemUserStatus =  vabtStatus;
+        }
+        
+        else if ( vabtStatus == 0xFF )
+        {
+            ModemATBased::ModemUserStatus =  0x00;
+        }
+        
         ModemATBased::vcacucATString[ 0 ]	 =  &modem_sms_delete_by_id;
         ModemATBased::vcacucATResponse[ 0 ]	 =  0;
         
@@ -483,8 +565,18 @@ void ModemATBased::internetDataSendByGET ()
         ModemATBased::StateMachineRun ();
     }
     
-    void ModemATBased::deleteSmsByStatus ()
+    void ModemATBased::deleteSmsByStatus ( byte vabtStatus )
     {
+        if ( ( vabtStatus != 0x00 ) && ( vabtStatus != 0xFF ) )
+        {
+            ModemATBased::ModemUserStatus =  vabtStatus;
+        }
+        
+        else if ( vabtStatus == 0xFF )
+        {
+            ModemATBased::ModemUserStatus =  0x00;
+        }
+        
         ModemATBased::vcacucATString[ 0 ]	 =  &modem_sms_delete_by_status;
         ModemATBased::vcacucATResponse[ 0 ]	 =  0;
         
@@ -506,8 +598,18 @@ void ModemATBased::internetDataSendByGET ()
 
 #endif
 
-void ModemATBased::getCurrentCallNumber ()
+void ModemATBased::getCurrentCallNumber ( byte vabtStatus )
 {
+    if ( ( vabtStatus != 0x00 ) && ( vabtStatus != 0xFF ) )
+    {
+        ModemATBased::ModemUserStatus =  vabtStatus;
+    }
+    
+    else if ( vabtStatus == 0xFF )
+    {
+        ModemATBased::ModemUserStatus =  0x00;
+    }
+    
     ModemATBased::vcacucATString[ 0 ]	 =  &modem_header_carrier_number;
     ModemATBased::vcacucATResponse[ 0 ]	 =  0;
     
@@ -524,8 +626,18 @@ void ModemATBased::getCurrentCallNumber ()
     ModemATBased::StateMachineRun ();
 }
 
-void ModemATBased::getSignalQuality ()
+void ModemATBased::getSignalQuality ( byte vabtStatus )
 {
+    if ( ( vabtStatus != 0x00 ) && ( vabtStatus != 0xFF ) )
+    {
+        ModemATBased::ModemUserStatus =  vabtStatus;
+    }
+    
+    else if ( vabtStatus == 0xFF )
+    {
+        ModemATBased::ModemUserStatus =  0x00;
+    }
+    
     ModemATBased::vcacucATString[ 0 ]	 =  &modem_header_signal_quality;
     ModemATBased::vcacucATResponse[ 0 ]	 =  0;//modem_header_signal_quality_response;
     
