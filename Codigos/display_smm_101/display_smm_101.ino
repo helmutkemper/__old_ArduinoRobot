@@ -1,4 +1,4 @@
-  /*
+/*
           $lati=$lati+floor( ( ($lat/100)-$lati)/60*100*1000000)/1000000;
           $loni=$loni+floor( (($lon/100)-$loni)/60*100*1000000)/1000000;
 
@@ -40,103 +40,210 @@ Protocolo:
 #include <EEPROM.h>
 #include <ModemATBased.h>
 
-#define displayPower 53
+#define               kuiReleDisplayPin                 53
 
-const byte kReady              =  0x00;
-const byte kConnectingInternet =  0x01;
-const byte kConnectingHost     =  0x02;
-const byte kConnectingPage     =  0x03;
-const byte kError              =  0x04;
-const byte kClosed             =  0x05;
-const byte kCallReady          =  0x06;
+#define               kuiGpsBaudRate                    4800
+//#define             kDefineGpsUseSerialPort0
+#define               kDefineGpsUseSerialPort1
+//#define             kDefineGpsUseSerialPort2
+//#define             kDefineGpsUseSerialPort3
 
-const String host          =  "kemper.com.br";
-const String hostPort      =  String ( 80, DEC );
+#define               kDisplayBaudRate                  1200
+//#define             kDefineDisplayUseSerialPort0
+//#define             kDefineDisplayUseSerialPort1
+#define               kDefineDisplayUseSerialPort2
+//#define             kDefineDisplayUseSerialPort3
 
-byte vgbStatusCode         =  kReady;
+#define               kuiModemGprsTimeOutError          30000
+#define               kxModemGprsPowerPin               A0
+#define               kuiModemGprsBaudRate              9600
+//#define             kDefineModemGprsUseSerialPort0
+//#define             kDefineModemGprsUseSerialPort1
+//#define             kDefineModemGprsUseSerialPort2
+#define               kDefineModemGprsUseSerialPort3
 
+const byte            kReady                         =  0x00;
+const byte            kConnectingInternet            =  0x01;
+const byte            kConnectingHost                =  0x02;
+const byte            kConnectingPage                =  0x03;
+const byte            kError                         =  0x04;
+const byte            kClosed                        =  0x05;
+const byte            kCallReady                     =  0x06;
 
+const unsigned int    kuiEepromAddressRecordedData   =  0x0000;
+const unsigned int    kuiEepromAddressId             =  0x000F;
+const unsigned int    kuiEepromAddressTelefon        =  0x002F;
+const unsigned int    kuiEepromAddressUrl            =  0x0043;
+const unsigned int    kuiEepromAddressPage           =  0x00C3;
+const unsigned int    kuiEepromAddressMessage        =  0x0143;
 
+const unsigned char   kucEepromGravada[]            =  "DATA_GRAV_OK";
+const unsigned char   kucEepromVersion[]            =  "V1.0";
 
-const unsigned int kuiEepromAddressRecordedData   =  0x0000;
-const unsigned int kuiEepromAddressId             =  0x000F;
-const unsigned int kuiEepromAddressTelefon        =  0x002F;
-const unsigned int kuiEepromAddressUrl            =  0x0043;
-const unsigned int kuiEepromAddressPage           =  0x00C3;
-const unsigned int kuiEepromAddressMessage        =  0x0143;
-
-const unsigned char kucEepromGravada[]   =  "DATA_GRAV_OK";
-const unsigned char kucEepromVersion[]   =  "V1.0";
-
-
-
-const unsigned char   kucaNmea[]  =  "$GPRMC";
+const unsigned char   kucaNmea[]                    =  "$GPRMC";
 const unsigned char * vgucNmea;
-      int            vgscGetingData =  0;
+      int             vgscGetingData                =  0;
       unsigned char   vgucGpsRmc[80];
 
+      String          vgstIdSmsToDelete;
+      String          vgstIdLastMessage             =  "0";
+      String          vgstPowerLed                  =  "1";
+      unsigned long   vgulMillis                    =  millis ();
 
-
-
-String IdSmsToDelete;
-String IdLastMessage                              =  "0";
-String PowerLed                                   =  "1";
-unsigned long vgulMillis  =  millis ();
-
+/*  
+ *  Devido a falta de eficiência do compilador Arduino em tratar Strings, a porta serial do GPS fica desligada,
+ *  sendo habilitada apenas quando requisitada, evitando o desperdício de tempo de processamento desnecessário.
+ *  
+ *  A função startGps () tem a finalidade de ligar a porta serial do mesmo e gerar um evento assim que uma String 
+ *  $GPRMC é detectada, mantendo o programa em "suspensão" até que a mesma seja totalmente carregada na memória.
+ */
 void startGps ()
 {
+  #ifdef kDefineGpsUseSerialPort0
+  
+    Serial.begin ( kuiGpsBaudRate );
     
-  Serial1.begin ( 4800 );  //GPS
+  #endif
+  #ifdef kDefineGpsUseSerialPort1
+  
+    Serial1.begin ( kuiGpsBaudRate );
+  
+  #endif
+  #ifdef kDefineGpsUseSerialPort2
+  
+    Serial2.begin ( kuiGpsBaudRate );
+  
+  #endif
+  #ifdef kDefineGpsUseSerialPort3
+  
+    Serial3.begin ( kuiGpsBaudRate );
+  
+  #endif
+  
   vgscGetingData =  0;
   vgucNmea       =  &kucaNmea[0];
 }
 
-void serialEvent1 ()
-{
-    unsigned char vlucData =  Serial1.read ();  //GPS
+
+/*  
+ *  Função de interrupção da porta serial usada pelo GPS.
+ *  
+ *  Basicamente a função compara o dado que chegou com os cinco primeiros caracteres do dado contido em "kucaNmea[]"
+ *  e faz a captura do mesmo até que seja encontrado "\r". Em seguida é disparado o evento da captura de 
+ *  coordenadas para que o sistema passe para a próxima etapa.
+ */
+#ifdef kDefineGpsUseSerialPort0
+  
+  void serialEvent () {
+  
+#endif
+#ifdef kDefineGpsUseSerialPort1
+  
+  void serialEvent1 () {
+  
+#endif
+#ifdef kDefineGpsUseSerialPort2
+  
+  void serialEvent2 () {
+  
+#endif
+#ifdef kDefineGpsUseSerialPort3
+  
+  void serialEvent3 () {
+  
+#endif
+  
+  #ifdef kDefineGpsUseSerialPort0
+  
+    unsigned char vlucData =  Serial.read ();
+  
+  #endif
+  #ifdef kDefineGpsUseSerialPort1
+  
+    unsigned char vlucData =  Serial1.read ();
+  
+  #endif
+  #ifdef kDefineGpsUseSerialPort2
+  
+    unsigned char vlucData =  Serial2.read ();
+  
+  #endif
+  #ifdef kDefineGpsUseSerialPort3
+  
+    unsigned char vlucData =  Serial3.read ();
+  
+  #endif
+  
+  if ( vlucData == '\n' )
+  {
+    vgscGetingData =  0;
+    vgucNmea       =  &kucaNmea[0];
+  }
     
-    if ( vlucData == '\n' )
-    {
-      vgscGetingData =  0;
-      vgucNmea       =  &kucaNmea[0];
-    }
+  vgucGpsRmc[   vgscGetingData       ] =  vlucData;
+  vgucGpsRmc[ ( vgscGetingData + 1 ) ]   =  0x00;
     
-    vgucGpsRmc[   vgscGetingData       ] =  vlucData;
-    vgucGpsRmc[ ( vgscGetingData + 1 ) ]   =  0x00;
+  if ( ( vgscGetingData <= 0x05 ) && ( vlucData == *vgucNmea ) )
+  {
+    vgucNmea++;
+    vgscGetingData++;
+  }
     
-    if ( ( vgscGetingData <= 0x05 ) && ( vlucData == *vgucNmea ) )
-    {
-      vgucNmea++;
-      vgscGetingData++;
-    }
+  else if ( ( vgscGetingData > 0x05 ) && ( vlucData == '\r' ) )
+  {
     
-    else if ( ( vgscGetingData > 0x05 ) && ( vlucData == '\r' ) )
-    {
-      Serial1.end ();  //GPS
-      Serial1.flush ();  //GPS
+    // Limpa o buffer serial
+    #ifdef kDefineGpsUseSerialPort0
+    
+      Serial.end ();
+      Serial.flush ();
+    
+    #endif
+    #ifdef kDefineGpsUseSerialPort1
+  
+      Serial1.end ();
+      Serial1.flush ();
+    
+    #endif
+    #ifdef kDefineGpsUseSerialPort2
+  
+      Serial2.end ();
+      Serial2.flush ();
+  
+    #endif
+    #ifdef kDefineGpsUseSerialPort3
+  
+      Serial3.end ();
+      Serial3.flush ();
+  
+    #endif
+    
+    vgscGetingData =  0;
       
-      vgscGetingData =  0;
+    Evento ( Event::GPSData, Event::None );
       
-      Evento ( Event::GPSData, Event::None );
-      
-      return;
-    }
+    return;
+  }
     
-    else if ( vgscGetingData > 0x05 )
-    {
-      vgscGetingData++;
-    }
+  else if ( vgscGetingData > 0x05 )
+  {
+    vgscGetingData++;
+  }
     
-    else
-    {
-      vgucNmea       =  &kucaNmea[0];
-      vgscGetingData =  0;
-    }
+  else
+  {
+    vgucNmea       =  &kucaNmea[0];
+    vgscGetingData =  0;
+  }
 }
 
+/*  
+ *  
+ */
 void onDataEvent ()
 {
-  int vlsiIndexOfStart, vlsiIndexOfEnd ;
+  int          vlsiIndexOfStart;
+  int          vlsiIndexOfEnd ;
   String       vlstIdActualMesageReceived;
   unsigned int vluiIdLastMesageReceived;
   unsigned int vluiIdActualMesageReceived;
@@ -150,7 +257,7 @@ void onDataEvent ()
   vluiIdActualMesageReceived =  StringToUInt ( vlstIdActualMesageReceived );
   
   // id da ultima mensagem valida recebida
-  vluiIdLastMesageReceived   =  StringToUInt ( IdLastMessage );
+  vluiIdLastMesageReceived   =  StringToUInt ( vgstIdLastMessage );
   
   // esta mensagem ja foi processada
   if ( vluiIdLastMesageReceived >= vluiIdActualMesageReceived )
@@ -163,7 +270,7 @@ void onDataEvent ()
   ModemATBased::Telefon  =  "";
   
   // arquiva o id da nova mensagem
-  IdLastMessage          =  vlstIdActualMesageReceived;
+  vgstIdLastMessage          =  vlstIdActualMesageReceived;
   
   // i - id do novo modem
   vlsiIndexOfStart       =  ModemATBased::vcsSerialBuffer.indexOf ( "i:" );
@@ -207,7 +314,7 @@ void onDataEvent ()
   
   if ( vlsiIndexOfStart != -1 )
   {
-    PowerLed =  "0";
+    vgstPowerLed =  "0";
     shutDownDisplay ( true );
   }
   
@@ -215,7 +322,7 @@ void onDataEvent ()
   
   if ( vlsiIndexOfStart != -1 )
   {
-    PowerLed =  "1";
+    vgstPowerLed =  "1";
     shutDownDisplay ( false );
   }
   
@@ -223,33 +330,62 @@ void onDataEvent ()
   
   if ( vlsiIndexOfStart != -1 )
   {
-    IdLastMessage      =  "0";
+    vgstIdLastMessage      =  "0";
     Serial.println ( "\r\nid da mesg zerado" );
   }
 }
 
+/*  
+ *  
+ */
 void shutDownDisplay ( boolean vlbPowerToDisplay )
 {
   if ( vlbPowerToDisplay == true )
   {
-    digitalWrite ( displayPower, LOW );
+    digitalWrite ( kuiReleDisplayPin, LOW );
     Serial.println ( "\r\nDisplay desligado" );
   }
   
   else
   {
-    digitalWrite ( displayPower, HIGH );
+    digitalWrite ( kuiReleDisplayPin, HIGH );
     Serial.println ( "\r\nDisplay ligado" );
   }
 }
 
+/*  
+ *  
+ */
 void sendMessageToDisplay ( String * vastpMessage )
 {
   Serial.print ( "\r\nMensagem para o display: " );
   Serial.println ( * vastpMessage );
-  Serial2.println ( * vastpMessage );
+  
+  #ifdef kDefineDisplayUseSerialPort0
+  
+    Serial.println ( * vastpMessage );
+    
+  #endif
+  #ifdef kDefineDisplayUseSerialPort1
+  
+    Serial1.println ( * vastpMessage );
+    
+  #endif
+  #ifdef kDefineDisplayUseSerialPort2
+  
+    Serial2.println ( * vastpMessage );
+    
+  #endif
+  #ifdef kDefineDisplayUseSerialPort3
+  
+    Serial3.println ( * vastpMessage );
+    
+  #endif
 }
 
+/*  
+ *  
+ */
 unsigned int StringToUInt ( String vastIntString )
 {
   unsigned int vluiNumber       =  0;
@@ -273,11 +409,18 @@ unsigned int StringToUInt ( String vastIntString )
   return vluiNumber;
 }
 
+/*  
+ *  
+ */
 void resetMillis ()
-{Serial.write("reset millis()\r\n");
+{
+  Serial.write("reset millis()\r\n");
   vgulMillis  =  millis ();
 }
 
+/*  
+ *  
+ */
 boolean testMillis ( unsigned long vaulMillis )
 {
   if ( millis () < vgulMillis )
@@ -293,32 +436,88 @@ boolean testMillis ( unsigned long vaulMillis )
   return false;
 }
 
+/*  
+ *  
+ */
 void modemPower ()
 {
   resetMillis ();
   Serial.write ( "Power Down\r\n" );
-  pinMode ( A0, OUTPUT );
-  digitalWrite (A0, HIGH);
+  
+  pinMode ( kxModemGprsPowerPin, OUTPUT );
+  digitalWrite ( kxModemGprsPowerPin, LOW );
+  
+  resetMillis ();
+  
+  digitalWrite (kxModemGprsPowerPin, HIGH);
   delay ( 1000 );
-  digitalWrite ( A0, LOW );
+  
+  digitalWrite ( kxModemGprsPowerPin, LOW );
+  
   resetMillis ();
 }
 
+/*  
+ *  
+ */
 void setup ()
 {
   resetMillis ();
   Serial.begin ( 9600 );
-  Serial2.begin ( 1200 );
+  
+  #ifdef kDefineDisplayUseSerialPort0
+  
+    Serial.begin ( kDisplayBaudRate );
+    
+  #endif
+  #ifdef kDefineDisplayUseSerialPort1
+  
+    Serial1.begin ( kDisplayBaudRate );
+    
+  #endif
+  #ifdef kDefineDisplayUseSerialPort2
+  
+    Serial2.begin ( kDisplayBaudRate );
+    
+  #endif
+  #ifdef kDefineDisplayUseSerialPort3
+  
+    Serial3.begin ( kDisplayBaudRate );
+    
+  #endif
   
   Serial.write ( "Power down pelo reset\r\n" );
   modemPower ();
   
   ModemATBased::StateMachineEvent = &Evento;
-  ModemATBased::setSerial ( SerialPort::Port3, 9600 );
+  
+  #ifdef kDefineModemGprsUseSerialPort0
+  
+    ModemATBased::setSerial ( SerialPort::Port0, kuiModemGprsBaudRate );
+    
+  #endif
+  #ifdef kDefineModemGprsUseSerialPort1
+  
+    ModemATBased::setSerial ( SerialPort::Port1, kuiModemGprsBaudRate );
+    
+  #endif
+  #ifdef kDefineModemGprsUseSerialPort2
+  
+    ModemATBased::setSerial ( SerialPort::Port2, kuiModemGprsBaudRate );
+    
+  #endif
+  #ifdef kDefineModemGprsUseSerialPort3
+  
+    ModemATBased::setSerial ( SerialPort::Port3, kuiModemGprsBaudRate );
+    
+  #endif
   
   ModemATBased::DataEvent = &onDataEvent;
 }
 
+/*  
+ *  
+ */
 void makeEepromRecordedData ()
 {
   const unsigned char * vlucpAddressData =  &kucEepromGravada[0];
@@ -337,6 +536,9 @@ void makeEepromRecordedData ()
   EEPROM.write ( vlucpAddress, 0x00 );
 }
 
+/*  
+ *  
+ */
 boolean testEepromRecordedData ()
 {
   unsigned int vluiAddress =  kuiEepromAddressRecordedData;
@@ -363,6 +565,9 @@ boolean testEepromRecordedData ()
   }
 }
 
+/*  
+ *  
+ */
 void writeEepromData ( const unsigned int * vauipAddress, String * vastpDara )
 {
   unsigned int  vluiEepromAddress =  * vauipAddress;
@@ -386,6 +591,9 @@ void writeEepromData ( const unsigned int * vauipAddress, String * vastpDara )
   }
 }
 
+/*  
+ *  
+ */
 void readEepromData ( const unsigned int * vauipAddress, String * vastpDara )
 {
   unsigned int  vluiEepromAddress =  * vauipAddress;
@@ -408,11 +616,9 @@ void readEepromData ( const unsigned int * vauipAddress, String * vastpDara )
   }
 }
 
-void getGpsData ()
-{
-  
-}
-
+/*  
+ *  
+ */
 void Evento ( eEvent e, eEvent d )
 {
   switch ( e )
@@ -443,9 +649,9 @@ void Evento ( eEvent e, eEvent d )
                                                      ModemATBased::QueryString.concat ( "&q=" );
                                                      ModemATBased::QueryString.concat ( ModemATBased::SignalQualityDbm );
                                                      ModemATBased::QueryString.concat ( "&s=" );
-                                                     ModemATBased::QueryString.concat ( IdLastMessage );
+                                                     ModemATBased::QueryString.concat ( vgstIdLastMessage );
                                                      ModemATBased::QueryString.concat ( "&p=" );
-                                                     ModemATBased::QueryString.concat ( PowerLed );
+                                                     ModemATBased::QueryString.concat ( vgstPowerLed );
                                                      ModemATBased::QueryString.concat ( "&gp=" );
                                                      
                                                      while ( vgucGpsRmc[ vgscGetingData ] != '\r' )
@@ -461,9 +667,9 @@ void Evento ( eEvent e, eEvent d )
                                                      ModemATBased::QueryString.concat ( "-1&q=" );
                                                      ModemATBased::QueryString.concat ( ModemATBased::SignalQualityDbm );
                                                      ModemATBased::QueryString.concat ( "&s=" );
-                                                     ModemATBased::QueryString.concat ( IdLastMessage );
+                                                     ModemATBased::QueryString.concat ( vgstIdLastMessage );
                                                      ModemATBased::QueryString.concat ( "&p=" );
-                                                     ModemATBased::QueryString.concat ( PowerLed );
+                                                     ModemATBased::QueryString.concat ( vgstPowerLed );
                                                      ModemATBased::QueryString.concat ( "&gp=" );
                                                      
                                                      while ( vgucGpsRmc[ vgscGetingData ] != '\r' )
@@ -597,7 +803,7 @@ void Evento ( eEvent e, eEvent d )
                                                  
                                                  //Serial.print ( "\r\nEvento: User Data - " );
                                                  //Serial.println ( ModemATBased::Data );
-                                                 //ModemATBased::Id = IdSmsToDelete;
+                                                 //ModemATBased::Id = vgstIdSmsToDelete;
                                                  //ModemATBased::deleteSmsById ();
                                                  break;
     
@@ -673,7 +879,7 @@ void Evento ( eEvent e, eEvent d )
                                                  Serial.println   ( ModemATBased::Second );
                                                  Serial.print   ( "ModemATBased::Message: " );
                                                  Serial.println   (  ModemATBased::Message );
-                                                 //IdSmsToDelete =  ModemATBased::Id;
+                                                 //vgstIdSmsToDelete =  ModemATBased::Id;
                                                  //ModemATBased::readTextSms ();
                                                  break;
                                         
@@ -731,11 +937,14 @@ void Evento ( eEvent e, eEvent d )
   }
 }
 
+/*  
+ *  
+ */
 void loop ()
 {
   unsigned char data;
   
-  if ( testMillis ( 30000 ) == true )
+  if ( testMillis ( kuiModemGprsTimeOutError ) == true )
   {
     Serial.write ( "Erro millis\r\n" );
     Evento ( Event::FatalError, Event::None );

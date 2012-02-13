@@ -84,6 +84,7 @@ namespace Event
         Busy,
         CmeError,
         Error,
+        FatalError,
         Close,
         Closed,
         ConnectionFailed,
@@ -119,7 +120,9 @@ namespace Event
         readTextSmsFunction,
         deleteTextSmsByIdFunction,
         deleteTextSmsByStatusFunction,
-        getSignalQualityFuntion
+        getSignalQualityFuntion,
+        
+        GPSData
     };
 }
 using namespace Event;
