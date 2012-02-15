@@ -92,8 +92,10 @@ const String modem_ip_single					 =  "AT+CIPMUX=0\r";//OK
 //const String modem_ip_multi						 =  "AT+CIPMUX=1\r";//OK
 const String modem_ip_mode_normal				 =  "AT+CIPMODE=0\r";//OK-ERROR
 //const String modem_ip_mode_transparent			 =  "AT+CIPMODE=1\r";//OK-ERROR
-const String modem_internet_connect				 =  "AT+CGDCONT=1,\"IP\",\"TATA.DOCOMO.INTERNET\",\"10.6.6.6\",0,0\r";//OK-ERROR
-const String modem_interner_connect_password	 =  "AT+CSTT=\"TATA.DOCOMO.INTERNET\"\r";//OK_ERROR
+const String modem_internet_connect				 =  "AT+CGDCONT=1,\"IP\",\"TIM.BR\",\"0.0.0.0\",0,0\r";//"AT+CGDCONT=1,\"IP\",\"TATA.DOCOMO.INTERNET\",\"10.6.6.6\",0,0\r";//OK-ERROR
+const String modem_internet_connect_ok           =  "CONNECT\r";
+//const String modem_interner_connect_password	 =  "ATD*99***1#\r";//"AT+CSTT=\"TATA.DOCOMO.INTERNET\"\r";//OK_ERROR
+const String modem_interner_connect_password	 =  "AT+CSTT=\"tim.br\",\"tim\",\"tim\"\r";//OK_ERROR
 const String modem_deactive_gprs_dpd			 =  "AT+CIPSHUT\r";//OK-CLOSE OK-ERROR
 const String modem_deactive_gprs_dpd_ok			 =  "SHUT OK\r";//OK-CLOSE OK-ERROR
 

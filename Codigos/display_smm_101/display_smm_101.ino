@@ -54,13 +54,15 @@ Protocolo:
 #define               kDefineDisplayUseSerialPort2
 //#define             kDefineDisplayUseSerialPort3
 
-#define               kuiModemGprsTimeOutError          30000
+#define               kuiModemGprsTimeOutError          50000
 #define               kxModemGprsPowerPin               A0
 #define               kuiModemGprsBaudRate              9600
 //#define             kDefineModemGprsUseSerialPort0
 //#define             kDefineModemGprsUseSerialPort1
 //#define             kDefineModemGprsUseSerialPort2
 #define               kDefineModemGprsUseSerialPort3
+
+#define               kuiPowerDownTimeToRestart         60000
 
 const byte            kReady                         =  0x00;
 const byte            kConnectingInternet            =  0x01;
@@ -342,13 +344,13 @@ void shutDownDisplay ( boolean vlbPowerToDisplay )
 {
   if ( vlbPowerToDisplay == true )
   {
-    digitalWrite ( kuiReleDisplayPin, LOW );
+    digitalWrite ( kuiReleDisplayPin, HIGH );
     Serial.println ( "\r\nDisplay desligado" );
   }
   
   else
   {
-    digitalWrite ( kuiReleDisplayPin, HIGH );
+    digitalWrite ( kuiReleDisplayPin, LOW );
     Serial.println ( "\r\nDisplay ligado" );
   }
 }
@@ -487,6 +489,7 @@ void setup ()
   #endif
   
   Serial.write ( "Power down pelo reset\r\n" );
+  pinMode ( kuiReleDisplayPin, OUTPUT );
   modemPower ();
   
   ModemATBased::StateMachineEvent = &Evento;
@@ -702,7 +705,8 @@ void Evento ( eEvent e, eEvent d )
                                                  break;
     case Event::Closed:                          
                                                  resetMillis ();
-                                                 ModemATBased::internetDisconnectToHost ( kClosed );
+                                                 //ModemATBased::internetDisconnectToHost ( kClosed );
+                                                 ModemATBased::internetDisconnectToHost ( kError );
                                                  break;
     
                                
@@ -733,7 +737,7 @@ void Evento ( eEvent e, eEvent d )
                                                  return;
                                                  
     case Event::PowerDown:                       Serial.write ( "Evento: Power Down\r\n" );
-                                                 delay ( 2500 );
+                                                 delay ( kuiPowerDownTimeToRestart );
                                                  modemPower ();
                                                  break;
                                                  

@@ -20,8 +20,8 @@ void setup()
   
   pinMode ( 2, INPUT );
   pinMode ( 3, INPUT );
-  Serial2.begin(1200);               // the GPRS baud rate   
-  Serial.begin(1200);                 // the GPRS baud rate   
+  Serial3.begin(9600);               // the GPRS baud rate   
+  Serial.begin(9600);                 // the GPRS baud rate   
 }
  
 void loop()
@@ -30,10 +30,10 @@ void loop()
     {
       dadoSerial =  ( unsigned char ) Serial.read ();
       
-      if ( dadoSerial == '#' )
-        Serial2.write(byte(26));
+      if ( dadoSerial == '<' )
+        Serial3.write(byte(26));
         
-      else if ( dadoSerial == '&' )
+      else if ( dadoSerial == '>' )
       {
         digitalWrite ( A0, HIGH );
         delay ( 1000 );
@@ -41,12 +41,12 @@ void loop()
       }
       
       else
-        Serial2.write( dadoSerial );
+        Serial3.write( dadoSerial );
     }  
     
-    if(Serial2.available())
+    if(Serial3.available())
     {
-      dadoSerialModem =  Serial2.read();
+      dadoSerialModem =  Serial3.read();
       
       if ( dadoSerialModem == NULL )
         Serial.write ( "NULL detectado\r\n" );
