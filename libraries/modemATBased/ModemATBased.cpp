@@ -303,6 +303,9 @@ void ModemATBased::internetConnect ( byte vabtStatus )
     ModemATBased::vcacucATString[ 3 ]	 =  &modem_internet_connect;
     ModemATBased::vcacucATResponse[ 3 ]	 =  &modem_modem_ok;
     
+//    ModemATBased::vcacucATString[ 5 ]	 =  &modem_internet_dns;
+//    ModemATBased::vcacucATResponse[ 5 ]	 =  &modem_modem_ok;
+    
     ModemATBased::vcacucATString[ 4 ]	 =  &modem_interner_connect_password;
     ModemATBased::vcacucATResponse[ 4 ]	 =  &modem_modem_ok;
     
