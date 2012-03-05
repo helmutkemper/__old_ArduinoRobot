@@ -1,0 +1,12 @@
+device_id:1
+textToDisplay:
+device_id:1
+textToDisplay:teste
+device_id:1
+realCommand:[H][P9][D][P9][R     Ola Mundo     ]
+device_id:1
+realCommand:[RRteste][RMteste][RLteste]
+device_id:1
+realCommand:
+device_id:1
+realCommand:
